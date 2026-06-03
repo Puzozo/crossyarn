@@ -1,0 +1,24 @@
+name: Deploy to Production
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy to server via SSH
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: 187.124.130.31
+          username: root
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            cd /opt/crossyarn
+            git pull origin main
+            npm install --omit=dev
+            npx prisma generate
+            npm run build
+            pm2 restart crossyarn || pm2 start .next/standalone/server.js --name crossyarn
+            pm2 save
