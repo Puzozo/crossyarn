@@ -28,6 +28,8 @@ jobs:
         run: |
           cd /opt/crossyarn
           npm run build
+          cp -r .next/static .next/standalone/.next/static
+          cp -r public .next/standalone/public 2>/dev/null || true
 
       - name: Restart app
         run: |
