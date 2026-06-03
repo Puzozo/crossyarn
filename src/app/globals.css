@@ -1,0 +1,117 @@
+@import url("https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Source+Sans+3:ital,wght@0,200..900;1,200..900&family=JetBrains+Mono:wght@400;500;600&display=swap");
+@import "tailwindcss";
+
+@theme {
+  --font-display: "Playfair Display", Georgia, serif;
+  --font-body: "Source Sans 3", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", monospace;
+
+  --color-yarn-cream: #FAF7F2;
+  --color-yarn-oatmeal: #F0EBE3;
+  --color-yarn-sand: #E8DFD3;
+  --color-yarn-warm-gray: #9C8E82;
+  --color-yarn-charcoal: #3D2E22;
+  --color-yarn-terracotta: #C4725A;
+  --color-yarn-terracotta-hover: #B5634B;
+  --color-yarn-terracotta-light: #F2DDD6;
+  --color-yarn-dusty-rose: #C9928A;
+  --color-yarn-sage: #8A9E8A;
+  --color-yarn-sage-light: #E8F0E8;
+  --color-yarn-deep-brown: #5C3D2E;
+}
+
+html,
+body {
+  min-height: 100%;
+}
+
+body {
+  font-family: var(--font-body);
+  background-color: var(--color-yarn-cream);
+  color: var(--color-yarn-charcoal);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Subtle knit texture overlay on body */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.025;
+  background-image: url("data:image/svg+xml,%3Csvg width='40' height='40' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M20 0c3 5 3 10 0 15s-3 10 0 15 3 10 0 15' fill='none' stroke='%233D2E22' stroke-width='0.5'/%3E%3Cpath d='M0 20c5 3 10 3 15 0s10-3 15 0 10 3 15 0' fill='none' stroke='%233D2E22' stroke-width='0.5'/%3E%3C/svg%3E");
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-display);
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+
+/* Warm shadow utilities */
+.shadow-warm-sm {
+  box-shadow: 0 1px 3px 0 rgba(92, 61, 46, 0.06), 0 1px 2px -1px rgba(92, 61, 46, 0.06);
+}
+
+.shadow-warm {
+  box-shadow: 0 4px 6px -1px rgba(92, 61, 46, 0.07), 0 2px 4px -2px rgba(92, 61, 46, 0.05);
+}
+
+.shadow-warm-md {
+  box-shadow: 0 10px 15px -3px rgba(92, 61, 46, 0.08), 0 4px 6px -4px rgba(92, 61, 46, 0.04);
+}
+
+.shadow-warm-lg {
+  box-shadow: 0 20px 25px -5px rgba(92, 61, 46, 0.08), 0 8px 10px -6px rgba(92, 61, 46, 0.04);
+}
+
+/* Print styles */
+@media print {
+  body::before {
+    display: none;
+  }
+
+  html, body {
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  main {
+    min-height: 0 !important;
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+
+  .print\:hidden {
+    display: none !important;
+    height: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    overflow: hidden !important;
+  }
+
+  .space-y-6 > .print\:hidden + * {
+    margin-top: 0 !important;
+  }
+
+  .space-y-6 > * + * {
+    margin-top: 0.5rem !important;
+  }
+
+  section {
+    page-break-inside: avoid;
+    break-inside: avoid;
+  }
+}

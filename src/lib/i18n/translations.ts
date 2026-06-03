@@ -1,0 +1,272 @@
+export type Language = "uk" | "en";
+
+export const translations = {
+  uk: {
+    // Nav / Header
+    "nav.patterns": "Схеми",
+    "nav.account": "Акаунт",
+    "nav.signIn": "Увійти",
+    "nav.signUp": "Реєстрація",
+    "nav.signOut": "Вийти",
+
+    // Home hero
+    "home.badge": "Редактор схем для в\u2019язання",
+    "home.titleLine1": "Створюйте схеми,",
+    "home.titleLine2": "втілюйте ідеї",
+    "home.subtitle": "Crossyarn — зручний вебдодаток для створення, збереження та експорту схем в\u2019язання. Ваша бібліотека проєктів завжди під рукою.",
+    "home.ctaPatterns": "Мої схеми",
+    "home.ctaStart": "Почати безкоштовно",
+    "home.ctaLearnMore": "Дізнатися більше",
+
+    // Home features
+    "home.featuresTitle": "Все для ваших схем",
+    "home.featuresSubtitle": "Від ідеї до готової схеми — все в одному місці",
+    "home.feature1Title": "Grid-редактор",
+    "home.feature1Desc": "Зручний редактор з нумерацією рядів і петель, палітрою кольорів та бібліотекою символів",
+    "home.feature2Title": "Бібліотека позначок",
+    "home.feature2Desc": "Стандартні та власні позначки для кожного типу петель і візерунків",
+    "home.feature3Title": "Експорт і друк",
+    "home.feature3Desc": "SVG-експорт для друку та зручне print-friendly представлення вашої схеми",
+    "home.feature4Title": "Імпорт зображень",
+    "home.feature4Desc": "Завантажте фото схеми — система розпізнає патерн і створить редаговану версію",
+    "home.feature5Title": "Автозбереження",
+    "home.feature5Desc": "Всі зміни зберігаються автоматично — ніколи не втратите свою роботу",
+    "home.feature6Title": "Персональний акаунт",
+    "home.feature6Desc": "Реєстрація через email — усі схеми прив\u2019язані до вашого акаунта",
+
+    // Patterns list
+    "patterns.title": "Мої схеми",
+    "patterns.subtitle": "Створюйте нові патерни, редагуйте їх і експортуйте у друкований вигляд.",
+    "patterns.empty": "У вас ще немає схем. Створіть першу або імпортуйте зображення, щоб відкрити редактор.",
+    "patterns.createBtn": "Створити схему",
+    "patterns.importBtn": "Імпорт зображення",
+    "patterns.importing": "Імпорт...",
+    "patterns.cells": "клітинок",
+    "patterns.openEditor": "Відкрити редактор",
+    "patterns.details": "Деталі",
+
+    // Pattern detail
+    "patternDetail.breadcrumb": "Мої схеми",
+    "patternDetail.openEditor": "Відкрити редактор",
+    "patternDetail.print": "Друк",
+    "patternDetail.svg": "SVG",
+    "patternDetail.cells": "клітинок",
+
+    // Editor
+    "editor.tools": "Інструменти",
+    "editor.stitches": "Петель",
+    "editor.rows": "Рядів",
+    "editor.symbols": "Позначки",
+    "editor.palette": "Палітра",
+    "editor.undo": "Скасувати",
+    "editor.redo": "Повторити",
+    "editor.saved": "Збережено",
+    "editor.saving": "Збереження...",
+    "editor.autosaving": "Автозбереження...",
+    "editor.error": "Помилка збереження",
+    "editor.editHint": "Редагуйте клітинки, палітру та символи. Зміни зберігаються автоматично.",
+    "editor.cellTitle": "Ряд {row}, петля {col}",
+
+    // Print
+    "print.breadcrumb": "Схеми",
+    "print.printBtn": "Друкувати",
+    "print.legend": "Легенда позначок",
+    "print.print": "Друк",
+
+    // Auth
+    "auth.signInTitle": "Вхід",
+    "auth.signUpTitle": "Створення акаунта",
+    "auth.signInDesc": "Увійдіть, щоб працювати з власними схемами.",
+    "auth.signUpDesc": "Зареєструйтесь, щоб зберігати та редагувати схеми.",
+    "auth.name": "Ім\u2019я",
+    "auth.namePlaceholder": "Ваше ім\u2019я",
+    "auth.email": "Email",
+    "auth.password": "Пароль",
+    "auth.passwordPlaceholder": "Мінімум 8 символів",
+    "auth.submitSignIn": "Увійти",
+    "auth.submitSignUp": "Створити акаунт",
+    "auth.pending": "Зачекайте...",
+    "auth.noAccount": "Немає акаунта?",
+    "auth.hasAccount": "Уже є акаунт?",
+    "auth.register": "Зареєструватися",
+    "auth.login": "Увійти",
+    "auth.genericError": "Щось пішло не так",
+
+    // Create pattern
+    "create.title": "Назва",
+    "create.stitches": "Петель",
+    "create.rows": "Рядів",
+    "create.submit": "Готово",
+    "create.creating": "Створення...",
+    "create.cancel": "Скасувати",
+    "create.defaultName": "Нова схема",
+    "create.error": "Не вдалося створити схему",
+
+    // Account
+    "account.title": "Акаунт",
+    "account.email": "Email",
+    "account.userId": "ID користувача",
+
+    // Symbol library
+    "symbols.title": "Бібліотека позначок",
+    "symbols.description": "Стандартні позначки з наданого набору вже доступні в редакторі. Тут можна додати власні 64×64 іконки з описом.",
+    "symbols.nameLabel": "Назва",
+    "symbols.descLabel": "Опис",
+    "symbols.iconLabel": "Іконка 64×64",
+    "symbols.addBtn": "Додати позначку",
+    "symbols.mySymbols": "Мої позначки",
+    "symbols.none": "Власних позначок ще немає.",
+    "symbols.deleteBtn": "Видалити",
+    "symbols.imageSizeError": "Зображення має бути рівно 64×64",
+    "symbols.addError": "Не вдалося додати позначку",
+    "symbols.deleteError": "Не вдалося видалити позначку",
+
+    // Import
+    "import.error": "Не вдалося імпортувати зображення",
+    "import.postError": "Не вдалося створити схему після імпорту",
+    "import.suggestedTitle": "Імпортована схема",
+    "import.description": "Створено з імпортованого зображення",
+
+    // Toast
+    "toast.notEnoughSpace": "Недостатньо місця — потрібно {needed} клітинок, доступно {available}",
+
+    // Mobile nav
+    "mobileNav.openMenu": "Відкрити меню",
+    "mobileNav.closeMenu": "Закрити меню"
+  },
+  en: {
+    // Nav / Header
+    "nav.patterns": "Patterns",
+    "nav.account": "Account",
+    "nav.signIn": "Sign In",
+    "nav.signUp": "Sign Up",
+    "nav.signOut": "Sign Out",
+
+    // Home hero
+    "home.badge": "Knitting pattern editor",
+    "home.titleLine1": "Create patterns,",
+    "home.titleLine2": "bring ideas to life",
+    "home.subtitle": "Crossyarn is a convenient web app for creating, saving and exporting knitting patterns. Your project library is always at hand.",
+    "home.ctaPatterns": "My Patterns",
+    "home.ctaStart": "Get started free",
+    "home.ctaLearnMore": "Learn more",
+
+    // Home features
+    "home.featuresTitle": "Everything for your patterns",
+    "home.featuresSubtitle": "From idea to finished pattern — all in one place",
+    "home.feature1Title": "Grid Editor",
+    "home.feature1Desc": "Handy editor with row and stitch numbering, color palette and symbol library",
+    "home.feature2Title": "Symbol Library",
+    "home.feature2Desc": "Standard and custom symbols for every stitch type and pattern",
+    "home.feature3Title": "Export & Print",
+    "home.feature3Desc": "SVG export for printing and a convenient print-friendly view of your pattern",
+    "home.feature4Title": "Image Import",
+    "home.feature4Desc": "Upload a photo of a pattern — the system recognizes it and creates an editable version",
+    "home.feature5Title": "Autosave",
+    "home.feature5Desc": "All changes are saved automatically — you\u2019ll never lose your work",
+    "home.feature6Title": "Personal Account",
+    "home.feature6Desc": "Register via email — all patterns are linked to your account",
+
+    // Patterns list
+    "patterns.title": "My Patterns",
+    "patterns.subtitle": "Create new patterns, edit them and export for printing.",
+    "patterns.empty": "You don\u2019t have any patterns yet. Create your first or import an image to open the editor.",
+    "patterns.createBtn": "Create Pattern",
+    "patterns.importBtn": "Import Image",
+    "patterns.importing": "Importing...",
+    "patterns.cells": "cells",
+    "patterns.openEditor": "Open Editor",
+    "patterns.details": "Details",
+
+    // Pattern detail
+    "patternDetail.breadcrumb": "My Patterns",
+    "patternDetail.openEditor": "Open Editor",
+    "patternDetail.print": "Print",
+    "patternDetail.svg": "SVG",
+    "patternDetail.cells": "cells",
+
+    // Editor
+    "editor.tools": "Tools",
+    "editor.stitches": "Stitches",
+    "editor.rows": "Rows",
+    "editor.symbols": "Symbols",
+    "editor.palette": "Palette",
+    "editor.undo": "Undo",
+    "editor.redo": "Redo",
+    "editor.saved": "Saved",
+    "editor.saving": "Saving...",
+    "editor.autosaving": "Autosaving...",
+    "editor.error": "Save error",
+    "editor.editHint": "Edit cells, palette and symbols. Changes are saved automatically.",
+    "editor.cellTitle": "Row {row}, stitch {col}",
+
+    // Print
+    "print.breadcrumb": "Patterns",
+    "print.printBtn": "Print",
+    "print.legend": "Symbol Legend",
+    "print.print": "Print",
+
+    // Auth
+    "auth.signInTitle": "Sign In",
+    "auth.signUpTitle": "Create Account",
+    "auth.signInDesc": "Sign in to work with your patterns.",
+    "auth.signUpDesc": "Register to save and edit patterns.",
+    "auth.name": "Name",
+    "auth.namePlaceholder": "Your name",
+    "auth.email": "Email",
+    "auth.password": "Password",
+    "auth.passwordPlaceholder": "Minimum 8 characters",
+    "auth.submitSignIn": "Sign In",
+    "auth.submitSignUp": "Create Account",
+    "auth.pending": "Please wait...",
+    "auth.noAccount": "Don\u2019t have an account?",
+    "auth.hasAccount": "Already have an account?",
+    "auth.register": "Register",
+    "auth.login": "Sign In",
+    "auth.genericError": "Something went wrong",
+
+    // Create pattern
+    "create.title": "Title",
+    "create.stitches": "Stitches",
+    "create.rows": "Rows",
+    "create.submit": "Create",
+    "create.creating": "Creating...",
+    "create.cancel": "Cancel",
+    "create.defaultName": "New Pattern",
+    "create.error": "Failed to create pattern",
+
+    // Account
+    "account.title": "Account",
+    "account.email": "Email",
+    "account.userId": "User ID",
+
+    // Symbol library
+    "symbols.title": "Symbol Library",
+    "symbols.description": "Standard symbols from the built-in set are already available in the editor. Here you can add your own 64\u00d764 icons with descriptions.",
+    "symbols.nameLabel": "Name",
+    "symbols.descLabel": "Description",
+    "symbols.iconLabel": "Icon 64\u00d764",
+    "symbols.addBtn": "Add Symbol",
+    "symbols.mySymbols": "My Symbols",
+    "symbols.none": "No custom symbols yet.",
+    "symbols.deleteBtn": "Delete",
+    "symbols.imageSizeError": "Image must be exactly 64\u00d764",
+    "symbols.addError": "Failed to add symbol",
+    "symbols.deleteError": "Failed to delete symbol",
+
+    // Import
+    "import.error": "Failed to import image",
+    "import.postError": "Failed to create pattern after import",
+    "import.suggestedTitle": "Imported Pattern",
+    "import.description": "Created from imported image",
+
+    // Toast
+    "toast.notEnoughSpace": "Not enough space \u2014 need {needed} cells, {available} available",
+
+    // Mobile nav
+    "mobileNav.openMenu": "Open menu",
+    "mobileNav.closeMenu": "Close menu"
+  }
+} as const;
+
+export type TranslationKey = keyof typeof translations.uk;
