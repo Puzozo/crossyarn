@@ -66,6 +66,34 @@ export async function PUT(request: Request, { params }: { params: Promise<{ id: 
   }
 }
 
+export async function PATCH(request: Request, { params }: { params: Promise<{ id: string }> }) {
+  try {
+    const session = await requireSession();
+    const { id } = await params;
+    const body = await request.json();
+    const title = typeof body.title === "string" ? body.title.trim() : "";
+    const description = typeof body.description === "string" ? body.description.trim() : "";
+
+    if (title.length < 2 || title.length > 120) {
+      return NextResponse.json({ error: "Некоректна назва" }, { status: 400 });
+    }
+
+    const existing = await db.pattern.findFirst({ where: { id, userId: session.userId } });
+    if (!existing) {
+      return NextResponse.json({ error: "Not found" }, { status: 404 });
+    }
+
+    const pattern = await db.pattern.update({
+      where: { id },
+      data: { title, description }
+    });
+
+    return NextResponse.json({ id: pattern.id, title: pattern.title, description: pattern.description });
+  } catch {
+    return NextResponse.json({ error: "Не вдалося оновити" }, { status: 400 });
+  }
+}
+
 export async function DELETE(_: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
     const session = await requireSession();

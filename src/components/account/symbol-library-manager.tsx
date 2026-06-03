@@ -72,6 +72,7 @@ export function SymbolLibraryManager({ initialSymbols }: Props) {
   }
 
   async function handleDelete(symbolId: string) {
+    if (!confirm(t("symbols.deleteConfirm"))) return;
     const rawId = symbolId.replace("user-", "");
     const response = await fetch(`/api/symbols/${rawId}`, { method: "DELETE" });
     if (!response.ok) {

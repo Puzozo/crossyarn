@@ -44,6 +44,11 @@ export const translations = {
     "patterns.cells": "клітинок",
     "patterns.openEditor": "Відкрити редактор",
     "patterns.details": "Деталі",
+    "patterns.delete": "Видалити",
+    "patterns.deleteConfirm": "Видалити цю схему? Дію не можна скасувати.",
+    "patterns.duplicate": "Дублювати",
+    "patterns.duplicating": "Дублювання...",
+    "patterns.search": "Пошук схем...",
 
     // Pattern detail
     "patternDetail.breadcrumb": "Мої схеми",
@@ -66,6 +71,12 @@ export const translations = {
     "editor.error": "Помилка збереження",
     "editor.editHint": "Редагуйте клітинки, палітру та символи. Зміни зберігаються автоматично.",
     "editor.cellTitle": "Ряд {row}, петля {col}",
+    "editor.editTitle": "Редагувати назву",
+    "editor.saveTitle": "Зберегти",
+    "editor.cancelEdit": "Скасувати",
+    "editor.titleError": "Не вдалося зберегти назву",
+    "editor.titleLabel": "Назва",
+    "editor.descriptionLabel": "Опис",
 
     // Print
     "print.breadcrumb": "Схеми",
@@ -117,6 +128,7 @@ export const translations = {
     "symbols.mySymbols": "Мої позначки",
     "symbols.none": "Власних позначок ще немає.",
     "symbols.deleteBtn": "Видалити",
+    "symbols.deleteConfirm": "Видалити цю позначку?",
     "symbols.imageSizeError": "Зображення має бути рівно 64×64",
     "symbols.addError": "Не вдалося додати позначку",
     "symbols.deleteError": "Не вдалося видалити позначку",
@@ -177,6 +189,11 @@ export const translations = {
     "patterns.cells": "cells",
     "patterns.openEditor": "Open Editor",
     "patterns.details": "Details",
+    "patterns.delete": "Delete",
+    "patterns.deleteConfirm": "Delete this pattern? This action cannot be undone.",
+    "patterns.duplicate": "Duplicate",
+    "patterns.duplicating": "Duplicating...",
+    "patterns.search": "Search patterns...",
 
     // Pattern detail
     "patternDetail.breadcrumb": "My Patterns",
@@ -199,6 +216,12 @@ export const translations = {
     "editor.error": "Save error",
     "editor.editHint": "Edit cells, palette and symbols. Changes are saved automatically.",
     "editor.cellTitle": "Row {row}, stitch {col}",
+    "editor.editTitle": "Edit title",
+    "editor.saveTitle": "Save",
+    "editor.cancelEdit": "Cancel",
+    "editor.titleError": "Failed to save title",
+    "editor.titleLabel": "Title",
+    "editor.descriptionLabel": "Description",
 
     // Print
     "print.breadcrumb": "Patterns",
@@ -250,6 +273,7 @@ export const translations = {
     "symbols.mySymbols": "My Symbols",
     "symbols.none": "No custom symbols yet.",
     "symbols.deleteBtn": "Delete",
+    "symbols.deleteConfirm": "Delete this symbol?",
     "symbols.imageSizeError": "Image must be exactly 64\u00d764",
     "symbols.addError": "Failed to add symbol",
     "symbols.deleteError": "Failed to delete symbol",
