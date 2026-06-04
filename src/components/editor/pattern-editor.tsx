@@ -307,7 +307,7 @@ export function PatternEditor({ patternId, initialPattern, title, description }:
         <div
           className="grid gap-px bg-yarn-sand/60 flex-1"
           style={{
-            gridTemplateColumns: `repeat(${pattern.width}, minmax(22px, 1fr)) 36px`
+            gridTemplateColumns: `repeat(${pattern.width}, minmax(40px, 1fr)) 40px`
           }}
         >
           {pattern.cells.flatMap((row, rowIndex) => [
@@ -323,7 +323,7 @@ export function PatternEditor({ patternId, initialPattern, title, description }:
                   key={`${rowIndex}-${columnIndex}`}
                   type="button"
                   onClick={() => paintCell(rowIndex, columnIndex)}
-                  className="flex min-h-7 items-center justify-center bg-white text-xs font-semibold text-yarn-charcoal hover:ring-1 hover:ring-yarn-terracotta/40 transition-shadow"
+                  className="flex min-h-[40px] items-center justify-center bg-white text-xs font-semibold text-yarn-charcoal hover:ring-1 hover:ring-yarn-terracotta/40 transition-shadow"
                   style={{
                     backgroundColor: cell.color,
                     gridColumn: symbolWidth > 1 ? `span ${symbolWidth}` : undefined,
@@ -350,7 +350,7 @@ export function PatternEditor({ patternId, initialPattern, title, description }:
             }).filter(Boolean),
             <div
               key={`row-${rowIndex}`}
-              className="flex min-h-7 items-center justify-center bg-yarn-oatmeal text-[10px] font-mono font-semibold text-yarn-warm-gray"
+              className="flex min-h-[40px] items-center justify-center bg-yarn-oatmeal text-[10px] font-mono font-semibold text-yarn-warm-gray"
             >
               {pattern.height - rowIndex}
             </div>
@@ -358,7 +358,7 @@ export function PatternEditor({ patternId, initialPattern, title, description }:
           {Array.from({ length: pattern.width }, (_, columnIndex) => (
             <div
               key={`column-${columnIndex}`}
-              className="flex min-h-7 items-center justify-center bg-yarn-oatmeal text-[10px] font-mono font-semibold text-yarn-warm-gray"
+              className="flex min-h-[40px] items-center justify-center bg-yarn-oatmeal text-[10px] font-mono font-semibold text-yarn-warm-gray"
             >
               {pattern.width - columnIndex}
             </div>
