@@ -28,6 +28,7 @@ export function PatternEditor({ patternId, initialPattern, title, description }:
     setSelectedSymbolId,
     setSymbols,
     resizePattern,
+    addEdge,
     toastData,
     clearToast
   } = usePatternEditorStore();
@@ -280,8 +281,31 @@ export function PatternEditor({ patternId, initialPattern, title, description }:
 
       {/* Grid canvas */}
       <section className="overflow-auto rounded-2xl bg-white/70 border border-yarn-sand/50 p-3 sm:p-4 lg:p-5 shadow-warm-sm">
+        {/* Add row top */}
+        <div className="flex justify-center mb-1">
+          <button
+            type="button"
+            onClick={() => addEdge("top")}
+            title="Додати рядок зверху"
+            className="flex items-center gap-1 rounded-full border border-dashed border-yarn-sand/70 bg-yarn-oatmeal/40 px-4 py-0.5 text-xs font-bold text-yarn-warm-gray hover:border-yarn-terracotta/50 hover:bg-yarn-terracotta-light/40 hover:text-yarn-terracotta transition-colors"
+          >
+            <span>+</span>
+          </button>
+        </div>
+
+        <div className="flex gap-1 items-stretch">
+          {/* Add col left */}
+          <button
+            type="button"
+            onClick={() => addEdge("left")}
+            title="Додати стовпець ліворуч"
+            className="flex items-center justify-center rounded-full border border-dashed border-yarn-sand/70 bg-yarn-oatmeal/40 w-6 shrink-0 text-xs font-bold text-yarn-warm-gray hover:border-yarn-terracotta/50 hover:bg-yarn-terracotta-light/40 hover:text-yarn-terracotta transition-colors"
+          >
+            +
+          </button>
+
         <div
-          className="grid gap-px bg-yarn-sand/60"
+          className="grid gap-px bg-yarn-sand/60 flex-1"
           style={{
             gridTemplateColumns: `repeat(${pattern.width}, minmax(22px, 1fr)) 36px`
           }}
@@ -340,6 +364,29 @@ export function PatternEditor({ patternId, initialPattern, title, description }:
             </div>
           ))}
           <div className="bg-yarn-oatmeal rounded-br" />
+        </div>
+
+          {/* Add col right */}
+          <button
+            type="button"
+            onClick={() => addEdge("right")}
+            title="Додати стовпець праворуч"
+            className="flex items-center justify-center rounded-full border border-dashed border-yarn-sand/70 bg-yarn-oatmeal/40 w-6 shrink-0 text-xs font-bold text-yarn-warm-gray hover:border-yarn-terracotta/50 hover:bg-yarn-terracotta-light/40 hover:text-yarn-terracotta transition-colors"
+          >
+            +
+          </button>
+        </div>
+
+        {/* Add row bottom */}
+        <div className="flex justify-center mt-1">
+          <button
+            type="button"
+            onClick={() => addEdge("bottom")}
+            title="Додати рядок знизу"
+            className="flex items-center gap-1 rounded-full border border-dashed border-yarn-sand/70 bg-yarn-oatmeal/40 px-4 py-0.5 text-xs font-bold text-yarn-warm-gray hover:border-yarn-terracotta/50 hover:bg-yarn-terracotta-light/40 hover:text-yarn-terracotta transition-colors"
+          >
+            <span>+</span>
+          </button>
         </div>
       </section>
 

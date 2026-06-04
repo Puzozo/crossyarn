@@ -47,6 +47,7 @@ type EditorState = {
   setSelectedColor: (color: string) => void;
   setSymbols: (symbols: PatternDocument["symbols"]) => void;
   resizePattern: (newWidth: number, newHeight: number) => void;
+  addEdge: (edge: "top" | "bottom" | "left" | "right") => void;
   clearToast: () => void;
   undo: () => void;
   redo: () => void;
@@ -166,6 +167,30 @@ export const usePatternEditorStore = create<EditorState>((set, get) => ({
     next.width = w;
     next.height = h;
     set({ pattern: next, history: [...state.history, previous], future: [] });
+  },
+  addEdge: (edge) => {
+    const state = get();
+    if (!state.pattern) return;
+    const prev = clonePattern(state.pattern);
+    const next = clonePattern(state.pattern);
+    const def = next.palette[0]?.hex ?? "#f5ede1";
+    const emptyRow = () => Array.from({ length: next.width }, () => ({ symbolId: "empty", color: def }));
+    const emptyCell = () => ({ symbolId: "empty", color: def });
+
+    if (edge === "top") {
+      next.cells = [emptyRow(), ...next.cells];
+      next.height += 1;
+    } else if (edge === "bottom") {
+      next.cells = [...next.cells, emptyRow()];
+      next.height += 1;
+    } else if (edge === "left") {
+      next.cells = next.cells.map((row) => [emptyCell(), ...row]);
+      next.width += 1;
+    } else {
+      next.cells = next.cells.map((row) => [...row, emptyCell()]);
+      next.width += 1;
+    }
+    set({ pattern: next, history: [...state.history, prev], future: [] });
   },
   undo: () => {
     const state = get();
