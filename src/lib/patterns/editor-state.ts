@@ -46,6 +46,7 @@ type EditorState = {
   setSelectedSymbolId: (symbolId: string) => void;
   setSelectedColor: (color: string) => void;
   setSymbols: (symbols: PatternDocument["symbols"]) => void;
+  resizePattern: (newWidth: number, newHeight: number) => void;
   clearToast: () => void;
   undo: () => void;
   redo: () => void;
@@ -127,6 +128,44 @@ export const usePatternEditorStore = create<EditorState>((set, get) => ({
     const next = clonePattern(state.pattern);
     next.symbols = symbols;
     set({ pattern: next });
+  },
+  resizePattern: (newWidth, newHeight) => {
+    const state = get();
+    if (!state.pattern) return;
+    const w = Math.max(1, Math.min(200, newWidth));
+    const h = Math.max(1, Math.min(200, newHeight));
+    const previous = clonePattern(state.pattern);
+    const next = clonePattern(state.pattern);
+    const defaultColor = next.palette[0]?.hex ?? "#f5ede1";
+    const currentWidth = next.width;
+    const currentHeight = next.height;
+
+    // Adjust each row width
+    next.cells = next.cells.map((row) => {
+      if (w > currentWidth) {
+        const extra = Array.from({ length: w - currentWidth }, () => ({
+          symbolId: "empty",
+          color: defaultColor
+        }));
+        return [...row, ...extra];
+      }
+      return row.slice(0, w);
+    });
+
+    // Adjust height
+    if (h > currentHeight) {
+      for (let r = currentHeight; r < h; r++) {
+        next.cells.push(
+          Array.from({ length: w }, () => ({ symbolId: "empty", color: defaultColor }))
+        );
+      }
+    } else {
+      next.cells = next.cells.slice(0, h);
+    }
+
+    next.width = w;
+    next.height = h;
+    set({ pattern: next, history: [...state.history, previous], future: [] });
   },
   undo: () => {
     const state = get();

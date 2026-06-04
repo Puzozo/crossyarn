@@ -77,6 +77,11 @@ export const translations = {
     "editor.titleError": "Не вдалося зберегти назву",
     "editor.titleLabel": "Назва",
     "editor.descriptionLabel": "Опис",
+    "editor.resize": "Змінити розмір",
+    "editor.resizeApply": "Застосувати",
+    "editor.resizeWarning": "Зменшення видалить частину схеми",
+    "editor.widthLabel": "Петель (шир.)",
+    "editor.heightLabel": "Рядів (вис.)",
 
     // Print
     "print.breadcrumb": "Схеми",
@@ -222,6 +227,11 @@ export const translations = {
     "editor.titleError": "Failed to save title",
     "editor.titleLabel": "Title",
     "editor.descriptionLabel": "Description",
+    "editor.resize": "Resize",
+    "editor.resizeApply": "Apply",
+    "editor.resizeWarning": "Shrinking will delete part of the pattern",
+    "editor.widthLabel": "Stitches (W)",
+    "editor.heightLabel": "Rows (H)",
 
     // Print
     "print.breadcrumb": "Patterns",

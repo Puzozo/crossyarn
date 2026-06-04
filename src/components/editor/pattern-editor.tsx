@@ -27,11 +27,15 @@ export function PatternEditor({ patternId, initialPattern, title, description }:
     setSelectedColor,
     setSelectedSymbolId,
     setSymbols,
+    resizePattern,
     toastData,
     clearToast
   } = usePatternEditorStore();
   const { t } = useTranslation();
   const [saveState, setSaveState] = useState("saved");
+  const [resizing, setResizing] = useState(false);
+  const [draftWidth, setDraftWidth] = useState(0);
+  const [draftHeight, setDraftHeight] = useState(0);
   const initializedRef = useRef(false);
   const [availableSymbols, setAvailableSymbols] = useState(initialPattern.symbols);
 
@@ -137,12 +141,68 @@ export function PatternEditor({ patternId, initialPattern, title, description }:
           </span>
         </div>
 
-        {/* Grid info */}
-        <div className="flex gap-3 rounded-xl bg-yarn-oatmeal/60 p-3 text-sm text-yarn-charcoal font-mono">
-          <span>{t("editor.stitches")}: {pattern.width}</span>
-          <span className="text-yarn-sand">|</span>
-          <span>{t("editor.rows")}: {pattern.height}</span>
-        </div>
+        {/* Grid info + resize */}
+        {resizing ? (
+          <div className="rounded-xl bg-yarn-oatmeal/60 p-3 space-y-2">
+            <p className="text-xs font-semibold uppercase tracking-wider text-yarn-warm-gray">{t("editor.resize")}</p>
+            <div className="grid grid-cols-2 gap-2">
+              <div className="space-y-1">
+                <label className="text-[10px] font-medium text-yarn-warm-gray">{t("editor.widthLabel")}</label>
+                <input
+                  type="number"
+                  min={1}
+                  max={200}
+                  value={draftWidth}
+                  onChange={(e) => setDraftWidth(Math.max(1, Math.min(200, Number(e.target.value))))}
+                  className="w-full rounded-lg border border-yarn-sand bg-white px-2 py-1.5 text-sm font-mono text-yarn-charcoal focus:outline-none focus:border-yarn-terracotta"
+                />
+              </div>
+              <div className="space-y-1">
+                <label className="text-[10px] font-medium text-yarn-warm-gray">{t("editor.heightLabel")}</label>
+                <input
+                  type="number"
+                  min={1}
+                  max={200}
+                  value={draftHeight}
+                  onChange={(e) => setDraftHeight(Math.max(1, Math.min(200, Number(e.target.value))))}
+                  className="w-full rounded-lg border border-yarn-sand bg-white px-2 py-1.5 text-sm font-mono text-yarn-charcoal focus:outline-none focus:border-yarn-terracotta"
+                />
+              </div>
+            </div>
+            {(draftWidth < pattern.width || draftHeight < pattern.height) && (
+              <p className="text-[10px] text-amber-600">{t("editor.resizeWarning")}</p>
+            )}
+            <div className="flex gap-2">
+              <button
+                type="button"
+                onClick={() => { resizePattern(draftWidth, draftHeight); setResizing(false); }}
+                className="flex-1 rounded-lg bg-yarn-terracotta text-white text-xs font-semibold py-1.5 hover:bg-yarn-terracotta-hover transition-colors"
+              >
+                {t("editor.resizeApply")}
+              </button>
+              <button
+                type="button"
+                onClick={() => setResizing(false)}
+                className="flex-1 rounded-lg bg-yarn-sand/60 text-yarn-charcoal text-xs font-semibold py-1.5 hover:bg-yarn-sand transition-colors"
+              >
+                {t("editor.cancelEdit")}
+              </button>
+            </div>
+          </div>
+        ) : (
+          <button
+            type="button"
+            onClick={() => { setDraftWidth(pattern.width); setDraftHeight(pattern.height); setResizing(true); }}
+            className="flex w-full items-center justify-between rounded-xl bg-yarn-oatmeal/60 p-3 text-sm text-yarn-charcoal font-mono hover:bg-yarn-oatmeal transition-colors"
+          >
+            <span>{t("editor.stitches")}: {pattern.width}</span>
+            <span className="text-yarn-sand">|</span>
+            <span>{t("editor.rows")}: {pattern.height}</span>
+            <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" className="ml-1 text-yarn-warm-gray">
+              <path d="M1 1h4M1 1v4M11 11H7M11 11V7" />
+            </svg>
+          </button>
+        )}
 
         {/* Symbols */}
         <div className="space-y-2">
