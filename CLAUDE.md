@@ -12,7 +12,7 @@ cp -r .next/static .next/standalone/.next/static
 cp -r public .next/standalone/public
 ```
 Deploy is automatic on push to `main` via `.github/workflows/deploy.yml`.
-The workflow runs `prisma generate` + `prisma db push --skip-generate` before build.
+The workflow runs `prisma generate` + `prisma db push --skip-generate --accept-data-loss` before build.
 
 ## Database
 - SQLite at `prisma/dev.db` (local), `/opt/crossyarn/prisma/prod.db` (prod)
