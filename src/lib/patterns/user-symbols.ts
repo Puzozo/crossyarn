@@ -20,7 +20,7 @@ export async function getUserSymbols(userId: string): Promise<PatternSymbol[]> {
 
 async function getOfficialSymbols(): Promise<PatternSymbol[]> {
   const records = await db.userSymbol.findMany({
-    where: { isOfficial: true },
+    where: { isOfficial: true, builtinId: null },
     orderBy: { createdAt: "asc" }
   });
   return records.map((record) => ({
@@ -34,10 +34,35 @@ async function getOfficialSymbols(): Promise<PatternSymbol[]> {
   }));
 }
 
+async function getBuiltinOverrides(): Promise<Map<string, PatternSymbol>> {
+  const records = await db.userSymbol.findMany({
+    where: { builtinId: { not: null } }
+  });
+  const map = new Map<string, PatternSymbol>();
+  for (const record of records) {
+    if (record.builtinId) {
+      map.set(record.builtinId, {
+        id: record.builtinId,
+        label: record.name,
+        imageData: record.imageData,
+        description: record.description,
+        source: "builtin" as const,
+        width: record.width > 1 ? record.width : undefined,
+        height: record.height > 1 ? record.height : undefined
+      });
+    }
+  }
+  return map;
+}
+
 export async function getAvailableSymbols(userId: string): Promise<PatternSymbol[]> {
-  const [userSymbols, officialSymbols] = await Promise.all([
+  const [userSymbols, officialSymbols, overrides] = await Promise.all([
     getUserSymbols(userId),
-    getOfficialSymbols()
+    getOfficialSymbols(),
+    getBuiltinOverrides()
   ]);
-  return [...DEFAULT_SYMBOLS, ...officialSymbols, ...userSymbols];
+
+  const defaults = DEFAULT_SYMBOLS.map((s) => overrides.get(s.id) ?? s);
+
+  return [...defaults, ...officialSymbols, ...userSymbols];
 }

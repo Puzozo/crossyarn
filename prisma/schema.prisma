@@ -69,6 +69,7 @@ model UserSymbol {
   category    String   @default("custom")
   visibility  String   @default("private")
   isOfficial  Boolean  @default(false)
+  builtinId   String?  @unique
   status      String   @default("active")
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
