@@ -7,8 +7,9 @@ import { getAvailableSymbols } from "@/lib/patterns/user-symbols";
 const createSymbolSchema = z.object({
   name: z.string().min(2).max(80),
   description: z.string().min(2).max(300),
-  imageData: z.string().startsWith("data:image/").max(100_000),
-  width: z.number().int().min(1).max(6).optional()
+  imageData: z.string().startsWith("data:image/").max(300_000),
+  width: z.number().int().min(1).max(6).optional(),
+  height: z.number().int().min(1).max(6).optional()
 });
 
 export async function GET() {
@@ -31,7 +32,8 @@ export async function POST(request: Request) {
         name: body.name,
         description: body.description,
         imageData: body.imageData,
-        width: body.width ?? 1
+        width: body.width ?? 1,
+        height: body.height ?? 1
       }
     });
     return NextResponse.json(symbol, { status: 201 });

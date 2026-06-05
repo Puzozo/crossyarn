@@ -16,6 +16,8 @@ export type PatternSymbol = {
   source?: "builtin" | "user";
   /** Number of grid cells this symbol spans horizontally (default 1) */
   width?: number;
+  /** Number of grid cells this symbol spans vertically (default 1) */
+  height?: number;
 };
 
 export type PatternPaletteColor = {

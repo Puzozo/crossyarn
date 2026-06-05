@@ -6,8 +6,9 @@ import { getAdminSession } from "@/lib/auth/admin-session";
 const createSchema = z.object({
   name: z.string().min(2).max(80),
   description: z.string().min(2).max(300),
-  imageData: z.string().min(1).refine((v) => v.startsWith("data:image/"), "Must be image data URI"),
-  width: z.number().int().min(1).max(6).optional()
+  imageData: z.string().min(1).max(300_000).refine((v) => v.startsWith("data:image/"), "Must be image data URI"),
+  width: z.number().int().min(1).max(6).optional(),
+  height: z.number().int().min(1).max(6).optional()
 });
 
 export async function GET() {
@@ -38,6 +39,7 @@ export async function POST(request: Request) {
         description: body.description,
         imageData: body.imageData,
         width: body.width ?? 1,
+        height: body.height ?? 1,
         isOfficial: true,
         visibility: "public",
         category: "official"

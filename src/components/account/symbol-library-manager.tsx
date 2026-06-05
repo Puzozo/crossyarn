@@ -17,12 +17,16 @@ export function SymbolLibraryManager({ initialSymbols }: Props) {
   const [imageData, setImageData] = useState<string>("");
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
+  const [width, setWidth] = useState(1);
+  const [height, setHeight] = useState(1);
   const [error, setError] = useState<string | null>(null);
   const customSymbols = useMemo(() => symbols.filter((item) => item.source === "user"), [symbols]);
 
   async function handleFile(event: ChangeEvent<HTMLInputElement>) {
     const file = event.target.files?.[0];
-    if (!file) {
+    if (!file) return;
+    if (file.size > 300_000) {
+      setError(t("symbols.imageSizeError"));
       return;
     }
     const image = await new Promise<string>((resolve, reject) => {
@@ -31,14 +35,6 @@ export function SymbolLibraryManager({ initialSymbols }: Props) {
       reader.onerror = reject;
       reader.readAsDataURL(file);
     });
-
-    const imageElement = document.createElement("img");
-    imageElement.src = image;
-    await imageElement.decode();
-    if (imageElement.width !== 64 || imageElement.height !== 64) {
-      setError(t("symbols.imageSizeError"));
-      return;
-    }
     setError(null);
     setImageData(image);
   }
@@ -49,7 +45,7 @@ export function SymbolLibraryManager({ initialSymbols }: Props) {
     const response = await fetch("/api/symbols", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ name, description, imageData })
+      body: JSON.stringify({ name, description, imageData, width, height })
     });
     const data = await response.json().catch(() => null);
     if (!response.ok) {
@@ -63,12 +59,16 @@ export function SymbolLibraryManager({ initialSymbols }: Props) {
         label: data.name,
         imageData: data.imageData,
         description: data.description,
-        source: "user"
+        source: "user" as const,
+        width: data.width > 1 ? data.width : undefined,
+        height: data.height > 1 ? data.height : undefined
       }
     ]);
     setName("");
     setDescription("");
     setImageData("");
+    setWidth(1);
+    setHeight(1);
   }
 
   async function handleDelete(symbolId: string) {
@@ -105,11 +105,38 @@ export function SymbolLibraryManager({ initialSymbols }: Props) {
           <div className="space-y-1.5">
             <label className="block text-sm font-medium text-yarn-charcoal">{t("symbols.iconLabel")}</label>
             <Input type="file" accept="image/*" onChange={handleFile} required />
+            <p className="text-[10px] text-yarn-warm-gray">
+              {t("symbols.imageSizeHint", { w: String(width * 64), h: String(height * 64) })}
+            </p>
+          </div>
+          <div className="space-y-1.5">
+            <label className="block text-sm font-medium text-yarn-charcoal">{t("symbols.widthLabel")}</label>
+            <select
+              value={width}
+              onChange={(e) => setWidth(Number(e.target.value))}
+              className="w-full rounded-lg border border-yarn-sand bg-white px-3 py-2 text-sm text-yarn-charcoal focus:outline-none focus:border-yarn-terracotta"
+            >
+              {[1, 2, 3, 4, 5, 6].map((w) => (
+                <option key={w} value={w}>{w}</option>
+              ))}
+            </select>
+          </div>
+          <div className="space-y-1.5">
+            <label className="block text-sm font-medium text-yarn-charcoal">{t("symbols.heightLabel")}</label>
+            <select
+              value={height}
+              onChange={(e) => setHeight(Number(e.target.value))}
+              className="w-full rounded-lg border border-yarn-sand bg-white px-3 py-2 text-sm text-yarn-charcoal focus:outline-none focus:border-yarn-terracotta"
+            >
+              {[1, 2, 3, 4, 5, 6].map((h) => (
+                <option key={h} value={h}>{h}</option>
+              ))}
+            </select>
           </div>
         </div>
         {imageData ? (
           <div className="mt-4">
-            <Image src={imageData} alt="preview" width={64} height={64} className="rounded-lg border border-yarn-sand object-contain" />
+            <Image src={imageData} alt="preview" width={width * 64} height={height * 64} className="rounded-lg border border-yarn-sand object-contain" />
           </div>
         ) : null}
         <div className="mt-4 flex items-center gap-3">
@@ -133,14 +160,19 @@ export function SymbolLibraryManager({ initialSymbols }: Props) {
                   <Image
                     src={symbol.imageData}
                     alt={symbol.label}
-                    width={48}
-                    height={48}
+                    width={(symbol.width ?? 1) * 48}
+                    height={(symbol.height ?? 1) * 48}
                     className="rounded-lg border border-yarn-sand object-contain shrink-0"
                   />
                 ) : null}
                 <div className="flex-1 min-w-0">
                   <div className="font-medium text-yarn-charcoal truncate">{symbol.label}</div>
                   <div className="text-sm text-yarn-warm-gray truncate">{symbol.description}</div>
+                  {((symbol.width ?? 1) > 1 || (symbol.height ?? 1) > 1) && (
+                    <span className="text-xs text-yarn-sage font-semibold">
+                      {symbol.width ?? 1}×{symbol.height ?? 1} {t("symbols.cells")}
+                    </span>
+                  )}
                   <Button
                     className="mt-2"
                     variant="danger"

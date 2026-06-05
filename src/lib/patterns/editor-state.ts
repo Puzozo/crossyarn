@@ -4,13 +4,25 @@ import { create } from "zustand";
 import { PatternDocument, PatternGrid, PatternSymbol } from "@/lib/patterns/model";
 
 function getSymbolWidth(symbolId: string, symbols: PatternSymbol[]): number {
-  const symbol = symbols.find((s) => s.id === symbolId);
-  return symbol?.width ?? 1;
+  return symbols.find((s) => s.id === symbolId)?.width ?? 1;
 }
 
-function clearMultiCellSymbol(cells: PatternGrid, row: number, anchorCol: number, width: number, defaultColor: string) {
-  for (let c = anchorCol; c < anchorCol + width && c < cells[row].length; c++) {
-    cells[row][c] = { symbolId: "empty", color: defaultColor };
+function getSymbolHeight(symbolId: string, symbols: PatternSymbol[]): number {
+  return symbols.find((s) => s.id === symbolId)?.height ?? 1;
+}
+
+function clearMultiCellSymbol(
+  cells: PatternGrid,
+  anchorRow: number,
+  anchorCol: number,
+  width: number,
+  height: number,
+  defaultColor: string
+) {
+  for (let r = anchorRow; r < anchorRow + height && r < cells.length; r++) {
+    for (let c = anchorCol; c < anchorCol + width && c < cells[r].length; c++) {
+      cells[r][c] = { symbolId: "empty", color: defaultColor };
+    }
   }
 }
 
@@ -20,11 +32,13 @@ function findAndClearOccupyingSymbol(cells: PatternGrid, symbols: PatternSymbol[
     const [anchorRow, anchorCol] = cell.occupiedByAnchor;
     const anchorCell = cells[anchorRow][anchorCol];
     const width = getSymbolWidth(anchorCell.symbolId, symbols);
-    clearMultiCellSymbol(cells, anchorRow, anchorCol, width, defaultColor);
+    const height = getSymbolHeight(anchorCell.symbolId, symbols);
+    clearMultiCellSymbol(cells, anchorRow, anchorCol, width, height, defaultColor);
   } else {
     const width = getSymbolWidth(cell.symbolId, symbols);
-    if (width > 1) {
-      clearMultiCellSymbol(cells, row, col, width, defaultColor);
+    const height = getSymbolHeight(cell.symbolId, symbols);
+    if (width > 1 || height > 1) {
+      clearMultiCellSymbol(cells, row, col, width, height, defaultColor);
     }
   }
 }
@@ -75,26 +89,34 @@ export const usePatternEditorStore = create<EditorState>((set, get) => ({
     }),
   paintCell: (row, column) => {
     const state = get();
-    if (!state.pattern) {
-      return;
-    }
+    if (!state.pattern) return;
     const previous = clonePattern(state.pattern);
     const next = clonePattern(state.pattern);
     const symbols = next.symbols;
     const width = getSymbolWidth(state.selectedSymbolId, symbols);
+    const height = getSymbolHeight(state.selectedSymbolId, symbols);
     const defaultColor = next.palette[0]?.hex ?? "#f5ede1";
 
-    // Check if there's enough room for multi-cell symbol
     if (column + width > next.width) {
       set({ toastData: { key: "toast.notEnoughSpace", params: { needed: width, available: next.width - column } } });
       return;
     }
+    if (row + height > next.height) {
+      set({ toastData: { key: "toast.notEnoughSpace", params: { needed: height, available: next.height - row } } });
+      return;
+    }
 
-    // Check all target cells and clear any conflicting multi-cell symbols
-    for (let c = column; c < column + width; c++) {
-      const targetCell = next.cells[row][c];
-      if (targetCell.occupiedByAnchor || getSymbolWidth(targetCell.symbolId, symbols) > 1) {
-        findAndClearOccupyingSymbol(next.cells, symbols, row, c, defaultColor);
+    // Clear all conflicting symbols in the M×N block
+    for (let r = row; r < row + height; r++) {
+      for (let c = column; c < column + width; c++) {
+        const targetCell = next.cells[r][c];
+        if (
+          targetCell.occupiedByAnchor ||
+          getSymbolWidth(targetCell.symbolId, symbols) > 1 ||
+          getSymbolHeight(targetCell.symbolId, symbols) > 1
+        ) {
+          findAndClearOccupyingSymbol(next.cells, symbols, r, c, defaultColor);
+        }
       }
     }
 
@@ -104,20 +126,19 @@ export const usePatternEditorStore = create<EditorState>((set, get) => ({
       color: state.selectedColor
     };
 
-    // Place occupied cells for multi-cell symbols
-    for (let c = column + 1; c < column + width; c++) {
-      next.cells[row][c] = {
-        symbolId: "empty",
-        color: state.selectedColor,
-        occupiedByAnchor: [row, column]
-      };
+    // Mark all non-anchor cells in the M×N block as occupied
+    for (let r = row; r < row + height; r++) {
+      for (let c = column; c < column + width; c++) {
+        if (r === row && c === column) continue;
+        next.cells[r][c] = {
+          symbolId: "empty",
+          color: state.selectedColor,
+          occupiedByAnchor: [row, column]
+        };
+      }
     }
 
-    set({
-      pattern: next,
-      history: [...state.history, previous],
-      future: []
-    });
+    set({ pattern: next, history: [...state.history, previous], future: [] });
   },
   setSelectedSymbolId: (selectedSymbolId) => set({ selectedSymbolId }),
   setSelectedColor: (selectedColor) => set({ selectedColor }),

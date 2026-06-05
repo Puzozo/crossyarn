@@ -65,6 +65,7 @@ model UserSymbol {
   description String
   imageData   String
   width       Int      @default(1)
+  height      Int      @default(1)
   category    String   @default("custom")
   visibility  String   @default("private")
   isOfficial  Boolean  @default(false)

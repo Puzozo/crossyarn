@@ -16,6 +16,7 @@ export function OfficialSymbolManager({ initialSymbols }: { initialSymbols: Symb
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [width, setWidth] = useState(1);
+  const [height, setHeight] = useState(1);
   const [imageData, setImageData] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
@@ -23,19 +24,16 @@ export function OfficialSymbolManager({ initialSymbols }: { initialSymbols: Symb
   async function handleFile(e: ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
     if (!file) return;
+    if (file.size > 300_000) {
+      setError("Файл занадто великий (макс. 300 KB)");
+      return;
+    }
     const data = await new Promise<string>((res, rej) => {
       const reader = new FileReader();
       reader.onload = () => res(String(reader.result));
       reader.onerror = rej;
       reader.readAsDataURL(file);
     });
-    const img = document.createElement("img");
-    img.src = data;
-    await img.decode();
-    if (img.width !== 64 || img.height !== 64) {
-      setError("Зображення має бути рівно 64×64 пікселі");
-      return;
-    }
     setError(null);
     setImageData(data);
   }
@@ -48,7 +46,7 @@ export function OfficialSymbolManager({ initialSymbols }: { initialSymbols: Symb
       const res = await fetch("/api/admin/symbols", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, description, imageData, width })
+        body: JSON.stringify({ name, description, imageData, width, height })
       });
       const data = await res.json().catch(() => ({}));
       if (!res.ok) {
@@ -59,6 +57,7 @@ export function OfficialSymbolManager({ initialSymbols }: { initialSymbols: Symb
       setName("");
       setDescription("");
       setWidth(1);
+      setHeight(1);
       setImageData("");
       const form = document.querySelector("form") as HTMLFormElement | null;
       form?.reset();
@@ -105,7 +104,7 @@ export function OfficialSymbolManager({ initialSymbols }: { initialSymbols: Symb
               />
             </div>
             <div className="space-y-1.5">
-              <label className="block text-sm font-medium text-gray-300">Іконка 64×64</label>
+              <label className="block text-sm font-medium text-gray-300">Зображення</label>
               <input
                 type="file"
                 accept="image/*"
@@ -113,6 +112,7 @@ export function OfficialSymbolManager({ initialSymbols }: { initialSymbols: Symb
                 required
                 className="w-full text-sm text-gray-400 file:mr-3 file:rounded-lg file:border-0 file:bg-indigo-600 file:px-3 file:py-1.5 file:text-xs file:font-medium file:text-white hover:file:bg-indigo-500"
               />
+              <p className="text-[10px] text-gray-500">Рекомендовано {width * 64}×{height * 64}px, ≤ 300KB</p>
             </div>
             <div className="space-y-1.5">
               <label className="block text-sm font-medium text-gray-300">Ширина (клітинок)</label>
@@ -122,7 +122,19 @@ export function OfficialSymbolManager({ initialSymbols }: { initialSymbols: Symb
                 className="w-full rounded-lg bg-gray-800 border border-gray-700 text-white px-3 py-2 text-sm focus:outline-none focus:border-indigo-500"
               >
                 {[1, 2, 3, 4, 5, 6].map((w) => (
-                  <option key={w} value={w}>{w} {w === 1 ? "клітинка" : "клітинки"}</option>
+                  <option key={w} value={w}>{w}</option>
+                ))}
+              </select>
+            </div>
+            <div className="space-y-1.5">
+              <label className="block text-sm font-medium text-gray-300">Висота (клітинок)</label>
+              <select
+                value={height}
+                onChange={(e) => setHeight(Number(e.target.value))}
+                className="w-full rounded-lg bg-gray-800 border border-gray-700 text-white px-3 py-2 text-sm focus:outline-none focus:border-indigo-500"
+              >
+                {[1, 2, 3, 4, 5, 6].map((h) => (
+                  <option key={h} value={h}>{h}</option>
                 ))}
               </select>
             </div>

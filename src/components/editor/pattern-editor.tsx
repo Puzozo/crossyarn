@@ -228,9 +228,9 @@ export function PatternEditor({ patternId, initialPattern, title, description }:
                     <span className="inline-flex min-w-5 justify-center font-mono">{symbol.glyph}</span>
                   )}
                   <span className="text-xs">{symbol.label}</span>
-                  {(symbol.width ?? 1) > 1 && (
+                  {((symbol.width ?? 1) > 1 || (symbol.height ?? 1) > 1) && (
                     <span className="ml-0.5 rounded bg-yarn-sage-light px-1 py-0.5 text-[9px] font-bold text-yarn-sage">
-                      ×{symbol.width}
+                      {symbol.width ?? 1}×{symbol.height ?? 1}
                     </span>
                   )}
                 </span>
@@ -307,50 +307,49 @@ export function PatternEditor({ patternId, initialPattern, title, description }:
         <div
           className="grid gap-px bg-yarn-sand/60 flex-1"
           style={{
-            gridTemplateColumns: `repeat(${pattern.width}, minmax(40px, 1fr)) 40px`
+            gridTemplateColumns: `repeat(${pattern.width}, minmax(40px, 1fr)) 40px`,
+            gridTemplateRows: `repeat(${pattern.height}, minmax(40px, auto)) 40px`
           }}
         >
           {pattern.cells.flatMap((row, rowIndex) => [
             ...row.map((cell, columnIndex) => {
-              // Skip cells occupied by a multi-cell symbol
-              if (cell.occupiedByAnchor) {
-                return null;
-              }
+              if (cell.occupiedByAnchor) return null;
               const symbol = availableSymbols.find((item) => item.id === cell.symbolId);
-              const symbolWidth = symbol?.width ?? 1;
+              const sw = symbol?.width ?? 1;
+              const sh = symbol?.height ?? 1;
               return (
                 <button
                   key={`${rowIndex}-${columnIndex}`}
                   type="button"
                   onClick={() => paintCell(rowIndex, columnIndex)}
-                  className="flex min-h-[40px] items-center justify-center bg-white text-xs font-semibold text-yarn-charcoal hover:ring-1 hover:ring-yarn-terracotta/40 transition-shadow"
+                  className="flex items-center justify-center bg-white text-xs font-semibold text-yarn-charcoal hover:ring-1 hover:ring-yarn-terracotta/40 transition-shadow"
                   style={{
                     backgroundColor: cell.color,
-                    gridColumn: symbolWidth > 1 ? `span ${symbolWidth}` : undefined,
-                    aspectRatio: symbolWidth > 1 ? undefined : "1"
+                    gridRow: sh > 1 ? `${rowIndex + 1} / span ${sh}` : rowIndex + 1,
+                    gridColumn: sw > 1 ? `${columnIndex + 1} / span ${sw}` : columnIndex + 1,
+                    aspectRatio: sw === 1 && sh === 1 ? "1" : undefined,
+                    minHeight: "40px"
                   }}
-                  title={t("editor.cellTitle", { row: String(pattern.height - rowIndex), col: String(pattern.width - columnIndex) }) + (symbolWidth > 1 ? ` (×${symbolWidth})` : "")}
+                  title={`${t("editor.cellTitle", { row: String(pattern.height - rowIndex), col: String(pattern.width - columnIndex) })}${sw > 1 || sh > 1 ? ` (${sw}×${sh})` : ""}`}
                 >
-                  {(() => {
-                    if (symbol?.imageData) {
-                      return (
-                        <Image
-                          src={symbol.imageData}
-                          alt={symbol.label}
-                          width={18 * symbolWidth}
-                          height={18}
-                          className="object-contain"
-                        />
-                      );
-                    }
-                    return symbol?.glyph ?? "·";
-                  })()}
+                  {symbol?.imageData ? (
+                    <Image
+                      src={symbol.imageData}
+                      alt={symbol.label}
+                      width={40 * sw}
+                      height={40 * sh}
+                      className="object-contain w-full h-full"
+                    />
+                  ) : (
+                    symbol?.glyph ?? "·"
+                  )}
                 </button>
               );
             }).filter(Boolean),
             <div
               key={`row-${rowIndex}`}
-              className="flex min-h-[40px] items-center justify-center bg-yarn-oatmeal text-[10px] font-mono font-semibold text-yarn-warm-gray"
+              className="flex items-center justify-center bg-yarn-oatmeal text-[10px] font-mono font-semibold text-yarn-warm-gray"
+              style={{ gridRow: rowIndex + 1, gridColumn: pattern.width + 1, minHeight: "40px" }}
             >
               {pattern.height - rowIndex}
             </div>
@@ -358,12 +357,16 @@ export function PatternEditor({ patternId, initialPattern, title, description }:
           {Array.from({ length: pattern.width }, (_, columnIndex) => (
             <div
               key={`column-${columnIndex}`}
-              className="flex min-h-[40px] items-center justify-center bg-yarn-oatmeal text-[10px] font-mono font-semibold text-yarn-warm-gray"
+              className="flex items-center justify-center bg-yarn-oatmeal text-[10px] font-mono font-semibold text-yarn-warm-gray"
+              style={{ gridRow: pattern.height + 1, gridColumn: columnIndex + 1, minHeight: "40px" }}
             >
               {pattern.width - columnIndex}
             </div>
           ))}
-          <div className="bg-yarn-oatmeal rounded-br" />
+          <div
+            className="bg-yarn-oatmeal rounded-br"
+            style={{ gridRow: pattern.height + 1, gridColumn: pattern.width + 1 }}
+          />
         </div>
 
           {/* Add col right */}

@@ -13,7 +13,8 @@ export async function getUserSymbols(userId: string): Promise<PatternSymbol[]> {
     imageData: record.imageData,
     description: record.description,
     source: "user" as const,
-    width: record.width > 1 ? record.width : undefined
+    width: record.width > 1 ? record.width : undefined,
+    height: record.height > 1 ? record.height : undefined
   }));
 }
 
@@ -28,7 +29,8 @@ async function getOfficialSymbols(): Promise<PatternSymbol[]> {
     imageData: record.imageData,
     description: record.description,
     source: "user" as const,
-    width: record.width > 1 ? record.width : undefined
+    width: record.width > 1 ? record.width : undefined,
+    height: record.height > 1 ? record.height : undefined
   }));
 }
 
