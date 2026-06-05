@@ -1,5 +1,6 @@
 import { redirect } from "next/navigation";
 import { getSession } from "@/lib/auth/session";
+import { getAdminSession } from "@/lib/auth/admin-session";
 
 export async function requireUserPage() {
   const session = await getSession();
@@ -14,4 +15,12 @@ export async function requireGuestPage() {
   if (session) {
     redirect("/patterns");
   }
+}
+
+export async function requireAdminPage() {
+  const session = await getAdminSession();
+  if (!session) {
+    redirect("/admin/login");
+  }
+  return session;
 }
