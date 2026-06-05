@@ -26,7 +26,7 @@ export async function createAdminSession(payload: AdminSessionPayload) {
     httpOnly: true,
     sameSite: "strict",
     secure: process.env.NODE_ENV === "production",
-    path: "/admin",
+    path: "/",
     maxAge: 60 * 60 * 8
   });
 }
@@ -45,5 +45,5 @@ export async function getAdminSession(): Promise<AdminSessionPayload | null> {
 
 export async function clearAdminSession() {
   const cookieStore = await cookies();
-  cookieStore.delete(COOKIE_NAME);
+  cookieStore.set(COOKIE_NAME, "", { path: "/", maxAge: 0 });
 }

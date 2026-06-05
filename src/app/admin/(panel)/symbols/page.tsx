@@ -1,6 +1,7 @@
 import { db } from "@/lib/db";
 import { requireAdminPage } from "@/lib/auth/guards";
 import { OfficialSymbolManager } from "@/components/admin/official-symbol-manager";
+import { DEFAULT_SYMBOLS } from "@/lib/patterns/model";
 
 export default async function AdminSymbolsPage() {
   await requireAdminPage();
@@ -10,6 +11,15 @@ export default async function AdminSymbolsPage() {
     orderBy: { createdAt: "asc" }
   });
 
+  const builtins = DEFAULT_SYMBOLS.map((s) => ({
+    id: s.id,
+    name: s.label,
+    description: s.description ?? "",
+    imageData: s.imageData ?? "",
+    width: s.width ?? 1,
+    height: s.height ?? 1
+  }));
+
   return (
     <div className="space-y-6 max-w-3xl">
       <div>
@@ -18,7 +28,7 @@ export default async function AdminSymbolsPage() {
           Символи доступні всім користувачам в редакторі схем
         </p>
       </div>
-      <OfficialSymbolManager initialSymbols={symbols} />
+      <OfficialSymbolManager initialSymbols={symbols} builtinSymbols={builtins} />
     </div>
   );
 }

@@ -3,16 +3,23 @@
 import Image from "next/image";
 import { ChangeEvent, FormEvent, useState } from "react";
 
-type Symbol = {
+type SymbolEntry = {
   id: string;
   name: string;
   description: string;
   imageData: string;
   width: number;
+  height?: number;
 };
 
-export function OfficialSymbolManager({ initialSymbols }: { initialSymbols: Symbol[] }) {
-  const [symbols, setSymbols] = useState(initialSymbols);
+export function OfficialSymbolManager({
+  initialSymbols,
+  builtinSymbols = []
+}: {
+  initialSymbols: SymbolEntry[];
+  builtinSymbols?: SymbolEntry[];
+}) {
+  const [symbols, setSymbols] = useState<SymbolEntry[]>(initialSymbols);
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [width, setWidth] = useState(1);
@@ -158,7 +165,7 @@ export function OfficialSymbolManager({ initialSymbols }: { initialSymbols: Symb
         </form>
       </div>
 
-      {/* Symbols list */}
+      {/* Official symbols list */}
       <div className="space-y-3">
         <h2 className="text-base font-semibold text-white">
           Офіційні позначки ({symbols.length})
@@ -184,7 +191,7 @@ export function OfficialSymbolManager({ initialSymbols }: { initialSymbols: Symb
                       <div className="text-white font-medium truncate">{s.name}</div>
                       <div className="text-gray-400 text-sm truncate">{s.description}</div>
                       {s.width > 1 && (
-                        <span className="text-xs text-indigo-400">×{s.width} клітинки</span>
+                        <span className="text-xs text-indigo-400">{s.width}×{s.height ?? 1} клітинки</span>
                       )}
                     </div>
                     <button
@@ -201,6 +208,41 @@ export function OfficialSymbolManager({ initialSymbols }: { initialSymbols: Symb
           </div>
         )}
       </div>
+
+      {/* Built-in symbols (read-only reference) */}
+      {builtinSymbols.length > 0 && (
+        <div className="space-y-3">
+          <div>
+            <h2 className="text-base font-semibold text-white">
+              Вбудовані позначки ({builtinSymbols.length})
+            </h2>
+            <p className="text-gray-500 text-xs mt-0.5">Вбудовані в код, доступні всім користувачам за замовчуванням</p>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            {builtinSymbols.map((s) => (
+              <div key={s.id} className="rounded-xl border border-gray-700/50 bg-gray-900/30 p-4 flex items-start gap-4">
+                {s.imageData && (
+                  <Image
+                    src={s.imageData}
+                    alt={s.name}
+                    width={48}
+                    height={48}
+                    className="rounded-lg border border-gray-700 bg-white shrink-0"
+                  />
+                )}
+                <div className="flex-1 min-w-0">
+                  <div className="text-gray-300 font-medium truncate">{s.name}</div>
+                  <div className="text-gray-500 text-sm truncate">{s.description}</div>
+                  {s.width > 1 && (
+                    <span className="text-xs text-indigo-400/70">{s.width}×{s.height ?? 1} клітинки</span>
+                  )}
+                  <div className="text-[10px] text-gray-600 mt-0.5">id: {s.id}</div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   );
 }
