@@ -5,7 +5,7 @@ import { createUser } from "@/lib/auth/users";
 
 const schema = z.object({
   email: z.string().email(),
-  password: z.string().min(8),
+  password: z.string().min(8).regex(/\d/, "Пароль повинен містити хоча б одну цифру"),
   name: z.string().max(120).optional()
 });
 

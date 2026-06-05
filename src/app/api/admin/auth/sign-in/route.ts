@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 import { createAdminSession } from "@/lib/auth/admin-session";
 import { verifyUser } from "@/lib/auth/users";
+import { checkRateLimit } from "@/lib/auth/rate-limit";
 
 const schema = z.object({
   email: z.string().email(),
@@ -9,6 +10,15 @@ const schema = z.object({
 });
 
 export async function POST(request: Request) {
+  const ip = request.headers.get("x-forwarded-for")?.split(",")[0] ?? "unknown";
+  const { allowed, retryAfterSeconds } = checkRateLimit(`admin-sign-in:${ip}`);
+  if (!allowed) {
+    return NextResponse.json(
+      { error: `Забагато спроб. Спробуйте через ${retryAfterSeconds} сек.` },
+      { status: 429 }
+    );
+  }
+
   try {
     const body = schema.parse(await request.json());
     const user = await verifyUser(body.email, body.password);
