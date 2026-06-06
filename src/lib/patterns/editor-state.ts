@@ -261,23 +261,18 @@ export const usePatternEditorStore = create<EditorState>((set, get) => ({
   },
 
   endSelection: () => {
-    set({ isSelecting: false });
-  },
-
-  clearSelection: () => {
-    set({ selectionStart: null, selectionEnd: null, isSelecting: false });
-  },
-
-  saveSelectionAsRapport: (name: string) => {
     const state = get();
-    if (!state.pattern || !state.selectionStart || !state.selectionEnd) return;
+    if (!state.pattern || !state.selectionStart || !state.selectionEnd) {
+      set({ isSelecting: false });
+      return;
+    }
 
     let r1 = Math.min(state.selectionStart[0], state.selectionEnd[0]);
     let r2 = Math.max(state.selectionStart[0], state.selectionEnd[0]);
     let c1 = Math.min(state.selectionStart[1], state.selectionEnd[1]);
     let c2 = Math.max(state.selectionStart[1], state.selectionEnd[1]);
 
-    // Expand bounds to fully include any multi-cell symbol with anchor inside selection
+    // Expand to fully include any multi-cell symbol with anchor in selection
     let expanded = true;
     while (expanded) {
       expanded = false;
@@ -295,6 +290,23 @@ export const usePatternEditorStore = create<EditorState>((set, get) => ({
         }
       }
     }
+
+    set({ isSelecting: false, selectionStart: [r1, c1], selectionEnd: [r2, c2] });
+  },
+
+  clearSelection: () => {
+    set({ selectionStart: null, selectionEnd: null, isSelecting: false });
+  },
+
+  saveSelectionAsRapport: (name: string) => {
+    const state = get();
+    if (!state.pattern || !state.selectionStart || !state.selectionEnd) return;
+
+    // Bounds already expanded by endSelection
+    const r1 = Math.min(state.selectionStart[0], state.selectionEnd[0]);
+    const r2 = Math.max(state.selectionStart[0], state.selectionEnd[0]);
+    const c1 = Math.min(state.selectionStart[1], state.selectionEnd[1]);
+    const c2 = Math.max(state.selectionStart[1], state.selectionEnd[1]);
 
     const cells: PatternCell[][] = [];
     for (let r = r1; r <= r2; r++) {
