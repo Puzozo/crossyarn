@@ -20,6 +20,14 @@ export type PatternSymbol = {
   height?: number;
 };
 
+export type Rapport = {
+  id: string;
+  name: string;
+  width: number;
+  height: number;
+  cells: PatternCell[][];
+};
+
 export type PatternPaletteColor = {
   id: string;
   name: string;
@@ -40,6 +48,7 @@ export type PatternDocument = {
     showRowNumbers: boolean;
     showColumnNumbers: boolean;
   };
+  rapports?: Rapport[];
 };
 
 export const DEFAULT_SYMBOLS: PatternSymbol[] = [
