@@ -50,8 +50,6 @@ export function PatternEditor({ patternId, initialPattern, title, description }:
     selectionStart,
     selectionEnd,
     rapportInsertId,
-    rapportTrimRows,
-    rapportTrimCols,
     toggleSelectionMode,
     startSelection,
     updateSelection,
@@ -60,7 +58,6 @@ export function PatternEditor({ patternId, initialPattern, title, description }:
     deleteRapport,
     startRapportInsert,
     cancelRapportInsert,
-    setRapportTrim,
     insertRapport
   } = usePatternEditorStore();
   const { t } = useTranslation();
@@ -135,8 +132,6 @@ export function PatternEditor({ patternId, initialPattern, title, description }:
 
   const rapports = pattern.rapports ?? [];
   const activeRapport = rapports.find((r) => r.id === rapportInsertId) ?? null;
-  const trimRows = rapportTrimRows ?? (activeRapport ? [0, activeRapport.height - 1] as [number, number] : null);
-  const trimCols = rapportTrimCols ?? (activeRapport ? [0, activeRapport.width - 1] as [number, number] : null);
   const hasSelection = selectionStart !== null && selectionEnd !== null && !isSelecting;
 
   return (
@@ -282,44 +277,19 @@ export function PatternEditor({ patternId, initialPattern, title, description }:
           )}
 
           {/* Insert mode panel */}
-          {rapportInsertId && activeRapport && trimRows && trimCols && (
-            <div className="rounded-lg bg-amber-50 border border-amber-200 p-2.5 space-y-2">
+          {rapportInsertId && activeRapport && (
+            <div className="rounded-lg bg-amber-50 border border-amber-200 p-2.5 space-y-1.5">
               <div className="flex items-center justify-between">
-                <span className="text-xs font-semibold text-amber-800">{activeRapport.name}</span>
+                <div>
+                  <span className="text-xs font-semibold text-amber-800">{activeRapport.name}</span>
+                  <span className="text-[10px] text-amber-600 ml-1.5">{activeRapport.width}×{activeRapport.height}</span>
+                </div>
                 <button type="button" onClick={cancelRapportInsert}
                   className="text-[10px] text-amber-600 hover:text-amber-800 transition-colors">✕</button>
               </div>
-              <p className="text-[10px] text-amber-700">Клікніть на схемі щоб вставити</p>
-              <div className="grid grid-cols-2 gap-1.5">
-                <div>
-                  <label className="text-[10px] text-yarn-warm-gray block mb-0.5">Рядки від</label>
-                  <input type="number" min={1} max={activeRapport.height}
-                    value={trimRows[0] + 1}
-                    onChange={(e) => setRapportTrim([Math.max(0, Number(e.target.value) - 1), trimRows[1]], trimCols)}
-                    className="w-full rounded border border-amber-200 bg-white px-2 py-1 text-xs focus:outline-none" />
-                </div>
-                <div>
-                  <label className="text-[10px] text-yarn-warm-gray block mb-0.5">до</label>
-                  <input type="number" min={1} max={activeRapport.height}
-                    value={trimRows[1] + 1}
-                    onChange={(e) => setRapportTrim([trimRows[0], Math.max(trimRows[0], Number(e.target.value) - 1)], trimCols)}
-                    className="w-full rounded border border-amber-200 bg-white px-2 py-1 text-xs focus:outline-none" />
-                </div>
-                <div>
-                  <label className="text-[10px] text-yarn-warm-gray block mb-0.5">Стовп. від</label>
-                  <input type="number" min={1} max={activeRapport.width}
-                    value={trimCols[0] + 1}
-                    onChange={(e) => setRapportTrim(trimRows, [Math.max(0, Number(e.target.value) - 1), trimCols[1]])}
-                    className="w-full rounded border border-amber-200 bg-white px-2 py-1 text-xs focus:outline-none" />
-                </div>
-                <div>
-                  <label className="text-[10px] text-yarn-warm-gray block mb-0.5">до</label>
-                  <input type="number" min={1} max={activeRapport.width}
-                    value={trimCols[1] + 1}
-                    onChange={(e) => setRapportTrim(trimRows, [trimCols[0], Math.max(trimCols[0], Number(e.target.value) - 1)])}
-                    className="w-full rounded border border-amber-200 bg-white px-2 py-1 text-xs focus:outline-none" />
-                </div>
-              </div>
+              <p className="text-[10px] text-amber-700">
+                Клікніть на схемі щоб вставити. Якщо не вміщується — автоматично обріжеться по межі.
+              </p>
             </div>
           )}
 

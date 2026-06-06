@@ -30,7 +30,8 @@ function findAndClearOccupyingSymbol(cells: PatternGrid, symbols: PatternSymbol[
   const cell = cells[row][col];
   if (cell.occupiedByAnchor) {
     const [anchorRow, anchorCol] = cell.occupiedByAnchor;
-    const anchorCell = cells[anchorRow][anchorCol];
+    const anchorCell = cells[anchorRow]?.[anchorCol];
+    if (!anchorCell) return;
     const width = getSymbolWidth(anchorCell.symbolId, symbols);
     const height = getSymbolHeight(anchorCell.symbolId, symbols);
     clearMultiCellSymbol(cells, anchorRow, anchorCol, width, height, defaultColor);
@@ -60,16 +61,12 @@ type EditorState = {
   future: PatternDocument[];
   toastData: ToastData;
 
-  // Selection
   isSelectionMode: boolean;
   isSelecting: boolean;
   selectionStart: [number, number] | null;
   selectionEnd: [number, number] | null;
 
-  // Rapport insert
   rapportInsertId: string | null;
-  rapportTrimRows: [number, number] | null;
-  rapportTrimCols: [number, number] | null;
 
   setPattern: (pattern: PatternDocument) => void;
   paintCell: (row: number, column: number) => void;
@@ -92,7 +89,6 @@ type EditorState = {
 
   startRapportInsert: (id: string) => void;
   cancelRapportInsert: () => void;
-  setRapportTrim: (rows: [number, number] | null, cols: [number, number] | null) => void;
   insertRapport: (anchorRow: number, anchorCol: number) => void;
 };
 
@@ -112,8 +108,6 @@ export const usePatternEditorStore = create<EditorState>((set, get) => ({
   selectionStart: null,
   selectionEnd: null,
   rapportInsertId: null,
-  rapportTrimRows: null,
-  rapportTrimCols: null,
 
   clearToast: () => set({ toastData: null }),
 
@@ -254,10 +248,7 @@ export const usePatternEditorStore = create<EditorState>((set, get) => ({
       isSelecting: false,
       selectionStart: next ? state.selectionStart : null,
       selectionEnd: next ? state.selectionEnd : null,
-      // exit insert mode when entering selection mode
       rapportInsertId: next ? null : state.rapportInsertId,
-      rapportTrimRows: next ? null : state.rapportTrimRows,
-      rapportTrimCols: next ? null : state.rapportTrimCols,
     });
   },
 
@@ -281,10 +272,29 @@ export const usePatternEditorStore = create<EditorState>((set, get) => ({
     const state = get();
     if (!state.pattern || !state.selectionStart || !state.selectionEnd) return;
 
-    const r1 = Math.min(state.selectionStart[0], state.selectionEnd[0]);
-    const r2 = Math.max(state.selectionStart[0], state.selectionEnd[0]);
-    const c1 = Math.min(state.selectionStart[1], state.selectionEnd[1]);
-    const c2 = Math.max(state.selectionStart[1], state.selectionEnd[1]);
+    let r1 = Math.min(state.selectionStart[0], state.selectionEnd[0]);
+    let r2 = Math.max(state.selectionStart[0], state.selectionEnd[0]);
+    let c1 = Math.min(state.selectionStart[1], state.selectionEnd[1]);
+    let c2 = Math.max(state.selectionStart[1], state.selectionEnd[1]);
+
+    // Expand bounds to fully include any multi-cell symbol with anchor inside selection
+    let expanded = true;
+    while (expanded) {
+      expanded = false;
+      for (let r = r1; r <= r2; r++) {
+        for (let c = c1; c <= c2; c++) {
+          const cell = state.pattern.cells[r]?.[c];
+          if (!cell || cell.occupiedByAnchor) continue;
+          const sym = state.pattern.symbols.find((s) => s.id === cell.symbolId);
+          const sw = sym?.width ?? 1;
+          const sh = sym?.height ?? 1;
+          const newC2 = Math.min(c + sw - 1, state.pattern.width - 1);
+          const newR2 = Math.min(r + sh - 1, state.pattern.height - 1);
+          if (newC2 > c2) { c2 = newC2; expanded = true; }
+          if (newR2 > r2) { r2 = newR2; expanded = true; }
+        }
+      }
+    }
 
     const cells: PatternCell[][] = [];
     for (let r = r1; r <= r2; r++) {
@@ -347,8 +357,6 @@ export const usePatternEditorStore = create<EditorState>((set, get) => ({
   startRapportInsert: (id: string) => {
     set({
       rapportInsertId: id,
-      rapportTrimRows: null,
-      rapportTrimCols: null,
       isSelectionMode: false,
       isSelecting: false,
       selectionStart: null,
@@ -357,11 +365,7 @@ export const usePatternEditorStore = create<EditorState>((set, get) => ({
   },
 
   cancelRapportInsert: () => {
-    set({ rapportInsertId: null, rapportTrimRows: null, rapportTrimCols: null });
-  },
-
-  setRapportTrim: (rows, cols) => {
-    set({ rapportTrimRows: rows, rapportTrimCols: cols });
+    set({ rapportInsertId: null });
   },
 
   insertRapport: (anchorRow: number, anchorCol: number) => {
@@ -371,21 +375,10 @@ export const usePatternEditorStore = create<EditorState>((set, get) => ({
     const rapport = (state.pattern.rapports ?? []).find((r) => r.id === state.rapportInsertId);
     if (!rapport) return;
 
-    const trimRows = state.rapportTrimRows ?? [0, rapport.height - 1];
-    const trimCols = state.rapportTrimCols ?? [0, rapport.width - 1];
-
-    const rowStart = Math.max(0, Math.min(trimRows[0], rapport.height - 1));
-    const rowEnd = Math.max(rowStart, Math.min(trimRows[1], rapport.height - 1));
-    const colStart = Math.max(0, Math.min(trimCols[0], rapport.width - 1));
-    const colEnd = Math.max(colStart, Math.min(trimCols[1], rapport.width - 1));
-
-    const insertHeight = rowEnd - rowStart + 1;
-    const insertWidth = colEnd - colStart + 1;
-
-    if (anchorRow + insertHeight > state.pattern.height || anchorCol + insertWidth > state.pattern.width) {
-      set({ toastData: { key: "toast.notEnoughSpace", params: { needed: insertHeight, available: state.pattern.height - anchorRow } } });
-      return;
-    }
+    // Auto-clip to pattern bounds
+    const insertHeight = Math.min(rapport.height, state.pattern.height - anchorRow);
+    const insertWidth = Math.min(rapport.width, state.pattern.width - anchorCol);
+    if (insertHeight <= 0 || insertWidth <= 0) return;
 
     const previous = clonePattern(state.pattern);
     const next = clonePattern(state.pattern);
@@ -398,25 +391,50 @@ export const usePatternEditorStore = create<EditorState>((set, get) => ({
       }
     }
 
-    // Copy cells from rapport with coordinate translation
-    for (let localR = rowStart; localR <= rowEnd; localR++) {
-      for (let localC = colStart; localC <= colEnd; localC++) {
-        const targetR = anchorRow + (localR - rowStart);
-        const targetC = anchorCol + (localC - colStart);
-        const cell = rapport.cells[localR][localC];
+    // Track anchors that were skipped because symbol doesn't fit
+    const skippedAnchors = new Set<string>();
 
-        if (cell.occupiedByAnchor) {
-          const [localAnchorR, localAnchorC] = cell.occupiedByAnchor;
-          if (localAnchorR >= rowStart && localAnchorR <= rowEnd && localAnchorC >= colStart && localAnchorC <= colEnd) {
-            next.cells[targetR][targetC] = {
-              ...cell,
-              occupiedByAnchor: [anchorRow + (localAnchorR - rowStart), anchorCol + (localAnchorC - colStart)]
-            };
-          } else {
-            next.cells[targetR][targetC] = { symbolId: "empty", color: cell.color };
-          }
+    // Pass 1: place anchor cells
+    for (let localR = 0; localR < insertHeight; localR++) {
+      for (let localC = 0; localC < insertWidth; localC++) {
+        const cell = rapport.cells[localR][localC];
+        if (cell.occupiedByAnchor) continue;
+
+        const targetR = anchorRow + localR;
+        const targetC = anchorCol + localC;
+        const sym = next.symbols.find((s) => s.id === cell.symbolId);
+        const sw = sym?.width ?? 1;
+        const sh = sym?.height ?? 1;
+
+        if (targetR + sh > next.height || targetC + sw > next.width) {
+          // Symbol doesn't fit — place as empty, mark as skipped
+          next.cells[targetR][targetC] = { symbolId: "empty", color: cell.color };
+          if (sw > 1 || sh > 1) skippedAnchors.add(`${localR},${localC}`);
         } else {
           next.cells[targetR][targetC] = { ...cell };
+        }
+      }
+    }
+
+    // Pass 2: place occupied cells
+    for (let localR = 0; localR < insertHeight; localR++) {
+      for (let localC = 0; localC < insertWidth; localC++) {
+        const cell = rapport.cells[localR][localC];
+        if (!cell.occupiedByAnchor) continue;
+
+        const [localAnchorR, localAnchorC] = cell.occupiedByAnchor;
+        const targetR = anchorRow + localR;
+        const targetC = anchorCol + localC;
+
+        if (skippedAnchors.has(`${localAnchorR},${localAnchorC}`)) {
+          next.cells[targetR][targetC] = { symbolId: "empty", color: cell.color };
+        } else if (localAnchorR >= 0 && localAnchorR < insertHeight && localAnchorC >= 0 && localAnchorC < insertWidth) {
+          next.cells[targetR][targetC] = {
+            ...cell,
+            occupiedByAnchor: [anchorRow + localAnchorR, anchorCol + localAnchorC]
+          };
+        } else {
+          next.cells[targetR][targetC] = { symbolId: "empty", color: cell.color };
         }
       }
     }
@@ -425,9 +443,7 @@ export const usePatternEditorStore = create<EditorState>((set, get) => ({
       pattern: next,
       history: [...state.history, previous],
       future: [],
-      rapportInsertId: null,
-      rapportTrimRows: null,
-      rapportTrimCols: null
+      rapportInsertId: null
     });
   }
 }));
