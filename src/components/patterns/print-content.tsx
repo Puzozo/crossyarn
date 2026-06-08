@@ -3,6 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { PrintButton } from "@/components/patterns/print-button";
+import { PdfDownloadButton } from "@/components/patterns/pdf-download-button";
 import { useTranslation } from "@/lib/i18n/context";
 import { PatternDocument, PatternSymbol } from "@/lib/patterns/model";
 
@@ -40,7 +41,10 @@ export function PrintContent({ pattern, document, usedSymbols }: Props) {
           </svg>
           <span className="text-yarn-charcoal font-medium">{t("print.print")}</span>
         </nav>
-        <PrintButton />
+        <div className="flex gap-2">
+          <PdfDownloadButton patternId={pattern.id} title={pattern.title} />
+          <PrintButton />
+        </div>
       </div>
 
       {/* Print content */}
@@ -53,20 +57,35 @@ export function PrintContent({ pattern, document, usedSymbols }: Props) {
         <div
           className="mt-6 grid gap-px bg-yarn-sand/60 print:bg-gray-300"
           style={{
-            gridTemplateColumns: `repeat(${document.width}, minmax(16px, 1fr)) 32px`
+            gridTemplateColumns: `repeat(${document.width}, minmax(16px, 1fr)) 32px`,
+            gridTemplateRows: `repeat(${document.height}, minmax(16px, auto))`
           }}
         >
           {document.cells.flatMap((row, rowIndex) => [
             ...row.map((cell, columnIndex) => {
+              if (cell.occupiedByAnchor) return null;
               const symbol = document.symbols.find((item) => item.id === cell.symbolId);
+              const w = symbol?.width ?? 1;
+              const h = symbol?.height ?? 1;
               return (
                 <div
                   key={`${rowIndex}-${columnIndex}`}
-                  className="flex aspect-square items-center justify-center bg-white text-[10px] font-semibold text-yarn-charcoal print:text-black"
-                  style={{ backgroundColor: cell.color }}
+                  className="flex items-center justify-center bg-white text-[10px] font-semibold text-yarn-charcoal print:text-black"
+                  style={{
+                    gridColumn: `${columnIndex + 1} / span ${w}`,
+                    gridRow: `${rowIndex + 1} / span ${h}`,
+                    backgroundColor: cell.color,
+                    aspectRatio: w === 1 && h === 1 ? "1" : undefined
+                  }}
                 >
                   {symbol?.imageData ? (
-                    <Image src={symbol.imageData} alt={symbol.label} width={16} height={16} className="object-contain" />
+                    <Image
+                      src={symbol.imageData}
+                      alt={symbol.label}
+                      width={16 * w}
+                      height={16 * h}
+                      className="object-contain w-full h-full"
+                    />
                   ) : (
                     symbol?.glyph ?? "·"
                   )}
@@ -75,7 +94,8 @@ export function PrintContent({ pattern, document, usedSymbols }: Props) {
             }),
             <div
               key={`print-row-${rowIndex}`}
-              className="flex min-h-6 items-center justify-center bg-yarn-oatmeal print:bg-gray-100 text-[10px] font-mono font-semibold text-yarn-warm-gray print:text-gray-600"
+              className="flex min-h-4 items-center justify-center bg-yarn-oatmeal print:bg-gray-100 text-[10px] font-mono font-semibold text-yarn-warm-gray print:text-gray-600"
+              style={{ gridColumn: document.width + 1, gridRow: rowIndex + 1 }}
             >
               {document.height - rowIndex}
             </div>
@@ -83,12 +103,16 @@ export function PrintContent({ pattern, document, usedSymbols }: Props) {
           {Array.from({ length: document.width }, (_, columnIndex) => (
             <div
               key={`print-column-${columnIndex}`}
-              className="flex min-h-6 items-center justify-center bg-yarn-oatmeal print:bg-gray-100 text-[10px] font-mono font-semibold text-yarn-warm-gray print:text-gray-600"
+              className="flex min-h-4 items-center justify-center bg-yarn-oatmeal print:bg-gray-100 text-[10px] font-mono font-semibold text-yarn-warm-gray print:text-gray-600"
+              style={{ gridColumn: columnIndex + 1, gridRow: document.height + 1 }}
             >
               {document.width - columnIndex}
             </div>
           ))}
-          <div className="bg-yarn-oatmeal print:bg-gray-100" />
+          <div
+            className="bg-yarn-oatmeal print:bg-gray-100"
+            style={{ gridColumn: document.width + 1, gridRow: document.height + 1 }}
+          />
         </div>
 
         {usedSymbols.length > 0 && (

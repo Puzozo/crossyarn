@@ -89,6 +89,10 @@ export const translations = {
     "print.legend": "Легенда позначок",
     "print.print": "Друк",
 
+    // PDF
+    "pdf.download": "PDF",
+    "pdf.generating": "Генерація...",
+
     // Auth
     "auth.signInTitle": "Вхід",
     "auth.signUpTitle": "Створення акаунта",
@@ -242,6 +246,10 @@ export const translations = {
     "print.printBtn": "Print",
     "print.legend": "Symbol Legend",
     "print.print": "Print",
+
+    // PDF
+    "pdf.download": "PDF",
+    "pdf.generating": "Generating...",
 
     // Auth
     "auth.signInTitle": "Sign In",

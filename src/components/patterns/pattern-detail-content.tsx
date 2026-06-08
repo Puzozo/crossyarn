@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import { PdfDownloadButton } from "@/components/patterns/pdf-download-button";
 import { useTranslation } from "@/lib/i18n/context";
 
 type Props = {
@@ -45,6 +46,7 @@ export function PatternDetailContent({ pattern }: Props) {
             <Link href={`/patterns/${pattern.id}/print`}>
               <Button variant="secondary">{t("patternDetail.print")}</Button>
             </Link>
+            <PdfDownloadButton patternId={pattern.id} title={pattern.title} />
             <a href={`/api/exports/${pattern.id}`} target="_blank">
               <Button variant="secondary">{t("patternDetail.svg")}</Button>
             </a>
