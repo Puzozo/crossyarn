@@ -53,6 +53,49 @@ export type ToastData = {
   params?: Record<string, string | number>;
 } | null;
 
+export type RapportMirror = "none" | "h" | "v" | "hv";
+
+/**
+ * Mirrors rapport cells horizontally and/or vertically.
+ * Multi-cell symbols keep their anchor as top-left of the block:
+ * the block position is mirrored, then occupied cells are regenerated.
+ */
+export function mirrorRapportCells(
+  cells: PatternCell[][],
+  width: number,
+  height: number,
+  mirror: RapportMirror,
+  symbols: PatternSymbol[]
+): PatternCell[][] {
+  if (mirror === "none") return cells;
+  const flipH = mirror === "h" || mirror === "hv";
+  const flipV = mirror === "v" || mirror === "hv";
+
+  const result: PatternCell[][] = Array.from({ length: height }, () =>
+    Array.from({ length: width }, () => ({ symbolId: "empty", color: "#f5ede1" }))
+  );
+
+  for (let r = 0; r < height; r++) {
+    for (let c = 0; c < width; c++) {
+      const cell = cells[r][c];
+      if (cell.occupiedByAnchor) continue; // regenerated from anchors below
+      const sw = getSymbolWidth(cell.symbolId, symbols);
+      const sh = getSymbolHeight(cell.symbolId, symbols);
+      const newR = flipV ? height - r - sh : r;
+      const newC = flipH ? width - c - sw : c;
+      result[newR][newC] = { symbolId: cell.symbolId, color: cell.color };
+      for (let rr = newR; rr < newR + sh && rr < height; rr++) {
+        for (let cc = newC; cc < newC + sw && cc < width; cc++) {
+          if (rr === newR && cc === newC) continue;
+          result[rr][cc] = { symbolId: "empty", color: cell.color, occupiedByAnchor: [newR, newC] };
+        }
+      }
+    }
+  }
+
+  return result;
+}
+
 type EditorState = {
   pattern: PatternDocument | null;
   selectedSymbolId: string;
@@ -67,7 +110,11 @@ type EditorState = {
   selectionEnd: [number, number] | null;
 
   rapportInsertId: string | null;
+  rapportMirror: RapportMirror;
+  zoomLevel: number;
 
+  setZoom: (level: number) => void;
+  setRapportMirror: (mirror: RapportMirror) => void;
   setPattern: (pattern: PatternDocument) => void;
   paintCell: (row: number, column: number) => void;
   setSelectedSymbolId: (symbolId: string) => void;
@@ -110,6 +157,11 @@ export const usePatternEditorStore = create<EditorState>((set, get) => ({
   selectionStart: null,
   selectionEnd: null,
   rapportInsertId: null,
+  rapportMirror: "none",
+  zoomLevel: 1,
+
+  setZoom: (level) => set({ zoomLevel: Math.max(0.4, Math.min(2.5, level)) }),
+  setRapportMirror: (rapportMirror) => set({ rapportMirror }),
 
   clearToast: () => set({ toastData: null }),
 
@@ -397,6 +449,7 @@ export const usePatternEditorStore = create<EditorState>((set, get) => ({
   startRapportInsert: (id: string) => {
     set({
       rapportInsertId: id,
+      rapportMirror: "none",
       isSelectionMode: false,
       isSelecting: false,
       selectionStart: null,
@@ -405,15 +458,27 @@ export const usePatternEditorStore = create<EditorState>((set, get) => ({
   },
 
   cancelRapportInsert: () => {
-    set({ rapportInsertId: null });
+    set({ rapportInsertId: null, rapportMirror: "none" });
   },
 
   insertRapport: (anchorRow: number, anchorCol: number) => {
     const state = get();
     if (!state.pattern || !state.rapportInsertId) return;
 
-    const rapport = (state.pattern.rapports ?? []).find((r) => r.id === state.rapportInsertId);
-    if (!rapport) return;
+    const rapportRecord = (state.pattern.rapports ?? []).find((r) => r.id === state.rapportInsertId);
+    if (!rapportRecord) return;
+
+    // Apply mirror transform before insertion (cells regenerated, original untouched)
+    const rapport = {
+      ...rapportRecord,
+      cells: mirrorRapportCells(
+        rapportRecord.cells,
+        rapportRecord.width,
+        rapportRecord.height,
+        state.rapportMirror,
+        state.pattern.symbols
+      )
+    };
 
     // Auto-clip to pattern bounds
     const insertHeight = Math.min(rapport.height, state.pattern.height - anchorRow);

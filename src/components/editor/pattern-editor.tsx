@@ -60,7 +60,11 @@ export function PatternEditor({ patternId, initialPattern, title, description }:
     deleteRapport,
     startRapportInsert,
     cancelRapportInsert,
-    insertRapport
+    insertRapport,
+    zoomLevel,
+    setZoom,
+    rapportMirror,
+    setRapportMirror
   } = usePatternEditorStore();
   const { t } = useTranslation();
   const [saveState, setSaveState] = useState("saved");
@@ -124,6 +128,60 @@ export function PatternEditor({ patternId, initialPattern, title, description }:
     return () => clearTimeout(timeout);
   }, [handleSave, pattern]);
 
+  const availableSymbolsRef = useRef(availableSymbols);
+  useEffect(() => { availableSymbolsRef.current = availableSymbols; }, [availableSymbols]);
+
+  // Ctrl+Scroll zoom on the grid area (native listener — React's onWheel is passive)
+  const gridSectionRef = useRef<HTMLElement | null>(null);
+  useEffect(() => {
+    const el = gridSectionRef.current;
+    if (!el) return;
+    const onWheel = (e: WheelEvent) => {
+      if (!e.ctrlKey) return;
+      e.preventDefault();
+      const store = usePatternEditorStore.getState();
+      store.setZoom(store.zoomLevel + (e.deltaY < 0 ? 0.1 : -0.1));
+    };
+    el.addEventListener("wheel", onWheel, { passive: false });
+    return () => el.removeEventListener("wheel", onWheel);
+  }, []);
+
+  // Keyboard shortcuts: Ctrl+Z/Y undo/redo, Esc cancel modes, 1-9 symbol pick, +/- zoom
+  useEffect(() => {
+    const onKeyDown = (e: KeyboardEvent) => {
+      const target = e.target as HTMLElement | null;
+      if (target && (target.tagName === "INPUT" || target.tagName === "TEXTAREA" || target.tagName === "SELECT" || target.isContentEditable)) {
+        return;
+      }
+      const store = usePatternEditorStore.getState();
+      if ((e.ctrlKey || e.metaKey) && !e.shiftKey && e.key.toLowerCase() === "z") {
+        e.preventDefault(); store.undo(); return;
+      }
+      if ((e.ctrlKey || e.metaKey) && (e.key.toLowerCase() === "y" || (e.shiftKey && e.key.toLowerCase() === "z"))) {
+        e.preventDefault(); store.redo(); return;
+      }
+      if (e.key === "Escape") {
+        if (store.rapportInsertId) store.cancelRapportInsert();
+        if (store.isSelectionMode) store.toggleSelectionMode();
+        return;
+      }
+      if (!e.ctrlKey && !e.metaKey && !e.altKey && /^[1-9]$/.test(e.key)) {
+        const idx = Number(e.key) - 1;
+        const symbol = availableSymbolsRef.current[idx];
+        if (symbol) store.setSelectedSymbolId(symbol.id);
+        return;
+      }
+      if (!e.ctrlKey && !e.metaKey && (e.key === "+" || e.key === "=")) {
+        store.setZoom(store.zoomLevel + 0.2); return;
+      }
+      if (!e.ctrlKey && !e.metaKey && e.key === "-") {
+        store.setZoom(store.zoomLevel - 0.2); return;
+      }
+    };
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, []);
+
   if (!pattern) return null;
 
   const saveLabel =
@@ -140,6 +198,8 @@ export function PatternEditor({ patternId, initialPattern, title, description }:
   const skipPurl = pattern.view.skipPurlRows ?? false;
   const visibleRowIndexes = Array.from({ length: pattern.height }, (_, i) => i)
     .filter((i) => !skipPurl || (pattern.height - i) % 2 === 1);
+
+  const cellPx = Math.round(40 * zoomLevel);
 
   return (
     <div className="grid gap-4 lg:gap-6 lg:grid-cols-[300px,1fr]">
@@ -305,6 +365,23 @@ export function PatternEditor({ patternId, initialPattern, title, description }:
                 <button type="button" onClick={cancelRapportInsert}
                   className="text-[10px] text-amber-600 hover:text-amber-800 transition-colors">✕</button>
               </div>
+              <div className="flex gap-1">
+                {([
+                  ["none", "Як є"],
+                  ["h", "↔ Гориз."],
+                  ["v", "↕ Верт."],
+                  ["hv", "↔↕ Обидва"]
+                ] as const).map(([mode, label]) => (
+                  <button key={mode} type="button" onClick={() => setRapportMirror(mode)}
+                    className={`flex-1 rounded px-1 py-1 text-[10px] font-medium transition-colors ${
+                      rapportMirror === mode
+                        ? "bg-amber-500 text-white"
+                        : "bg-white border border-amber-200 text-amber-700 hover:bg-amber-100"
+                    }`}>
+                    {label}
+                  </button>
+                ))}
+              </div>
               <p className="text-[10px] text-amber-700">
                 Клікніть на схемі щоб вставити. Якщо не вміщується — автоматично обріжеться по межі.
               </p>
@@ -366,7 +443,24 @@ export function PatternEditor({ patternId, initialPattern, title, description }:
       </aside>
 
       {/* Grid canvas */}
-      <section className="overflow-auto rounded-2xl bg-white/70 border border-yarn-sand/50 p-3 sm:p-4 lg:p-5 shadow-warm-sm">
+      <section ref={gridSectionRef} className="overflow-auto rounded-2xl bg-white/70 border border-yarn-sand/50 p-3 sm:p-4 lg:p-5 shadow-warm-sm">
+        {/* Zoom toolbar */}
+        <div className="flex items-center justify-end gap-1 mb-2">
+          <button type="button" onClick={() => setZoom(zoomLevel - 0.2)} title="Зменшити (−)"
+            className="flex h-7 w-7 items-center justify-center rounded-lg border border-yarn-sand/60 bg-white text-sm font-bold text-yarn-charcoal hover:bg-yarn-oatmeal transition-colors">
+            −
+          </button>
+          <button type="button" onClick={() => setZoom(1)} title="Скинути масштаб"
+            className="h-7 min-w-12 rounded-lg border border-yarn-sand/60 bg-white px-1.5 text-[11px] font-mono font-semibold text-yarn-warm-gray hover:bg-yarn-oatmeal transition-colors">
+            {Math.round(zoomLevel * 100)}%
+          </button>
+          <button type="button" onClick={() => setZoom(zoomLevel + 0.2)} title="Збільшити (+)"
+            className="flex h-7 w-7 items-center justify-center rounded-lg border border-yarn-sand/60 bg-white text-sm font-bold text-yarn-charcoal hover:bg-yarn-oatmeal transition-colors">
+            +
+          </button>
+          <span className="ml-1 hidden lg:inline text-[10px] text-yarn-warm-gray/70">Ctrl+скрол</span>
+        </div>
+
         {/* Add/remove row top */}
         <div className="flex justify-center gap-1 mb-1">
           <button type="button" onClick={() => addEdge("top")} title="Додати рядок зверху"
@@ -395,19 +489,38 @@ export function PatternEditor({ patternId, initialPattern, title, description }:
           <div
             className="grid gap-px bg-yarn-sand/60 flex-1"
             style={{
-              gridTemplateColumns: `repeat(${pattern.width}, minmax(40px, 1fr)) 40px`,
-              gridTemplateRows: `repeat(${visibleRowIndexes.length}, minmax(40px, auto)) 40px`
+              gridTemplateColumns: zoomLevel === 1
+                ? `repeat(${pattern.width}, minmax(40px, 1fr)) 40px`
+                : `repeat(${pattern.width}, ${cellPx}px) ${cellPx}px`,
+              gridTemplateRows: zoomLevel === 1
+                ? `repeat(${visibleRowIndexes.length}, minmax(40px, auto)) 40px`
+                : `repeat(${visibleRowIndexes.length}, ${cellPx}px) ${cellPx}px`
             }}
             onPointerUp={() => { if (isSelectionMode && isSelecting) endSelection(); }}
           >
             {visibleRowIndexes.flatMap((rowIndex, displayIdx) => [
               ...pattern.cells[rowIndex].map((cell, columnIndex) => {
+                // In skip mode vertical spans collapse; a symbol anchored in a hidden
+                // row is projected onto its first visible row so it doesn't vanish
+                let displaySymbolId = cell.symbolId;
                 if (cell.occupiedByAnchor) {
-                  // In skip mode vertical spans are collapsed — render occupied cells
-                  // whose anchor sits in another (hidden or visible) row as plain cells
-                  if (!skipPurl || cell.occupiedByAnchor[0] === rowIndex) return null;
+                  if (!skipPurl) return null;
+                  const [ar, ac] = cell.occupiedByAnchor;
+                  if (ar === rowIndex) return null;
+                  const anchorHidden = (pattern.height - ar) % 2 === 0;
+                  if (anchorHidden && rowIndex === ar + 1) {
+                    const anchorCell = pattern.cells[ar]?.[ac];
+                    const anchorWidth = anchorCell
+                      ? availableSymbols.find((s) => s.id === anchorCell.symbolId)?.width ?? 1
+                      : 1;
+                    if (columnIndex === ac && anchorCell) {
+                      displaySymbolId = anchorCell.symbolId;
+                    } else if (columnIndex < ac + anchorWidth) {
+                      return null; // covered by the projected anchor's colspan
+                    }
+                  }
                 }
-                const symbol = availableSymbols.find((item) => item.id === cell.symbolId);
+                const symbol = availableSymbols.find((item) => item.id === displaySymbolId);
                 const sw = symbol?.width ?? 1;
                 const sh = skipPurl ? 1 : symbol?.height ?? 1;
                 const selected = inSelectionRect(rowIndex, columnIndex, selectionStart, selectionEnd);
@@ -442,7 +555,7 @@ export function PatternEditor({ patternId, initialPattern, title, description }:
                       gridRow: sh > 1 ? `${displayIdx + 1} / span ${sh}` : displayIdx + 1,
                       gridColumn: sw > 1 ? `${columnIndex + 1} / span ${sw}` : columnIndex + 1,
                       aspectRatio: sw === 1 && sh === 1 ? "1" : undefined,
-                      minHeight: "40px"
+                      minHeight: `${cellPx}px`
                     }}
                     title={`${t("editor.cellTitle", { row: String(pattern.height - rowIndex), col: String(pattern.width - columnIndex) })}${sw > 1 || sh > 1 ? ` (${sw}×${sh})` : ""}`}
                   >
@@ -459,14 +572,14 @@ export function PatternEditor({ patternId, initialPattern, title, description }:
               }).filter(Boolean),
               <div key={`row-${rowIndex}`}
                 className="flex items-center justify-center bg-yarn-oatmeal text-[10px] font-mono font-semibold text-yarn-warm-gray"
-                style={{ gridRow: displayIdx + 1, gridColumn: pattern.width + 1, minHeight: "40px" }}>
+                style={{ gridRow: displayIdx + 1, gridColumn: pattern.width + 1, minHeight: `${cellPx}px` }}>
                 {pattern.height - rowIndex}
               </div>
             ])}
             {Array.from({ length: pattern.width }, (_, columnIndex) => (
               <div key={`column-${columnIndex}`}
                 className="flex items-center justify-center bg-yarn-oatmeal text-[10px] font-mono font-semibold text-yarn-warm-gray"
-                style={{ gridRow: visibleRowIndexes.length + 1, gridColumn: columnIndex + 1, minHeight: "40px" }}>
+                style={{ gridRow: visibleRowIndexes.length + 1, gridColumn: columnIndex + 1, minHeight: `${cellPx}px` }}>
                 {pattern.width - columnIndex}
               </div>
             ))}

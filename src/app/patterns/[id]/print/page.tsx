@@ -29,9 +29,11 @@ export default async function PatternPrintPage({
   const usedSymbolIds = new Set<string>();
   for (const row of document.cells) {
     for (const cell of row) {
+      if (cell.occupiedByAnchor) continue;
       usedSymbolIds.add(cell.symbolId);
     }
   }
+  usedSymbolIds.delete("empty");
   const usedSymbols = document.symbols.filter((s) => usedSymbolIds.has(s.id));
 
   return (

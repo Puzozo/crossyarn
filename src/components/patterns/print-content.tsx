@@ -68,12 +68,26 @@ export function PrintContent({ pattern, document, usedSymbols }: Props) {
         >
           {visibleRowIndexes.flatMap((rowIndex, displayIdx) => [
             ...document.cells[rowIndex].map((cell, columnIndex) => {
+              // In skip mode vertical spans collapse; a symbol anchored in a hidden
+              // row is projected onto its first visible row so it doesn't vanish
+              let displaySymbolId = cell.symbolId;
               if (cell.occupiedByAnchor) {
-                // In skip mode vertical spans are collapsed — render occupied cells
-                // whose anchor sits in another row as plain cells
                 if (!skipPurl || cell.occupiedByAnchor[0] === rowIndex) return null;
+                const [ar, ac] = cell.occupiedByAnchor;
+                const anchorHidden = (document.height - ar) % 2 === 0;
+                if (anchorHidden && rowIndex === ar + 1) {
+                  const anchorCell = document.cells[ar]?.[ac];
+                  const anchorWidth = anchorCell
+                    ? document.symbols.find((s) => s.id === anchorCell.symbolId)?.width ?? 1
+                    : 1;
+                  if (columnIndex === ac && anchorCell) {
+                    displaySymbolId = anchorCell.symbolId;
+                  } else if (columnIndex < ac + anchorWidth) {
+                    return null; // covered by the projected anchor's colspan
+                  }
+                }
               }
-              const symbol = document.symbols.find((item) => item.id === cell.symbolId);
+              const symbol = document.symbols.find((item) => item.id === displaySymbolId);
               const w = symbol?.width ?? 1;
               const h = skipPurl ? 1 : symbol?.height ?? 1;
               return (

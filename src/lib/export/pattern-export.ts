@@ -24,13 +24,15 @@ export function patternToSvg(pattern: PatternDocument, title: string) {
   const width = gridWidth + rightGutter;
   const gridBottom = gridHeight;
 
-  // Collect unique used symbols for legend
+  // Collect unique used symbols for legend (skip occupied cells and the background "empty")
   const usedIds = new Set<string>();
   for (const row of pattern.cells) {
     for (const cell of row) {
+      if (cell.occupiedByAnchor) continue;
       usedIds.add(cell.symbolId);
     }
   }
+  usedIds.delete("empty");
   const usedSymbols = pattern.symbols.filter((s) => usedIds.has(s.id));
 
   // Legend layout
@@ -60,12 +62,27 @@ export function patternToSvg(pattern: PatternDocument, title: string) {
   const cells = visibleRowIndexes
     .flatMap((rowIndex, displayIdx) =>
       pattern.cells[rowIndex].map((cell, columnIndex) => {
-        // Skip cells occupied by a multi-cell symbol (in skip mode vertical spans are
-        // collapsed, so occupied cells anchored in another row render as plain cells)
+        // Skip cells occupied by a multi-cell symbol. In skip mode vertical spans
+        // collapse; a symbol anchored in a hidden row is projected onto its first
+        // visible row so it doesn't vanish from the chart.
+        let displaySymbolId = cell.symbolId;
         if (cell.occupiedByAnchor) {
           if (!skipPurl || cell.occupiedByAnchor[0] === rowIndex) return "";
+          const [ar, ac] = cell.occupiedByAnchor;
+          const anchorHidden = (pattern.height - ar) % 2 === 0;
+          if (anchorHidden && rowIndex === ar + 1) {
+            const anchorCell = pattern.cells[ar]?.[ac];
+            const anchorWidth = anchorCell
+              ? pattern.symbols.find((s) => s.id === anchorCell.symbolId)?.width ?? 1
+              : 1;
+            if (columnIndex === ac && anchorCell) {
+              displaySymbolId = anchorCell.symbolId;
+            } else if (columnIndex < ac + anchorWidth) {
+              return ""; // covered by the projected anchor's span
+            }
+          }
         }
-        const symbol = pattern.symbols.find((item) => item.id === cell.symbolId);
+        const symbol = pattern.symbols.find((item) => item.id === displaySymbolId);
         const symbolWidth = symbol?.width ?? 1;
         const glyph = symbol?.glyph ?? "\u00B7";
         const x = columnIndex * cellSize;
