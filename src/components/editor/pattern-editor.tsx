@@ -136,6 +136,11 @@ export function PatternEditor({ patternId, initialPattern, title, description }:
   const activeRapport = rapports.find((r) => r.id === rapportInsertId) ?? null;
   const hasSelection = selectionStart !== null && selectionEnd !== null && !isSelecting;
 
+  // When skipPurlRows is on, only odd-numbered rows are shown (row number = height - rowIndex)
+  const skipPurl = pattern.view.skipPurlRows ?? false;
+  const visibleRowIndexes = Array.from({ length: pattern.height }, (_, i) => i)
+    .filter((i) => !skipPurl || (pattern.height - i) % 2 === 1);
+
   return (
     <div className="grid gap-4 lg:gap-6 lg:grid-cols-[300px,1fr]">
       {/* Sidebar */}
@@ -391,16 +396,20 @@ export function PatternEditor({ patternId, initialPattern, title, description }:
             className="grid gap-px bg-yarn-sand/60 flex-1"
             style={{
               gridTemplateColumns: `repeat(${pattern.width}, minmax(40px, 1fr)) 40px`,
-              gridTemplateRows: `repeat(${pattern.height}, minmax(40px, auto)) 40px`
+              gridTemplateRows: `repeat(${visibleRowIndexes.length}, minmax(40px, auto)) 40px`
             }}
             onPointerUp={() => { if (isSelectionMode && isSelecting) endSelection(); }}
           >
-            {pattern.cells.flatMap((row, rowIndex) => [
-              ...row.map((cell, columnIndex) => {
-                if (cell.occupiedByAnchor) return null;
+            {visibleRowIndexes.flatMap((rowIndex, displayIdx) => [
+              ...pattern.cells[rowIndex].map((cell, columnIndex) => {
+                if (cell.occupiedByAnchor) {
+                  // In skip mode vertical spans are collapsed — render occupied cells
+                  // whose anchor sits in another (hidden or visible) row as plain cells
+                  if (!skipPurl || cell.occupiedByAnchor[0] === rowIndex) return null;
+                }
                 const symbol = availableSymbols.find((item) => item.id === cell.symbolId);
                 const sw = symbol?.width ?? 1;
-                const sh = symbol?.height ?? 1;
+                const sh = skipPurl ? 1 : symbol?.height ?? 1;
                 const selected = inSelectionRect(rowIndex, columnIndex, selectionStart, selectionEnd);
 
                 return (
@@ -430,7 +439,7 @@ export function PatternEditor({ patternId, initialPattern, title, description }:
                     ].join(" ")}
                     style={{
                       backgroundColor: cell.color,
-                      gridRow: sh > 1 ? `${rowIndex + 1} / span ${sh}` : rowIndex + 1,
+                      gridRow: sh > 1 ? `${displayIdx + 1} / span ${sh}` : displayIdx + 1,
                       gridColumn: sw > 1 ? `${columnIndex + 1} / span ${sw}` : columnIndex + 1,
                       aspectRatio: sw === 1 && sh === 1 ? "1" : undefined,
                       minHeight: "40px"
@@ -450,20 +459,18 @@ export function PatternEditor({ patternId, initialPattern, title, description }:
               }).filter(Boolean),
               <div key={`row-${rowIndex}`}
                 className="flex items-center justify-center bg-yarn-oatmeal text-[10px] font-mono font-semibold text-yarn-warm-gray"
-                style={{ gridRow: rowIndex + 1, gridColumn: pattern.width + 1, minHeight: "40px" }}>
-                {pattern.view.skipPurlRows
-                  ? (pattern.height - rowIndex) * 2 - 1
-                  : pattern.height - rowIndex}
+                style={{ gridRow: displayIdx + 1, gridColumn: pattern.width + 1, minHeight: "40px" }}>
+                {pattern.height - rowIndex}
               </div>
             ])}
             {Array.from({ length: pattern.width }, (_, columnIndex) => (
               <div key={`column-${columnIndex}`}
                 className="flex items-center justify-center bg-yarn-oatmeal text-[10px] font-mono font-semibold text-yarn-warm-gray"
-                style={{ gridRow: pattern.height + 1, gridColumn: columnIndex + 1, minHeight: "40px" }}>
+                style={{ gridRow: visibleRowIndexes.length + 1, gridColumn: columnIndex + 1, minHeight: "40px" }}>
                 {pattern.width - columnIndex}
               </div>
             ))}
-            <div className="bg-yarn-oatmeal rounded-br" style={{ gridRow: pattern.height + 1, gridColumn: pattern.width + 1 }} />
+            <div className="bg-yarn-oatmeal rounded-br" style={{ gridRow: visibleRowIndexes.length + 1, gridColumn: pattern.width + 1 }} />
           </div>
 
           {/* Add/remove col right */}

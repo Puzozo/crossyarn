@@ -13,8 +13,14 @@ export function patternToSvg(pattern: PatternDocument, title: string) {
   const cellSize = 24;
   const rightGutter = 32;
   const bottomGutter = 32;
+
+  // When skipPurlRows is on, only odd-numbered rows are rendered (row number = height - rowIndex)
+  const skipPurl = pattern.view.skipPurlRows ?? false;
+  const visibleRowIndexes = Array.from({ length: pattern.height }, (_, i) => i)
+    .filter((i) => !skipPurl || (pattern.height - i) % 2 === 1);
+
   const gridWidth = pattern.width * cellSize;
-  const gridHeight = pattern.height * cellSize;
+  const gridHeight = visibleRowIndexes.length * cellSize;
   const width = gridWidth + rightGutter;
   const gridBottom = gridHeight;
 
@@ -45,27 +51,25 @@ export function patternToSvg(pattern: PatternDocument, title: string) {
   }).join("");
 
   // Row numbers on the right side, counting bottom-to-top (row 0 shows N, row N-1 shows 1)
-  const rowNumbers = Array.from({ length: pattern.height }, (_, rowIndex) => {
-    const y = rowIndex * cellSize + 16;
+  const rowNumbers = visibleRowIndexes.map((rowIndex, displayIdx) => {
+    const y = displayIdx * cellSize + 16;
     const x = gridWidth + 16;
-    const rowNum = pattern.view.skipPurlRows
-      ? (pattern.height - rowIndex) * 2 - 1
-      : pattern.height - rowIndex;
-    return `<text x="${x}" y="${y}" text-anchor="middle" font-size="11" fill="#475569">${rowNum}</text>`;
+    return `<text x="${x}" y="${y}" text-anchor="middle" font-size="11" fill="#475569">${pattern.height - rowIndex}</text>`;
   }).join("");
 
-  const cells = pattern.cells
-    .flatMap((row, rowIndex) =>
-      row.map((cell, columnIndex) => {
-        // Skip cells occupied by a multi-cell symbol
+  const cells = visibleRowIndexes
+    .flatMap((rowIndex, displayIdx) =>
+      pattern.cells[rowIndex].map((cell, columnIndex) => {
+        // Skip cells occupied by a multi-cell symbol (in skip mode vertical spans are
+        // collapsed, so occupied cells anchored in another row render as plain cells)
         if (cell.occupiedByAnchor) {
-          return "";
+          if (!skipPurl || cell.occupiedByAnchor[0] === rowIndex) return "";
         }
         const symbol = pattern.symbols.find((item) => item.id === cell.symbolId);
         const symbolWidth = symbol?.width ?? 1;
         const glyph = symbol?.glyph ?? "\u00B7";
         const x = columnIndex * cellSize;
-        const y = rowIndex * cellSize;
+        const y = displayIdx * cellSize;
         const spanWidth = cellSize * symbolWidth;
         const symbolMarkup = symbol?.imageData
           ? `<image href="${escapeXml(symbol.imageData)}" x="${x + 4}" y="${y + 4}" width="${spanWidth - 8}" height="${cellSize - 8}" />`

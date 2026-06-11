@@ -22,6 +22,11 @@ type Props = {
 export function PrintContent({ pattern, document, usedSymbols }: Props) {
   const { t } = useTranslation();
 
+  // When skipPurlRows is on, only odd-numbered rows are shown (row number = height - rowIndex)
+  const skipPurl = document.view.skipPurlRows ?? false;
+  const visibleRowIndexes = Array.from({ length: document.height }, (_, i) => i)
+    .filter((i) => !skipPurl || (document.height - i) % 2 === 1);
+
   return (
     <section className="space-y-6 print:p-4">
       {/* Screen-only header */}
@@ -58,22 +63,26 @@ export function PrintContent({ pattern, document, usedSymbols }: Props) {
           className="mt-6 grid gap-px bg-yarn-sand/60 print:bg-gray-300"
           style={{
             gridTemplateColumns: `repeat(${document.width}, minmax(16px, 1fr)) 32px`,
-            gridTemplateRows: `repeat(${document.height}, minmax(16px, auto))`
+            gridTemplateRows: `repeat(${visibleRowIndexes.length}, minmax(16px, auto))`
           }}
         >
-          {document.cells.flatMap((row, rowIndex) => [
-            ...row.map((cell, columnIndex) => {
-              if (cell.occupiedByAnchor) return null;
+          {visibleRowIndexes.flatMap((rowIndex, displayIdx) => [
+            ...document.cells[rowIndex].map((cell, columnIndex) => {
+              if (cell.occupiedByAnchor) {
+                // In skip mode vertical spans are collapsed — render occupied cells
+                // whose anchor sits in another row as plain cells
+                if (!skipPurl || cell.occupiedByAnchor[0] === rowIndex) return null;
+              }
               const symbol = document.symbols.find((item) => item.id === cell.symbolId);
               const w = symbol?.width ?? 1;
-              const h = symbol?.height ?? 1;
+              const h = skipPurl ? 1 : symbol?.height ?? 1;
               return (
                 <div
                   key={`${rowIndex}-${columnIndex}`}
                   className="flex items-center justify-center bg-white text-[10px] font-semibold text-yarn-charcoal print:text-black"
                   style={{
                     gridColumn: `${columnIndex + 1} / span ${w}`,
-                    gridRow: `${rowIndex + 1} / span ${h}`,
+                    gridRow: `${displayIdx + 1} / span ${h}`,
                     backgroundColor: cell.color,
                     aspectRatio: w === 1 && h === 1 ? "1" : undefined
                   }}
@@ -95,25 +104,23 @@ export function PrintContent({ pattern, document, usedSymbols }: Props) {
             <div
               key={`print-row-${rowIndex}`}
               className="flex min-h-4 items-center justify-center bg-yarn-oatmeal print:bg-gray-100 text-[10px] font-mono font-semibold text-yarn-warm-gray print:text-gray-600"
-              style={{ gridColumn: document.width + 1, gridRow: rowIndex + 1 }}
+              style={{ gridColumn: document.width + 1, gridRow: displayIdx + 1 }}
             >
-              {document.view.skipPurlRows
-                ? (document.height - rowIndex) * 2 - 1
-                : document.height - rowIndex}
+              {document.height - rowIndex}
             </div>
           ])}
           {Array.from({ length: document.width }, (_, columnIndex) => (
             <div
               key={`print-column-${columnIndex}`}
               className="flex min-h-4 items-center justify-center bg-yarn-oatmeal print:bg-gray-100 text-[10px] font-mono font-semibold text-yarn-warm-gray print:text-gray-600"
-              style={{ gridColumn: columnIndex + 1, gridRow: document.height + 1 }}
+              style={{ gridColumn: columnIndex + 1, gridRow: visibleRowIndexes.length + 1 }}
             >
               {document.width - columnIndex}
             </div>
           ))}
           <div
             className="bg-yarn-oatmeal print:bg-gray-100"
-            style={{ gridColumn: document.width + 1, gridRow: document.height + 1 }}
+            style={{ gridColumn: document.width + 1, gridRow: visibleRowIndexes.length + 1 }}
           />
         </div>
 
