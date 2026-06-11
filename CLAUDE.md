@@ -52,6 +52,10 @@ The workflow runs `prisma generate` + `prisma db push --skip-generate --accept-d
 **Follow `docs/PRE-DEPLOY.md` before every push to main.**
 Short version: `npm run build` → delegate UI verification to the `site-verifier` subagent → push only on SAFE TO DEPLOY verdict.
 
+## Subagents (defined in `c:\Projects\Work\.claude\agents\`)
+- `site-verifier` — browser verification of changes before deploy (see PRE-DEPLOY.md)
+- `competitor-research` — investigates how tamica.ru / ravelry.com implement a feature; use when designing new functionality
+
 ## Database
 - SQLite at `prisma/dev.db` (local), `/opt/crossyarn/prisma/prod.db` (prod)
 - Schema changes: `npx prisma db push` (no migrations, direct push)
