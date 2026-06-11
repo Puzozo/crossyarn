@@ -69,6 +69,12 @@ npm run build    # 0 TypeScript errors required
 ```
 
 ### 2. UI verification via Playwright MCP
+**Preferred: delegate to the `site-verifier` subagent** (defined in `c:\Projects\Work\.claude\agents\site-verifier.md`).
+Pass it a description of what was changed; it starts the dev server, seeds data, logs in,
+walks the affected flows, checks console/network, and returns a SAFE TO DEPLOY / DO NOT DEPLOY verdict.
+Do not push if the verdict is DO NOT DEPLOY.
+
+Manual fallback (same data the subagent uses):
 - Dev server: `npm run dev` in background (http://localhost:3000)
 - Test login: `test@crossyarn.local` / `test1234` (admin, seeded)
 - Re-seed if needed: `npx tsx scripts/seed-dev.ts` (idempotent)
