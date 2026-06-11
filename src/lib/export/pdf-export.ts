@@ -3,9 +3,13 @@ export async function downloadPatternAsPdf(patternId: string, title: string) {
   if (!res.ok) throw new Error("Failed to fetch pattern SVG");
   const svgText = await res.text();
 
-  const parser = new DOMParser();
-  const svgDoc = parser.parseFromString(svgText, "image/svg+xml");
-  const svgEl = svgDoc.documentElement as unknown as SVGSVGElement;
+  // Mount SVG in DOM — svg2pdf.js requires a live document element
+  const container = document.createElement("div");
+  container.style.cssText = "position:absolute;left:-9999px;top:-9999px;visibility:hidden;width:0;height:0;overflow:hidden";
+  container.innerHTML = svgText;
+  document.body.appendChild(container);
+  const svgEl = container.querySelector("svg") as SVGSVGElement;
+
   const svgW = parseFloat(svgEl.getAttribute("width") ?? "600");
   const svgH = parseFloat(svgEl.getAttribute("height") ?? "600");
 
@@ -26,6 +30,10 @@ export async function downloadPatternAsPdf(patternId: string, title: string) {
   const x = (pageW - svgW * scale) / 2;
   const y = (pageH - svgH * scale) / 2;
 
-  await svg2pdf(svgEl, doc, { x, y, width: svgW * scale, height: svgH * scale });
-  doc.save(`${title}.pdf`);
+  try {
+    await svg2pdf(svgEl, doc, { x, y, width: svgW * scale, height: svgH * scale });
+    doc.save(`${title}.pdf`);
+  } finally {
+    document.body.removeChild(container);
+  }
 }

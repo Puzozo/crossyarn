@@ -47,6 +47,7 @@ export type PatternDocument = {
     showGrid: boolean;
     showRowNumbers: boolean;
     showColumnNumbers: boolean;
+    skipPurlRows?: boolean;
   };
   rapports?: Rapport[];
 };

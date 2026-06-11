@@ -43,6 +43,8 @@ export function PatternEditor({ patternId, initialPattern, title, description }:
     setSymbols,
     resizePattern,
     addEdge,
+    removeEdge,
+    toggleSkipPurlRows,
     toastData,
     clearToast,
     isSelectionMode,
@@ -191,6 +193,17 @@ export function PatternEditor({ patternId, initialPattern, title, description }:
             </svg>
           </button>
         )}
+
+        {/* View options */}
+        <button type="button" onClick={toggleSkipPurlRows}
+          className={`flex w-full items-center gap-2 rounded-xl px-3 py-2 text-xs font-medium transition-colors ${
+            pattern.view.skipPurlRows
+              ? "bg-yarn-terracotta-light text-yarn-terracotta border border-yarn-terracotta/30"
+              : "bg-yarn-oatmeal/60 text-yarn-charcoal hover:bg-yarn-oatmeal"
+          }`}>
+          <span className="font-mono text-sm leading-none">{pattern.view.skipPurlRows ? "1 3 5" : "1 2 3"}</span>
+          {t("editor.skipPurlRows")}
+        </button>
 
         {/* Symbols */}
         <div className="space-y-2">
@@ -349,20 +362,30 @@ export function PatternEditor({ patternId, initialPattern, title, description }:
 
       {/* Grid canvas */}
       <section className="overflow-auto rounded-2xl bg-white/70 border border-yarn-sand/50 p-3 sm:p-4 lg:p-5 shadow-warm-sm">
-        {/* Add row top */}
-        <div className="flex justify-center mb-1">
+        {/* Add/remove row top */}
+        <div className="flex justify-center gap-1 mb-1">
           <button type="button" onClick={() => addEdge("top")} title="Додати рядок зверху"
             className="flex items-center gap-1 rounded-full border border-dashed border-yarn-sand/70 bg-yarn-oatmeal/40 px-4 py-0.5 text-xs font-bold text-yarn-warm-gray hover:border-yarn-terracotta/50 hover:bg-yarn-terracotta-light/40 hover:text-yarn-terracotta transition-colors">
-            <span>+</span>
+            +
+          </button>
+          <button type="button" onClick={() => removeEdge("top")} title="Видалити рядок зверху"
+            className="flex items-center gap-1 rounded-full border border-dashed border-yarn-sand/70 bg-yarn-oatmeal/40 px-4 py-0.5 text-xs font-bold text-yarn-warm-gray hover:border-red-400/50 hover:bg-red-50 hover:text-red-500 transition-colors">
+            −
           </button>
         </div>
 
         <div className="flex gap-1 items-stretch">
-          {/* Add col left */}
-          <button type="button" onClick={() => addEdge("left")} title="Додати стовпець ліворуч"
-            className="flex items-center justify-center rounded-full border border-dashed border-yarn-sand/70 bg-yarn-oatmeal/40 w-6 shrink-0 text-xs font-bold text-yarn-warm-gray hover:border-yarn-terracotta/50 hover:bg-yarn-terracotta-light/40 hover:text-yarn-terracotta transition-colors">
-            +
-          </button>
+          {/* Add/remove col left */}
+          <div className="flex flex-col gap-1 shrink-0">
+            <button type="button" onClick={() => addEdge("left")} title="Додати стовпець ліворуч"
+              className="flex flex-1 items-center justify-center rounded-full border border-dashed border-yarn-sand/70 bg-yarn-oatmeal/40 w-6 text-xs font-bold text-yarn-warm-gray hover:border-yarn-terracotta/50 hover:bg-yarn-terracotta-light/40 hover:text-yarn-terracotta transition-colors">
+              +
+            </button>
+            <button type="button" onClick={() => removeEdge("left")} title="Видалити стовпець ліворуч"
+              className="flex flex-1 items-center justify-center rounded-full border border-dashed border-yarn-sand/70 bg-yarn-oatmeal/40 w-6 text-xs font-bold text-yarn-warm-gray hover:border-red-400/50 hover:bg-red-50 hover:text-red-500 transition-colors">
+              −
+            </button>
+          </div>
 
           <div
             className="grid gap-px bg-yarn-sand/60 flex-1"
@@ -428,7 +451,9 @@ export function PatternEditor({ patternId, initialPattern, title, description }:
               <div key={`row-${rowIndex}`}
                 className="flex items-center justify-center bg-yarn-oatmeal text-[10px] font-mono font-semibold text-yarn-warm-gray"
                 style={{ gridRow: rowIndex + 1, gridColumn: pattern.width + 1, minHeight: "40px" }}>
-                {pattern.height - rowIndex}
+                {pattern.view.skipPurlRows
+                  ? (pattern.height - rowIndex) * 2 - 1
+                  : pattern.height - rowIndex}
               </div>
             ])}
             {Array.from({ length: pattern.width }, (_, columnIndex) => (
@@ -441,18 +466,28 @@ export function PatternEditor({ patternId, initialPattern, title, description }:
             <div className="bg-yarn-oatmeal rounded-br" style={{ gridRow: pattern.height + 1, gridColumn: pattern.width + 1 }} />
           </div>
 
-          {/* Add col right */}
-          <button type="button" onClick={() => addEdge("right")} title="Додати стовпець праворуч"
-            className="flex items-center justify-center rounded-full border border-dashed border-yarn-sand/70 bg-yarn-oatmeal/40 w-6 shrink-0 text-xs font-bold text-yarn-warm-gray hover:border-yarn-terracotta/50 hover:bg-yarn-terracotta-light/40 hover:text-yarn-terracotta transition-colors">
-            +
-          </button>
+          {/* Add/remove col right */}
+          <div className="flex flex-col gap-1 shrink-0">
+            <button type="button" onClick={() => addEdge("right")} title="Додати стовпець праворуч"
+              className="flex flex-1 items-center justify-center rounded-full border border-dashed border-yarn-sand/70 bg-yarn-oatmeal/40 w-6 text-xs font-bold text-yarn-warm-gray hover:border-yarn-terracotta/50 hover:bg-yarn-terracotta-light/40 hover:text-yarn-terracotta transition-colors">
+              +
+            </button>
+            <button type="button" onClick={() => removeEdge("right")} title="Видалити стовпець праворуч"
+              className="flex flex-1 items-center justify-center rounded-full border border-dashed border-yarn-sand/70 bg-yarn-oatmeal/40 w-6 text-xs font-bold text-yarn-warm-gray hover:border-red-400/50 hover:bg-red-50 hover:text-red-500 transition-colors">
+              −
+            </button>
+          </div>
         </div>
 
-        {/* Add row bottom */}
-        <div className="flex justify-center mt-1">
+        {/* Add/remove row bottom */}
+        <div className="flex justify-center gap-1 mt-1">
           <button type="button" onClick={() => addEdge("bottom")} title="Додати рядок знизу"
             className="flex items-center gap-1 rounded-full border border-dashed border-yarn-sand/70 bg-yarn-oatmeal/40 px-4 py-0.5 text-xs font-bold text-yarn-warm-gray hover:border-yarn-terracotta/50 hover:bg-yarn-terracotta-light/40 hover:text-yarn-terracotta transition-colors">
-            <span>+</span>
+            +
+          </button>
+          <button type="button" onClick={() => removeEdge("bottom")} title="Видалити рядок знизу"
+            className="flex items-center gap-1 rounded-full border border-dashed border-yarn-sand/70 bg-yarn-oatmeal/40 px-4 py-0.5 text-xs font-bold text-yarn-warm-gray hover:border-red-400/50 hover:bg-red-50 hover:text-red-500 transition-colors">
+            −
           </button>
         </div>
       </section>

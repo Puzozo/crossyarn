@@ -97,7 +97,9 @@ export function PrintContent({ pattern, document, usedSymbols }: Props) {
               className="flex min-h-4 items-center justify-center bg-yarn-oatmeal print:bg-gray-100 text-[10px] font-mono font-semibold text-yarn-warm-gray print:text-gray-600"
               style={{ gridColumn: document.width + 1, gridRow: rowIndex + 1 }}
             >
-              {document.height - rowIndex}
+              {document.view.skipPurlRows
+                ? (document.height - rowIndex) * 2 - 1
+                : document.height - rowIndex}
             </div>
           ])}
           {Array.from({ length: document.width }, (_, columnIndex) => (

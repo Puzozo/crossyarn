@@ -93,6 +93,9 @@ export const translations = {
     "pdf.download": "PDF",
     "pdf.generating": "Генерація...",
 
+    // Skip purl rows
+    "editor.skipPurlRows": "Пропускати виворітні",
+
     // Auth
     "auth.signInTitle": "Вхід",
     "auth.signUpTitle": "Створення акаунта",
@@ -250,6 +253,9 @@ export const translations = {
     // PDF
     "pdf.download": "PDF",
     "pdf.generating": "Generating...",
+
+    // Skip purl rows
+    "editor.skipPurlRows": "Skip purl rows",
 
     // Auth
     "auth.signInTitle": "Sign In",

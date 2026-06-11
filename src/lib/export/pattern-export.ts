@@ -48,7 +48,10 @@ export function patternToSvg(pattern: PatternDocument, title: string) {
   const rowNumbers = Array.from({ length: pattern.height }, (_, rowIndex) => {
     const y = rowIndex * cellSize + 16;
     const x = gridWidth + 16;
-    return `<text x="${x}" y="${y}" text-anchor="middle" font-size="11" fill="#475569">${pattern.height - rowIndex}</text>`;
+    const rowNum = pattern.view.skipPurlRows
+      ? (pattern.height - rowIndex) * 2 - 1
+      : pattern.height - rowIndex;
+    return `<text x="${x}" y="${y}" text-anchor="middle" font-size="11" fill="#475569">${rowNum}</text>`;
   }).join("");
 
   const cells = pattern.cells
