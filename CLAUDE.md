@@ -58,3 +58,44 @@ db.user.update({
 ## i18n
 - Translations in `src/lib/i18n/translations.ts` — both `uk` and `en` blocks must be updated together
 - Interpolation: `t("key", { variable: value })`
+
+## Pre-Deploy Verification (MANDATORY before push to main)
+
+Push to `main` = instant production deploy. Never push without completing these steps:
+
+### 1. Static checks
+```bash
+npm run build    # 0 TypeScript errors required
+```
+
+### 2. UI verification via Playwright MCP
+- Dev server: `npm run dev` in background (http://localhost:3000)
+- Test login: `test@crossyarn.local` / `test1234` (admin, seeded)
+- Re-seed if needed: `npx tsx scripts/seed-dev.ts` (idempotent)
+- Seeded "Test Pattern" (24×24) contains knit, purl, and a multi-cell cable-4 symbol
+
+**Verify every flow touched by the change.** Minimum smoke set by area:
+
+| Area changed | What to check in browser |
+|---|---|
+| Editor (`pattern-editor.tsx`, `editor-state.ts`) | open `/editor/[id]`, paint a cell, undo/redo, autosave badge turns "Збережено" |
+| Multi-cell symbols | place cable-4, check it spans 4 cols; paint over it — fully cleared |
+| Rapports | select area, save rapport, insert it elsewhere |
+| Skip purl rows | toggle flag — even rows hide, numbering 1,3,5..., row count unchanged |
+| Print/PDF/SVG | open `/patterns/[id]/print`, click PDF — file downloads; open `/api/exports/[id]` — valid SVG |
+| Auth | sign-in with test user, sign-out |
+| Admin | `/admin/login`, check changed admin page |
+| API routes | trigger via UI, check Network tab for non-2xx |
+
+- Always check browser console for errors after each flow
+- Schema changes (`schema.prisma`): run `npx prisma db push` locally first, verify the affected flow, remember prod uses `--accept-data-loss`
+
+### 3. Only then
+```bash
+git add <files> && git commit && git push origin main
+```
+After push: GitHub Actions must go green; spot-check crossyarn.online if the change is risky.
+
+## Dev Test Data
+- `scripts/seed-dev.ts` — creates admin test user + "Test Pattern" with multi-cell symbol
+- Credentials: `test@crossyarn.local` / `test1234` — dev only, never create on prod
