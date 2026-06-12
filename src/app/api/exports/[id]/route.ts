@@ -5,6 +5,16 @@ import { patternToSvg } from "@/lib/export/pattern-export";
 import { PatternDocument } from "@/lib/patterns/model";
 import { hydrateBuiltinSymbols } from "@/lib/patterns/normalize-symbols";
 
+/**
+ * HTTP headers only allow Latin-1, so non-ASCII titles (e.g. Cyrillic) must be
+ * RFC 5987-encoded via filename*; a sanitized ASCII filename is kept as fallback.
+ */
+function inlineDisposition(filename: string) {
+  const fallback = filename.replace(/[^\x20-\x7E]/g, "_").replace(/"/g, "'");
+  const encoded = encodeURIComponent(filename);
+  return `inline; filename="${fallback}"; filename*=UTF-8''${encoded}`;
+}
+
 export async function GET(_: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
     const session = await requireSession();
@@ -25,10 +35,14 @@ export async function GET(_: Request, { params }: { params: Promise<{ id: string
     return new NextResponse(svg, {
       headers: {
         "Content-Type": "image/svg+xml",
-        "Content-Disposition": `inline; filename=\"${pattern.title}.svg\"`
+        "Content-Disposition": inlineDisposition(`${pattern.title}.svg`)
       }
     });
-  } catch {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  } catch (error) {
+    if (error instanceof Error && error.message === "UNAUTHORIZED") {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+    console.error("SVG export failed:", error);
+    return NextResponse.json({ error: "Export failed" }, { status: 500 });
   }
 }
