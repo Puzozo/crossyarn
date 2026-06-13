@@ -53,8 +53,10 @@ The workflow runs `prisma generate` + `prisma db push --skip-generate --accept-d
 Short version: `npm run build` → delegate UI verification to the `site-verifier` subagent → push only on SAFE TO DEPLOY verdict.
 
 ## Subagents (defined in `c:\Projects\Work\.claude\agents\`)
-- `site-verifier` — browser verification of changes before deploy (see PRE-DEPLOY.md)
+- `site-verifier` — browser verification of a specific change before deploy (see PRE-DEPLOY.md)
 - `competitor-research` — investigates how tamica.ru / ravelry.com implement a feature; use when designing new functionality
+- `ux-auditor` — periodic UX/UI audit from a user's perspective (usability, mobile, copy/i18n, a11y, polish); read-only
+- `reliability-security-auditor` — periodic reliability + security audit of our own site (IDOR/auth, validation, XSS, headers, error handling); authorized, non-destructive, read-only
 
 ## Database
 - SQLite at `prisma/dev.db` (local), `/opt/crossyarn/prisma/prod.db` (prod)
