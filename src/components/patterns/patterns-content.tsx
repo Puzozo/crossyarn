@@ -79,7 +79,7 @@ export function PatternsContent({ patterns }: { patterns: PatternData[] }) {
             </svg>
           </div>
           <p className="text-yarn-warm-gray text-base">
-            {search.trim() ? `Нічого не знайдено за "${search}"` : t("patterns.empty")}
+            {search.trim() ? t("patterns.noResults", { query: search }) : t("patterns.empty")}
           </p>
         </div>
       ) : (

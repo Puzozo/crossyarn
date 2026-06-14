@@ -60,7 +60,7 @@ export function CreatePatternButton() {
     >
       <div className="min-w-44">
         <label className="mb-1.5 block text-xs font-medium text-yarn-warm-gray">{t("create.title")}</label>
-        <Input name="title" defaultValue={t("create.defaultName")} />
+        <Input name="title" defaultValue={t("create.defaultName")} maxLength={120} />
       </div>
       <div>
         <label className="mb-1.5 block text-xs font-medium text-yarn-warm-gray">{t("create.stitches")}</label>

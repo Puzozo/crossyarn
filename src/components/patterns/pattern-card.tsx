@@ -46,31 +46,31 @@ export function PatternCard({ pattern }: { pattern: PatternData }) {
   return (
     <article className="group rounded-2xl bg-white/70 border border-yarn-sand/50 p-6 shadow-warm-sm hover:shadow-warm transition-all duration-300 hover:-translate-y-0.5">
       <div className="flex items-start justify-between gap-4">
-        <div>
-          <h2 className="font-display text-lg font-semibold text-yarn-charcoal group-hover:text-yarn-terracotta transition-colors">
+        <div className="min-w-0">
+          <h2 className="font-display text-lg font-semibold text-yarn-charcoal group-hover:text-yarn-terracotta transition-colors break-words [overflow-wrap:anywhere] line-clamp-2">
             {pattern.title}
           </h2>
           <p className="mt-1 text-sm text-yarn-warm-gray">
             {pattern.width} × {pattern.height} {t("patterns.cells")}
           </p>
         </div>
-        <span className="rounded-full bg-yarn-sage-light px-3 py-1 text-xs font-medium text-yarn-sage">
+        <span className="shrink-0 rounded-full bg-yarn-sage-light px-3 py-1 text-xs font-medium text-yarn-sage">
           {pattern.visibility}
         </span>
       </div>
       {pattern.description ? (
         <p className="mt-3 line-clamp-2 text-sm text-yarn-warm-gray leading-relaxed">{pattern.description}</p>
       ) : null}
-      <div className="mt-5 flex flex-wrap items-center gap-3 pt-4 border-t border-yarn-sand/40">
+      <div className="mt-4 flex flex-wrap items-center gap-x-4 gap-y-1 pt-3 border-t border-yarn-sand/40">
         <Link
           href={`/editor/${pattern.id}`}
-          className="text-sm font-semibold text-yarn-terracotta hover:text-yarn-terracotta-hover transition-colors"
+          className="inline-flex items-center min-h-11 text-sm font-semibold text-yarn-terracotta hover:text-yarn-terracotta-hover transition-colors"
         >
           {t("patterns.openEditor")}
         </Link>
         <Link
           href={`/patterns/${pattern.id}`}
-          className="text-sm font-medium text-yarn-warm-gray hover:text-yarn-charcoal transition-colors"
+          className="inline-flex items-center min-h-11 text-sm font-medium text-yarn-warm-gray hover:text-yarn-charcoal transition-colors"
         >
           {t("patterns.details")}
         </Link>
@@ -78,7 +78,7 @@ export function PatternCard({ pattern }: { pattern: PatternData }) {
           type="button"
           onClick={() => void handleDuplicate()}
           disabled={duplicating || deleting}
-          className="text-sm font-medium text-yarn-warm-gray hover:text-yarn-charcoal transition-colors disabled:opacity-50"
+          className="inline-flex items-center min-h-11 text-sm font-medium text-yarn-warm-gray hover:text-yarn-charcoal transition-colors disabled:opacity-50"
         >
           {duplicating ? t("patterns.duplicating") : t("patterns.duplicate")}
         </button>
@@ -86,7 +86,7 @@ export function PatternCard({ pattern }: { pattern: PatternData }) {
           type="button"
           onClick={() => void handleDelete()}
           disabled={deleting || duplicating}
-          className="ml-auto text-sm font-medium text-red-400 hover:text-red-600 transition-colors disabled:opacity-50"
+          className="ml-auto inline-flex items-center min-h-11 text-sm font-medium text-red-400 hover:text-red-600 transition-colors disabled:opacity-50"
         >
           {deleting ? "..." : t("patterns.delete")}
         </button>

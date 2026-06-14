@@ -317,14 +317,14 @@ export function PatternEditor({ patternId, initialPattern, title, description }:
         {/* ── Rapports ── */}
         <div className="space-y-2 border-t border-yarn-sand/40 pt-3">
           <div className="flex items-center justify-between">
-            <p className="text-xs font-semibold uppercase tracking-wider text-yarn-warm-gray">Рапорти</p>
+            <p className="text-xs font-semibold uppercase tracking-wider text-yarn-warm-gray">{t("editor.rapports")}</p>
             <button type="button" onClick={toggleSelectionMode}
               className={`text-xs px-2.5 py-1 rounded-lg border transition-colors ${
                 isSelectionMode
                   ? "bg-blue-100 border-blue-300 text-blue-700"
                   : "bg-yarn-oatmeal/60 border-transparent text-yarn-charcoal hover:bg-yarn-oatmeal"
               }`}>
-              {isSelectionMode ? "✕ Скасувати" : "⬚ Виділити"}
+              {isSelectionMode ? t("editor.rapportCancelSelect") : t("editor.rapportSelectBtn")}
             </button>
           </div>
 
@@ -332,11 +332,14 @@ export function PatternEditor({ patternId, initialPattern, title, description }:
           {hasSelection && (
             <div className="rounded-lg bg-blue-50 border border-blue-200 p-2 space-y-2">
               <p className="text-[10px] text-blue-600 font-medium">
-                Виділено: {Math.abs(selectionEnd![1] - selectionStart![1]) + 1}×{Math.abs(selectionEnd![0] - selectionStart![0]) + 1} клітинок
+                {t("editor.rapportSelected", {
+                  w: Math.abs(selectionEnd![1] - selectionStart![1]) + 1,
+                  h: Math.abs(selectionEnd![0] - selectionStart![0]) + 1
+                })}
               </p>
               <div className="flex gap-1">
                 <input value={rapportNameInput} onChange={(e) => setRapportNameInput(e.target.value)}
-                  placeholder="Назва рапорту"
+                  placeholder={t("editor.rapportNamePlaceholder")}
                   className="flex-1 rounded border border-blue-200 bg-white px-2 py-1 text-xs text-yarn-charcoal focus:outline-none focus:border-blue-400"
                   onKeyDown={(e) => {
                     if (e.key === "Enter" && rapportNameInput.trim()) {
@@ -348,7 +351,7 @@ export function PatternEditor({ patternId, initialPattern, title, description }:
                 <button type="button" disabled={!rapportNameInput.trim()}
                   onClick={() => { saveSelectionAsRapport(rapportNameInput.trim()); setRapportNameInput(""); }}
                   className="px-2 py-1 rounded bg-blue-500 text-white text-xs font-medium disabled:opacity-40 hover:bg-blue-600 transition-colors">
-                  Зберегти
+                  {t("editor.rapportSave")}
                 </button>
               </div>
             </div>
@@ -367,10 +370,10 @@ export function PatternEditor({ patternId, initialPattern, title, description }:
               </div>
               <div className="flex gap-1">
                 {([
-                  ["none", "Як є"],
-                  ["h", "↔ Гориз."],
-                  ["v", "↕ Верт."],
-                  ["hv", "↔↕ Обидва"]
+                  ["none", t("editor.mirrorNone")],
+                  ["h", t("editor.mirrorH")],
+                  ["v", t("editor.mirrorV")],
+                  ["hv", t("editor.mirrorHV")]
                 ] as const).map(([mode, label]) => (
                   <button key={mode} type="button" onClick={() => setRapportMirror(mode)}
                     className={`flex-1 rounded px-1 py-1 text-[10px] font-medium transition-colors ${
@@ -383,7 +386,7 @@ export function PatternEditor({ patternId, initialPattern, title, description }:
                 ))}
               </div>
               <p className="text-[10px] text-amber-700">
-                Клікніть на схемі щоб вставити. Якщо не вміщується — автоматично обріжеться по межі.
+                {t("editor.rapportInsertHint")}
               </p>
             </div>
           )}
@@ -407,7 +410,7 @@ export function PatternEditor({ patternId, initialPattern, title, description }:
                         ? "bg-amber-200 text-amber-800 hover:bg-amber-300"
                         : "bg-yarn-sage-light text-yarn-sage hover:bg-yarn-sage/20"
                     }`}>
-                    {rapportInsertId === rapport.id ? "Скасувати" : "Вставити"}
+                    {rapportInsertId === rapport.id ? t("editor.rapportCancelInsert") : t("editor.rapportInsert")}
                   </button>
                   <button type="button" onClick={() => deleteRapport(rapport.id)}
                     className="text-yarn-warm-gray/40 hover:text-red-400 transition-colors text-sm leading-none shrink-0">
@@ -420,7 +423,7 @@ export function PatternEditor({ patternId, initialPattern, title, description }:
 
           {rapports.length === 0 && !isSelectionMode && (
             <p className="text-[11px] text-yarn-warm-gray/70">
-              Натисніть «Виділити», обведіть ділянку на схемі та збережіть як рапорт.
+              {t("editor.rapportEmptyHint")}
             </p>
           )}
         </div>
@@ -446,28 +449,28 @@ export function PatternEditor({ patternId, initialPattern, title, description }:
       <section ref={gridSectionRef} className="overflow-auto rounded-2xl bg-white/70 border border-yarn-sand/50 p-3 sm:p-4 lg:p-5 shadow-warm-sm">
         {/* Zoom toolbar */}
         <div className="flex items-center justify-end gap-1 mb-2">
-          <button type="button" onClick={() => setZoom(zoomLevel - 0.2)} title="Зменшити (−)"
+          <button type="button" onClick={() => setZoom(zoomLevel - 0.2)} title={t("editor.zoomOut")}
             className="flex h-7 w-7 items-center justify-center rounded-lg border border-yarn-sand/60 bg-white text-sm font-bold text-yarn-charcoal hover:bg-yarn-oatmeal transition-colors">
             −
           </button>
-          <button type="button" onClick={() => setZoom(1)} title="Скинути масштаб"
+          <button type="button" onClick={() => setZoom(1)} title={t("editor.zoomReset")}
             className="h-7 min-w-12 rounded-lg border border-yarn-sand/60 bg-white px-1.5 text-[11px] font-mono font-semibold text-yarn-warm-gray hover:bg-yarn-oatmeal transition-colors">
             {Math.round(zoomLevel * 100)}%
           </button>
-          <button type="button" onClick={() => setZoom(zoomLevel + 0.2)} title="Збільшити (+)"
+          <button type="button" onClick={() => setZoom(zoomLevel + 0.2)} title={t("editor.zoomIn")}
             className="flex h-7 w-7 items-center justify-center rounded-lg border border-yarn-sand/60 bg-white text-sm font-bold text-yarn-charcoal hover:bg-yarn-oatmeal transition-colors">
             +
           </button>
-          <span className="ml-1 hidden lg:inline text-[10px] text-yarn-warm-gray/70">Ctrl+скрол</span>
+          <span className="ml-1 hidden lg:inline text-[10px] text-yarn-warm-gray/70">{t("editor.zoomScrollHint")}</span>
         </div>
 
         {/* Add/remove row top */}
         <div className="flex justify-center gap-1 mb-1">
-          <button type="button" onClick={() => addEdge("top")} title="Додати рядок зверху"
+          <button type="button" onClick={() => addEdge("top")} title={t("editor.addRowTop")}
             className="flex items-center gap-1 rounded-full border border-dashed border-yarn-sand/70 bg-yarn-oatmeal/40 px-4 py-0.5 text-xs font-bold text-yarn-warm-gray hover:border-yarn-terracotta/50 hover:bg-yarn-terracotta-light/40 hover:text-yarn-terracotta transition-colors">
             +
           </button>
-          <button type="button" onClick={() => removeEdge("top")} title="Видалити рядок зверху"
+          <button type="button" onClick={() => removeEdge("top")} title={t("editor.removeRowTop")}
             className="flex items-center gap-1 rounded-full border border-dashed border-yarn-sand/70 bg-yarn-oatmeal/40 px-4 py-0.5 text-xs font-bold text-yarn-warm-gray hover:border-red-400/50 hover:bg-red-50 hover:text-red-500 transition-colors">
             −
           </button>
@@ -476,11 +479,11 @@ export function PatternEditor({ patternId, initialPattern, title, description }:
         <div className="flex gap-1 items-stretch">
           {/* Add/remove col left */}
           <div className="flex flex-col gap-1 shrink-0">
-            <button type="button" onClick={() => addEdge("left")} title="Додати стовпець ліворуч"
+            <button type="button" onClick={() => addEdge("left")} title={t("editor.addColLeft")}
               className="flex flex-1 items-center justify-center rounded-full border border-dashed border-yarn-sand/70 bg-yarn-oatmeal/40 w-6 text-xs font-bold text-yarn-warm-gray hover:border-yarn-terracotta/50 hover:bg-yarn-terracotta-light/40 hover:text-yarn-terracotta transition-colors">
               +
             </button>
-            <button type="button" onClick={() => removeEdge("left")} title="Видалити стовпець ліворуч"
+            <button type="button" onClick={() => removeEdge("left")} title={t("editor.removeColLeft")}
               className="flex flex-1 items-center justify-center rounded-full border border-dashed border-yarn-sand/70 bg-yarn-oatmeal/40 w-6 text-xs font-bold text-yarn-warm-gray hover:border-red-400/50 hover:bg-red-50 hover:text-red-500 transition-colors">
               −
             </button>
@@ -588,11 +591,11 @@ export function PatternEditor({ patternId, initialPattern, title, description }:
 
           {/* Add/remove col right */}
           <div className="flex flex-col gap-1 shrink-0">
-            <button type="button" onClick={() => addEdge("right")} title="Додати стовпець праворуч"
+            <button type="button" onClick={() => addEdge("right")} title={t("editor.addColRight")}
               className="flex flex-1 items-center justify-center rounded-full border border-dashed border-yarn-sand/70 bg-yarn-oatmeal/40 w-6 text-xs font-bold text-yarn-warm-gray hover:border-yarn-terracotta/50 hover:bg-yarn-terracotta-light/40 hover:text-yarn-terracotta transition-colors">
               +
             </button>
-            <button type="button" onClick={() => removeEdge("right")} title="Видалити стовпець праворуч"
+            <button type="button" onClick={() => removeEdge("right")} title={t("editor.removeColRight")}
               className="flex flex-1 items-center justify-center rounded-full border border-dashed border-yarn-sand/70 bg-yarn-oatmeal/40 w-6 text-xs font-bold text-yarn-warm-gray hover:border-red-400/50 hover:bg-red-50 hover:text-red-500 transition-colors">
               −
             </button>
@@ -601,11 +604,11 @@ export function PatternEditor({ patternId, initialPattern, title, description }:
 
         {/* Add/remove row bottom */}
         <div className="flex justify-center gap-1 mt-1">
-          <button type="button" onClick={() => addEdge("bottom")} title="Додати рядок знизу"
+          <button type="button" onClick={() => addEdge("bottom")} title={t("editor.addRowBottom")}
             className="flex items-center gap-1 rounded-full border border-dashed border-yarn-sand/70 bg-yarn-oatmeal/40 px-4 py-0.5 text-xs font-bold text-yarn-warm-gray hover:border-yarn-terracotta/50 hover:bg-yarn-terracotta-light/40 hover:text-yarn-terracotta transition-colors">
             +
           </button>
-          <button type="button" onClick={() => removeEdge("bottom")} title="Видалити рядок знизу"
+          <button type="button" onClick={() => removeEdge("bottom")} title={t("editor.removeRowBottom")}
             className="flex items-center gap-1 rounded-full border border-dashed border-yarn-sand/70 bg-yarn-oatmeal/40 px-4 py-0.5 text-xs font-bold text-yarn-warm-gray hover:border-red-400/50 hover:bg-red-50 hover:text-red-500 transition-colors">
             −
           </button>

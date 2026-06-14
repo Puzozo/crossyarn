@@ -27,7 +27,7 @@ export function EditorPageContent({ patternId, title: initialTitle, description:
 
   async function handleSaveTitle() {
     if (draftTitle.trim().length < 2) {
-      setTitleError("Мінімум 2 символи");
+      setTitleError(t("editor.titleMin"));
       return;
     }
     setSaving(true);
