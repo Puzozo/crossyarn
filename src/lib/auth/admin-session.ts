@@ -1,5 +1,6 @@
 import { SignJWT, jwtVerify } from "jose";
 import { cookies } from "next/headers";
+import { db } from "@/lib/db";
 
 const COOKIE_NAME = "crossyarn-admin";
 
@@ -37,6 +38,13 @@ export async function getAdminSession(): Promise<AdminSessionPayload | null> {
   if (!token) return null;
   try {
     const verified = await jwtVerify<AdminSessionPayload>(token, getSecret());
+    // Re-validate against the DB so a demoted/blocked admin loses access immediately
+    // instead of keeping it until the 8h token expires.
+    const user = await db.user.findUnique({
+      where: { id: verified.payload.userId },
+      select: { isAdmin: true, isDisabled: true }
+    });
+    if (!user || !user.isAdmin || user.isDisabled) return null;
     return verified.payload;
   } catch {
     return null;

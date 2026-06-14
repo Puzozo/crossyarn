@@ -1,5 +1,6 @@
 import { SignJWT, jwtVerify } from "jose";
 import { cookies } from "next/headers";
+import { db } from "@/lib/db";
 
 const COOKIE_NAME = "crossyarn_session";
 
@@ -41,6 +42,12 @@ export async function getSession() {
   }
   try {
     const verified = await jwtVerify<SessionPayload>(token, getSecret());
+    // Reject sessions of users blocked after the token was issued (token lives 7d).
+    const user = await db.user.findUnique({
+      where: { id: verified.payload.userId },
+      select: { isDisabled: true }
+    });
+    if (!user || user.isDisabled) return null;
     return verified.payload;
   } catch {
     return null;

@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { requireSession } from "@/lib/auth/session";
 import { createEmptyPattern } from "@/lib/patterns/model";
+import { createPatternRequestSchema } from "@/lib/patterns/validation";
 
 export async function GET() {
   try {
@@ -17,18 +18,26 @@ export async function GET() {
 }
 
 export async function POST(request: Request) {
+  let session;
   try {
-    const session = await requireSession();
-    const body = await request.json().catch(() => ({}));
-    const width = Number(body.width) || 24;
-    const height = Number(body.height) || 24;
-    const patternData = body.patternData ?? createEmptyPattern(width, height);
+    session = await requireSession();
+  } catch {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
 
+  const parsed = createPatternRequestSchema.safeParse(await request.json().catch(() => ({})));
+  if (!parsed.success) {
+    return NextResponse.json({ error: "Некоректні дані схеми" }, { status: 400 });
+  }
+  const { title, description, width, height } = parsed.data;
+  const patternData = parsed.data.patternData ?? createEmptyPattern(width, height);
+
+  try {
     const pattern = await db.pattern.create({
       data: {
         userId: session.userId,
-        title: typeof body.title === "string" ? body.title : "Нова схема",
-        description: typeof body.description === "string" ? body.description : "",
+        title,
+        description: description ?? "",
         width,
         height,
         patternData,
@@ -45,7 +54,8 @@ export async function POST(request: Request) {
     });
 
     return NextResponse.json({ id: pattern.id }, { status: 201 });
-  } catch {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  } catch (error) {
+    console.error("Pattern create failed:", error);
+    return NextResponse.json({ error: "Не вдалося створити схему" }, { status: 500 });
   }
 }

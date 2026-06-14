@@ -93,7 +93,7 @@ export function patternToSvg(pattern: PatternDocument, title: string) {
           : `<text x="${x + spanWidth / 2}" y="${y + 16}" text-anchor="middle" font-size="12" fill="#111827">${escapeXml(glyph)}</text>`;
         return `
           <g>
-            <rect x="${x}" y="${y}" width="${spanWidth}" height="${cellSize}" fill="${cell.color}" stroke="#cbd5e1" />
+            <rect x="${x}" y="${y}" width="${spanWidth}" height="${cellSize}" fill="${escapeXml(cell.color)}" stroke="#cbd5e1" />
             ${symbolMarkup}
           </g>
         `;

@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 import { createAdminSession } from "@/lib/auth/admin-session";
 import { verifyUser } from "@/lib/auth/users";
-import { checkRateLimit } from "@/lib/auth/rate-limit";
+import { checkRateLimit, getClientIp } from "@/lib/auth/rate-limit";
 
 const schema = z.object({
   email: z.string().email(),
@@ -10,7 +10,7 @@ const schema = z.object({
 });
 
 export async function POST(request: Request) {
-  const ip = request.headers.get("x-forwarded-for")?.split(",")[0] ?? "unknown";
+  const ip = getClientIp(request);
   const { allowed, retryAfterSeconds } = checkRateLimit(`admin-sign-in:${ip}`);
   if (!allowed) {
     return NextResponse.json(

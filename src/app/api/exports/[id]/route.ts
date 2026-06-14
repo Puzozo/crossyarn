@@ -10,7 +10,8 @@ import { hydrateBuiltinSymbols } from "@/lib/patterns/normalize-symbols";
  * RFC 5987-encoded via filename*; a sanitized ASCII filename is kept as fallback.
  */
 function inlineDisposition(filename: string) {
-  const fallback = filename.replace(/[^\x20-\x7E]/g, "_").replace(/"/g, "'");
+  // Strip non-ASCII (control chars included) and characters that could break the header
+  const fallback = filename.replace(/[^\x20-\x7E]/g, "_").replace(/["<>;\\]/g, "'");
   const encoded = encodeURIComponent(filename);
   return `inline; filename="${fallback}"; filename*=UTF-8''${encoded}`;
 }
