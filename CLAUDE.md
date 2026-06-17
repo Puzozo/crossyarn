@@ -4,7 +4,8 @@
 
 ## Stack
 - Next.js 16 App Router, TypeScript, Tailwind CSS v4, Prisma/SQLite, Zustand, JWT (jose), bcryptjs
-- PDF export: jspdf + svg2pdf.js (client-side, dynamic imports)
+- PDF export: jspdf (client-side); SVG is rasterized to PNG via canvas, then embedded (avoids jsPDF's no-Cyrillic font issue)
+- Security headers (CSP, HSTS, X-Frame-Options, X-Content-Type-Options, Referrer-Policy) set in `next.config.ts`; `poweredByHeader: false`
 - Deploy: GitHub Actions self-hosted runner → Hostinger VPS (187.124.130.31), PM2, Caddy reverse proxy
 
 ## Implemented Features
@@ -13,13 +14,15 @@
 - Grid painting with symbols + color palette, undo/redo, autosave (1.2s debounce)
 - Resize via W×H inputs; +/− buttons on all four grid edges (add/remove row/column, min 1×1)
 - Multi-cell symbols up to 6×6 (`occupiedByAnchor` mechanism, explicit CSS grid placement)
-- **Rapports** (repeating motifs): select area → save named rapport → insert anywhere; stored in `PatternDocument.rapports[]`; auto-clips at pattern edges; multi-cell symbols expand selection bounds automatically
-- **Skip purl rows** (`view.skipPurlRows`): hides even rows, numbering 1,3,5...; applied in editor, print, SVG/PDF
+- **Zoom**: ± toolbar + Ctrl+scroll, 40%–250% (`zoomLevel` in store, scales cell px)
+- **Keyboard shortcuts**: Ctrl+Z/Y undo/redo, Esc exits selection/insert modes, 1–9 picks a palette symbol, +/− zoom (ignored while typing in inputs)
+- **Rapports** (repeating motifs): select area → save named rapport → insert anywhere with 4 mirror variants (as-is / H / V / both, `mirrorRapportCells`); stored in `PatternDocument.rapports[]`; auto-clips at edges; multi-cell symbols expand selection bounds automatically
+- **Skip purl rows** (`view.skipPurlRows`): hides even rows, numbering 1,3,5...; symbols anchored in a hidden row project onto the next visible row; applied in editor, print, SVG/PDF
 
 ### Patterns (`/patterns`)
 - CRUD + duplicate (`POST /api/patterns/[id]/duplicate`), search
 - Print page `/patterns/[id]/print` (browser print, multi-cell aware)
-- SVG export `/api/exports/[id]`; PDF download (client converts that SVG via jspdf — `src/lib/export/pdf-export.ts`)
+- SVG export `/api/exports/[id]` (titles RFC-5987 encoded; legend lists only used symbols, excludes "empty"); PDF download rasterizes that SVG to PNG then embeds it (`src/lib/export/pdf-export.ts`)
 - Versioning in DB (`PatternVersion`, not yet surfaced in UI)
 
 ### Symbols
@@ -32,11 +35,12 @@
 - Users management (list, details, block/unblock), official + builtin symbols editing, stats dashboard
 
 ### Auth & security
-- Sign-in/sign-up, bcrypt, rate limiting 5/min per IP (`src/lib/auth/rate-limit.ts`)
-- Blocked users (`isDisabled`) get 403 on sign-in
+- Sign-in/sign-up, bcrypt, rate limiting 5/min per IP (`src/lib/auth/rate-limit.ts`); IP from trusted rightmost `X-Forwarded-For` hop (`getClientIp`)
+- Sessions re-validated against the DB on every request: `getSession` rejects `isDisabled`, `getAdminSession` rejects non-`isAdmin`/`isDisabled` (blocked/demoted users lose access immediately, not after token expiry)
+- All write APIs validate with zod (`src/lib/patterns/validation.ts`); `POST /api/patterns` uses a bounded schema (width/height ≤200) so oversized requests can't OOM; cell colors / palette hex constrained to hex format; `cell.color` escaped in SVG export (closed a stored-XSS vector)
 
 ### Not yet implemented
-- Public catalog / visibility UI (DB field exists), profile editing, bucket fill, zoom, keyboard shortcuts, image import (stub), Stripe
+- Public catalog / visibility UI (DB field exists), profile editing, bucket fill, image import (stub), Stripe / premium, ads
 
 ## Build & Deploy
 ```bash
@@ -65,9 +69,9 @@ Short version: `npm run build` → delegate UI verification to the `site-verifie
 - Dev seed: `npx tsx scripts/seed-dev.ts` → `test@crossyarn.local` / `test1234` (admin)
 
 ## Auth internals
-- **Main site session**: cookie `crossyarn-session`, 7d expiry, secret = `AUTH_SECRET`
+- **Main site session**: cookie `crossyarn_session` (underscore), 7d expiry, secret = `AUTH_SECRET`
 - **Admin session**: cookie `crossyarn-admin`, path `/` (NOT `/admin` — API routes need it), 8h expiry, secret = `AUTH_SECRET + "_admin"`
-- Guards: `requireSession()` / `requireUserPage()` (main), `requireAdminPage()` (admin)
+- Guards: `requireSession()` / `requireUserPage()` (main), `requireAdminPage()` (admin) — all read DB-validated sessions
 - Admin user: set `isAdmin: true` in DB manually after first registration
 
 ## Admin Panel internals
