@@ -2,6 +2,7 @@
 
 import { usePathname } from "next/navigation";
 import { ReactNode } from "react";
+import { Footer } from "@/components/layout/footer";
 
 export function ConditionalLayout({
   header,
@@ -17,11 +18,12 @@ export function ConditionalLayout({
   }
 
   return (
-    <div className="relative z-10">
+    <div className="relative z-10 flex min-h-screen flex-col">
       <div className="print:hidden">{header}</div>
-      <main className="mx-auto min-h-[calc(100vh-73px)] max-w-7xl px-4 py-8 sm:px-6 sm:py-10 print:max-w-none print:p-0">
+      <main className="mx-auto w-full max-w-7xl flex-1 px-4 py-8 sm:px-6 sm:py-10 print:max-w-none print:p-0">
         {children}
       </main>
+      <Footer />
     </div>
   );
 }

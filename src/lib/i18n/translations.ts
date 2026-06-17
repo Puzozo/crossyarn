@@ -9,6 +9,16 @@ export const translations = {
     "nav.signUp": "Реєстрація",
     "nav.signOut": "Вийти",
 
+    // Footer
+    "footer.terms": "Умови використання",
+    "footer.privacy": "Політика конфіденційності",
+
+    // Auth agreement (sign-up)
+    "auth.agreePrefix": "Реєструючись, ви погоджуєтесь з",
+    "auth.agreeTerms": "Умовами використання",
+    "auth.agreeAnd": "та",
+    "auth.agreePrivacy": "Політикою конфіденційності",
+
     // Home hero
     "home.badge": "Редактор схем для в\u2019язання",
     "home.titleLine1": "Створюйте схеми,",
@@ -200,6 +210,16 @@ export const translations = {
     "nav.signIn": "Sign In",
     "nav.signUp": "Sign Up",
     "nav.signOut": "Sign Out",
+
+    // Footer
+    "footer.terms": "Terms of Use",
+    "footer.privacy": "Privacy Policy",
+
+    // Auth agreement (sign-up)
+    "auth.agreePrefix": "By registering, you agree to the",
+    "auth.agreeTerms": "Terms of Use",
+    "auth.agreeAnd": "and",
+    "auth.agreePrivacy": "Privacy Policy",
 
     // Home hero
     "home.badge": "Knitting pattern editor",

@@ -2,6 +2,7 @@
 
 import { FormEvent, useState } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useTranslation } from "@/lib/i18n/context";
@@ -83,6 +84,19 @@ export function AuthForm({ mode }: { mode: Mode }) {
       <Button type="submit" className="w-full" disabled={pending}>
         {pending ? t("auth.pending") : mode === "sign-in" ? t("auth.submitSignIn") : t("auth.submitSignUp")}
       </Button>
+
+      {mode === "sign-up" ? (
+        <p className="text-center text-xs leading-relaxed text-yarn-warm-gray">
+          {t("auth.agreePrefix")}{" "}
+          <Link href="/terms" className="underline hover:text-yarn-charcoal transition-colors">
+            {t("auth.agreeTerms")}
+          </Link>{" "}
+          {t("auth.agreeAnd")}{" "}
+          <Link href="/privacy" className="underline hover:text-yarn-charcoal transition-colors">
+            {t("auth.agreePrivacy")}
+          </Link>.
+        </p>
+      ) : null}
     </form>
   );
 }
