@@ -22,6 +22,11 @@ model User {
   location      String?
   website       String?
   profilePublic Boolean           @default(false)
+  // Billing — forward-compatible with the planned WayForPay subscription.
+  // Source of truth for Premium is derived (isPremium helper), never a separate boolean.
+  // premiumUntil = null + plan="PREMIUM" means an open-ended manual grant (admin).
+  plan         String             @default("FREE") // "FREE" | "PREMIUM"
+  premiumUntil DateTime?
   createdAt    DateTime           @default(now())
   updatedAt    DateTime           @updatedAt
   patterns     Pattern[]
