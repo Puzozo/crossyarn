@@ -39,8 +39,16 @@
 - Sessions re-validated against the DB on every request: `getSession` rejects `isDisabled`, `getAdminSession` rejects non-`isAdmin`/`isDisabled` (blocked/demoted users lose access immediately, not after token expiry)
 - All write APIs validate with zod (`src/lib/patterns/validation.ts`); `POST /api/patterns` uses a bounded schema (width/height ≤200) so oversized requests can't OOM; cell colors / palette hex constrained to hex format; `cell.color` escaped in SVG export (closed a stored-XSS vector)
 
+### Public profiles & sharing
+- **User profile** (`User.username`/`bio`/`location`/`website`/`profilePublic`): edited on `/account` (`ProfileEditor` → `PATCH /api/profile`). `username` is a unique lowercased handle (3–30 `[a-z0-9_]`, reserved-name list in `src/lib/profile/validation.ts`); `profilePublic` defaults **false** (private-by-default, must opt in). `website` is normalized to a safe http(s) URL server-side (`normalizeWebsite`, blocks `javascript:` etc.). Making a profile public requires a username.
+- **Public profile page** `/u/[username]` (server, SEO metadata): shows name/bio/location/website + the author's **PUBLIC** patterns. 404s if the profile is private or the handle is free. Never exposes email.
+- **Pattern visibility** (`Pattern.visibility` PRIVATE/UNLISTED/PUBLIC): edited via `VisibilityControl` on `/patterns/[id]` → `PATCH /api/patterns/[id]/visibility` (also accepted optionally by the editor's PUT). Card badge is localized.
+- **Public read-only pattern** `/p/[id]` (server): renders the grid+legend read-only via shared `PatternGrid`/`PatternLegend` (extracted from `PrintContent`). PRIVATE → owner-only (else 404); UNLISTED → link-only + `robots noindex,nofollow`; PUBLIC → indexed + listed on the author's profile.
+- **Public catalog** `/explore` (server, in header nav): all PUBLIC patterns, newest first; title search via `?q=` (case-insensitive incl. Cyrillic — filtered in JS over a 500-recency cap because SQLite LIKE only folds ASCII; move to SQL with a normalized column when the catalog outgrows it), `?page=` pagination 24/page. Author attribution only when `profilePublic` (same rule as `/p/[id]`).
+- **Pattern thumbnails** `GET /api/patterns/[id]/thumbnail` (`src/lib/export/pattern-thumbnail.ts`): compact grid-only SVG — RLE-merged color runs + text glyphs (never the base64 icons of the full export), 8k element budget with block downsample for huge grids. Access mirrors `/p/[id]` (PRIVATE owner-only 404, no-store; public cached 1h). Used by `/explore` and `/u/[username]` cards with `?v=<updatedAt ms>` cache-buster.
+
 ### Not yet implemented
-- Public catalog / visibility UI (DB field exists), profile editing, bucket fill, image import (stub), Stripe / premium, ads
+- Avatars (profile has no image yet), bucket fill, thumbnails on own `/patterns` cards, image import end-to-end in prod (sidecar not deployed), WayForPay billing provider, ads
 
 ## Build & Deploy
 ```bash
@@ -100,3 +108,10 @@ db.user.update({
 }).then(u => console.log('Admin set:', u.email)).finally(() => db.\$disconnect());
 "
 ```
+
+## Ведення STATUS.md
+Наприкінці кожної робочої сесії ОБОВ'ЯЗКОВО онови STATUS.md:
+- перенеси виконане з Next у Done recently (тримай там останні ~5 пунктів)
+- додай нові задачі в Next, тримай список у пріоритетному порядку (3-7 пунктів)
+- онови Blocked (додай нові блокери, прибери вирішені)
+Пиши коротко, одним рядком на пункт, українською.
