@@ -4,6 +4,13 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useTranslation } from "@/lib/i18n/context";
+import { TranslationKey } from "@/lib/i18n/translations";
+
+const VISIBILITY_LABEL_KEYS: Record<string, TranslationKey> = {
+  PRIVATE: "visibility.private",
+  UNLISTED: "visibility.unlisted",
+  PUBLIC: "visibility.public"
+};
 
 type PatternData = {
   id: string;
@@ -55,7 +62,7 @@ export function PatternCard({ pattern }: { pattern: PatternData }) {
           </p>
         </div>
         <span className="shrink-0 rounded-full bg-yarn-sage-light px-3 py-1 text-xs font-medium text-yarn-sage">
-          {pattern.visibility}
+          {t(VISIBILITY_LABEL_KEYS[pattern.visibility] ?? "visibility.private")}
         </span>
       </div>
       {pattern.description ? (

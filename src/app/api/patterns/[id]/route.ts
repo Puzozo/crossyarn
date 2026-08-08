@@ -49,7 +49,9 @@ export async function PUT(request: Request, { params }: { params: Promise<{ id: 
         height: body.height,
         patternData: hydrateBuiltinSymbols(body.patternData),
         paletteData: body.patternData.palette,
-        symbolSetData: body.patternData.symbols
+        symbolSetData: body.patternData.symbols,
+        // Only touch visibility when the client sends it; the editor autosave omits it.
+        ...(body.visibility ? { visibility: body.visibility } : {})
       }
     });
 

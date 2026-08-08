@@ -2,15 +2,17 @@
 
 import { useTranslation } from "@/lib/i18n/context";
 import { SymbolLibraryManager } from "@/components/account/symbol-library-manager";
+import { ProfileEditor, ProfileValues } from "@/components/account/profile-editor";
 import { PatternSymbol } from "@/lib/patterns/model";
 
 type Props = {
   email: string;
   userId: string;
   symbols: PatternSymbol[];
+  profile: ProfileValues;
 };
 
-export function AccountContent({ email, userId, symbols }: Props) {
+export function AccountContent({ email, userId, symbols, profile }: Props) {
   const { t } = useTranslation();
 
   return (
@@ -30,6 +32,9 @@ export function AccountContent({ email, userId, symbols }: Props) {
           </div>
         </dl>
       </section>
+
+      {/* Public profile */}
+      <ProfileEditor initial={profile} />
 
       {/* Symbol library */}
       <SymbolLibraryManager initialSymbols={symbols} />

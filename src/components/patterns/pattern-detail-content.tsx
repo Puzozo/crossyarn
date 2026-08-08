@@ -3,7 +3,9 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { PdfDownloadButton } from "@/components/patterns/pdf-download-button";
+import { VisibilityControl } from "@/components/patterns/visibility-control";
 import { useTranslation } from "@/lib/i18n/context";
+import type { PatternVisibilityValue } from "@/lib/patterns/validation";
 
 type Props = {
   pattern: {
@@ -12,6 +14,7 @@ type Props = {
     description: string | null;
     width: number;
     height: number;
+    visibility: PatternVisibilityValue;
   };
 };
 
@@ -58,6 +61,8 @@ export function PatternDetailContent({ pattern }: Props) {
           </p>
         ) : null}
       </div>
+
+      <VisibilityControl patternId={pattern.id} initialVisibility={pattern.visibility} />
     </section>
   );
 }

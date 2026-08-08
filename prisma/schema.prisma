@@ -14,6 +14,14 @@ model User {
   name         String?
   isAdmin      Boolean            @default(false)
   isDisabled   Boolean            @default(false)
+  // Public profile. username is the handle used in /u/<username> URLs (lowercased, unique).
+  // profilePublic is the master privacy switch: false = profile page 404s to others.
+  // Default false so profiles are private-by-default; users opt in explicitly.
+  username      String?           @unique
+  bio           String?
+  location      String?
+  website       String?
+  profilePublic Boolean           @default(false)
   createdAt    DateTime           @default(now())
   updatedAt    DateTime           @updatedAt
   patterns     Pattern[]

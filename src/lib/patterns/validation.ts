@@ -55,6 +55,9 @@ export const patternDocumentSchema = z.object({
 
 const trimmedTitle = z.string().trim().min(2).max(120);
 
+export const patternVisibilitySchema = z.enum(["PRIVATE", "UNLISTED", "PUBLIC"]);
+export type PatternVisibilityValue = z.infer<typeof patternVisibilitySchema>;
+
 export const createPatternSchema = z.object({
   title: trimmedTitle,
   description: z.string().max(500).optional().or(z.literal("")),
@@ -64,7 +67,8 @@ export const createPatternSchema = z.object({
 });
 
 export const updatePatternSchema = createPatternSchema.extend({
-  id: z.string().min(1)
+  id: z.string().min(1),
+  visibility: patternVisibilitySchema.optional()
 });
 
 /**

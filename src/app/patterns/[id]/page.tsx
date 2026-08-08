@@ -29,7 +29,8 @@ export default async function PatternDetailsPage({
         title: pattern.title,
         description: pattern.description,
         width: pattern.width,
-        height: pattern.height
+        height: pattern.height,
+        visibility: pattern.visibility
       }}
     />
   );

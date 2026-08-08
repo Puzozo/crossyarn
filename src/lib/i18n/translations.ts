@@ -171,6 +171,56 @@ export const translations = {
     "account.email": "Email",
     "account.userId": "ID користувача",
 
+    // Public profile (account editing)
+    "profile.title": "Публічний профіль",
+    "profile.desc": "Заповніть профіль і зробіть його публічним, щоб інші бачили ваші публічні схеми.",
+    "profile.name": "Ім'я",
+    "profile.namePlaceholder": "Як вас показувати",
+    "profile.username": "Нікнейм",
+    "profile.usernameHint": "3–30 символів: латинські літери, цифри, «_». Ваша адреса: /u/{username}",
+    "profile.usernamePlaceholder": "напр. oksana_knits",
+    "profile.bio": "Про себе",
+    "profile.bioPlaceholder": "Кілька слів про себе та ваше в'язання",
+    "profile.location": "Локація",
+    "profile.locationPlaceholder": "Місто, країна",
+    "profile.website": "Сайт або посилання",
+    "profile.websitePlaceholder": "https://…",
+    "profile.public": "Зробити профіль публічним",
+    "profile.publicHint": "Публічний профіль і ваші публічні схеми стануть доступні всім за посиланням /u/нікнейм.",
+    "profile.save": "Зберегти профіль",
+    "profile.saving": "Збереження…",
+    "profile.saved": "Збережено",
+    "profile.viewPublic": "Переглянути публічний профіль",
+    "profile.errUsernameTaken": "Цей нікнейм уже зайнятий",
+    "profile.errUsernameReserved": "Цей нікнейм зарезервовано, оберіть інший",
+    "profile.errUsernameRequired": "Щоб зробити профіль публічним, спершу вкажіть нікнейм",
+    "profile.errUsernameFormat": "Нікнейм: 3–30 символів, лише латиниця, цифри та «_»",
+    "profile.errWebsite": "Некоректне посилання (дозволені лише http/https)",
+    "profile.errGeneric": "Не вдалося зберегти. Спробуйте ще раз.",
+
+    // Public profile page
+    "publicProfile.patternsTitle": "Публічні схеми",
+    "publicProfile.noPatterns": "Поки що немає публічних схем",
+    "publicProfile.backToSite": "На головну",
+
+    // Pattern visibility
+    "visibility.label": "Видимість",
+    "visibility.private": "Приватна",
+    "visibility.unlisted": "За посиланням",
+    "visibility.public": "Публічна",
+    "visibility.privateHint": "Бачите лише ви.",
+    "visibility.unlistedHint": "Доступна будь-кому за прямим посиланням, але не показується у профілі.",
+    "visibility.publicHint": "Показується у вашому публічному профілі та доступна всім.",
+    "visibility.updateError": "Не вдалося змінити видимість",
+    "visibility.copyLink": "Копіювати посилання",
+    "visibility.linkCopied": "Скопійовано!",
+    "visibility.openPublic": "Публічна сторінка",
+
+    // Public pattern page
+    "publicPattern.byAuthor": "Автор:",
+    "publicPattern.viewProfile": "Профіль автора",
+    "publicPattern.notPublic": "Ця схема недоступна",
+
     // Symbol library
     "symbols.title": "Бібліотека позначок",
     "symbols.description": "Стандартні позначки з наданого набору вже доступні в редакторі. Тут можна додати власні 64×64 іконки з описом.",
@@ -372,6 +422,56 @@ export const translations = {
     "account.title": "Account",
     "account.email": "Email",
     "account.userId": "User ID",
+
+    // Public profile (account editing)
+    "profile.title": "Public profile",
+    "profile.desc": "Fill in your profile and make it public so others can see your public patterns.",
+    "profile.name": "Name",
+    "profile.namePlaceholder": "How you appear to others",
+    "profile.username": "Username",
+    "profile.usernameHint": "3–30 characters: letters, digits, “_”. Your URL: /u/{username}",
+    "profile.usernamePlaceholder": "e.g. oksana_knits",
+    "profile.bio": "About",
+    "profile.bioPlaceholder": "A few words about you and your knitting",
+    "profile.location": "Location",
+    "profile.locationPlaceholder": "City, country",
+    "profile.website": "Website or link",
+    "profile.websitePlaceholder": "https://…",
+    "profile.public": "Make profile public",
+    "profile.publicHint": "A public profile and your public patterns become available to everyone at /u/username.",
+    "profile.save": "Save profile",
+    "profile.saving": "Saving…",
+    "profile.saved": "Saved",
+    "profile.viewPublic": "View public profile",
+    "profile.errUsernameTaken": "This username is already taken",
+    "profile.errUsernameReserved": "This username is reserved, pick another",
+    "profile.errUsernameRequired": "Set a username first to make your profile public",
+    "profile.errUsernameFormat": "Username: 3–30 characters, only letters, digits and “_”",
+    "profile.errWebsite": "Invalid link (only http/https allowed)",
+    "profile.errGeneric": "Could not save. Please try again.",
+
+    // Public profile page
+    "publicProfile.patternsTitle": "Public patterns",
+    "publicProfile.noPatterns": "No public patterns yet",
+    "publicProfile.backToSite": "Home",
+
+    // Pattern visibility
+    "visibility.label": "Visibility",
+    "visibility.private": "Private",
+    "visibility.unlisted": "Unlisted",
+    "visibility.public": "Public",
+    "visibility.privateHint": "Only you can see it.",
+    "visibility.unlistedHint": "Anyone with the direct link can view it, but it is not shown on your profile.",
+    "visibility.publicHint": "Shown on your public profile and available to everyone.",
+    "visibility.updateError": "Could not change visibility",
+    "visibility.copyLink": "Copy link",
+    "visibility.linkCopied": "Copied!",
+    "visibility.openPublic": "Public page",
+
+    // Public pattern page
+    "publicPattern.byAuthor": "By:",
+    "publicPattern.viewProfile": "Author profile",
+    "publicPattern.notPublic": "This pattern is unavailable",
 
     // Symbol library
     "symbols.title": "Symbol Library",
