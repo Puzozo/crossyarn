@@ -60,15 +60,20 @@ model PatternVersion {
 }
 
 model PatternImportJob {
-  id             String            @id @default(cuid())
-  userId         String
-  sourceImageUrl String
-  status         PatternImportStatus @default(PENDING)
-  resultData     Json?
-  errorMessage   String?
-  createdAt      DateTime          @default(now())
-  updatedAt      DateTime          @updatedAt
-  user           User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id                  String            @id @default(cuid())
+  userId              String
+  sourceImageUrl      String
+  status              PatternImportStatus @default(PENDING)
+  resultData          Json?
+  errorMessage        String?
+  // Queue / resource-control fields
+  processingStartedAt DateTime?         // set when a worker picks up the job; used by the stale-reaper
+  attemptCount        Int               @default(0)
+  idempotencyKey      String?           @unique
+  fileSizeBytes       Int?
+  createdAt           DateTime          @default(now())
+  updatedAt           DateTime          @updatedAt
+  user                User              @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model UserSymbol {
@@ -84,6 +89,9 @@ model UserSymbol {
   isOfficial  Boolean  @default(false)
   builtinId   String?  @unique
   status      String   @default("active")
+  // Perceptual hash of the source glyph for image-import "Unknown" symbols.
+  // Enables future cross-import dedup (same glyph from the same designer → reuse symbol).
+  sourceHash  String?
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
   user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)

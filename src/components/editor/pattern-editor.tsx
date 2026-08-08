@@ -74,6 +74,33 @@ export function PatternEditor({ patternId, initialPattern, title, description }:
   const initializedRef = useRef(false);
   const [availableSymbols, setAvailableSymbols] = useState(initialPattern.symbols);
   const [rapportNameInput, setRapportNameInput] = useState("");
+  const [editingSymbolId, setEditingSymbolId] = useState<string | null>(null);
+
+  const handleRenameSymbol = useCallback(
+    async (id: string, rawName: string) => {
+      setEditingSymbolId(null);
+      const name = rawName.trim();
+      const current = availableSymbols.find((s) => s.id === id);
+      if (!name || !current || name === current.label) return;
+
+      const before = availableSymbols;
+      const updated = before.map((s) => (s.id === id ? { ...s, label: name } : s));
+      setAvailableSymbols(updated);
+      setSymbols(updated);
+      try {
+        const res = await fetch(`/api/symbols/${id}`, {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ name })
+        });
+        if (!res.ok) throw new Error("rename failed");
+      } catch {
+        setAvailableSymbols(before);
+        setSymbols(before);
+      }
+    },
+    [availableSymbols, setSymbols]
+  );
 
   useEffect(() => {
     if (toastData) {
@@ -274,29 +301,64 @@ export function PatternEditor({ patternId, initialPattern, title, description }:
         <div className="space-y-2">
           <p className="text-xs font-semibold uppercase tracking-wider text-yarn-warm-gray">{t("editor.symbols")}</p>
           <div className="flex max-h-56 lg:max-h-80 flex-wrap gap-1.5 overflow-auto">
-            {availableSymbols.map((symbol) => (
-              <button key={symbol.id} type="button" onClick={() => setSelectedSymbolId(symbol.id)}
-                className={`rounded-lg border px-2.5 py-1.5 text-sm transition-all duration-150 ${
-                  selectedSymbolId === symbol.id
-                    ? "border-yarn-terracotta bg-yarn-terracotta-light text-yarn-terracotta shadow-warm-sm"
-                    : "border-yarn-sand/60 bg-white hover:border-yarn-terracotta/40 hover:bg-yarn-terracotta-light/30"
-                }`}
-                title={symbol.description}>
-                <span className="flex items-center gap-1.5">
-                  {symbol.imageData ? (
-                    <Image src={symbol.imageData} alt={symbol.label} width={20} height={20} className="object-contain" />
-                  ) : (
-                    <span className="inline-flex min-w-5 justify-center font-mono">{symbol.glyph}</span>
-                  )}
-                  <span className="text-xs">{symbol.label}</span>
-                  {((symbol.width ?? 1) > 1 || (symbol.height ?? 1) > 1) && (
-                    <span className="ml-0.5 rounded bg-yarn-sage-light px-1 py-0.5 text-[9px] font-bold text-yarn-sage">
-                      {symbol.width ?? 1}×{symbol.height ?? 1}
+            {availableSymbols.map((symbol) => {
+              const isUser = symbol.source === "user" || symbol.id.startsWith("user-");
+              const isUnknown = isUser && /^unknown/i.test(symbol.label);
+
+              if (editingSymbolId === symbol.id) {
+                return (
+                  <div key={symbol.id} className="rounded-lg border border-yarn-terracotta bg-white px-2.5 py-1.5">
+                    <input
+                      autoFocus
+                      defaultValue={symbol.label}
+                      onBlur={(e) => void handleRenameSymbol(symbol.id, e.target.value)}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter") e.currentTarget.blur();
+                        if (e.key === "Escape") setEditingSymbolId(null);
+                      }}
+                      className="w-24 bg-transparent text-xs text-yarn-charcoal outline-none"
+                    />
+                  </div>
+                );
+              }
+
+              return (
+                <div key={symbol.id} className="group relative">
+                  <button type="button" onClick={() => setSelectedSymbolId(symbol.id)}
+                    className={`rounded-lg border px-2.5 py-1.5 text-sm transition-all duration-150 ${
+                      selectedSymbolId === symbol.id
+                        ? "border-yarn-terracotta bg-yarn-terracotta-light text-yarn-terracotta shadow-warm-sm"
+                        : "border-yarn-sand/60 bg-white hover:border-yarn-terracotta/40 hover:bg-yarn-terracotta-light/30"
+                    }`}
+                    title={symbol.description}>
+                    <span className="flex items-center gap-1.5">
+                      {symbol.imageData ? (
+                        <Image src={symbol.imageData} alt={symbol.label} width={20} height={20} className="object-contain" />
+                      ) : (
+                        <span className="inline-flex min-w-5 justify-center font-mono">{symbol.glyph}</span>
+                      )}
+                      <span className="text-xs">{symbol.label}</span>
+                      {isUnknown && (
+                        <span className="rounded-full bg-amber-100 px-1 py-0.5 text-[9px] font-bold text-amber-700">?</span>
+                      )}
+                      {((symbol.width ?? 1) > 1 || (symbol.height ?? 1) > 1) && (
+                        <span className="ml-0.5 rounded bg-yarn-sage-light px-1 py-0.5 text-[9px] font-bold text-yarn-sage">
+                          {symbol.width ?? 1}×{symbol.height ?? 1}
+                        </span>
+                      )}
                     </span>
+                  </button>
+                  {isUser && (
+                    <button type="button"
+                      onClick={(e) => { e.stopPropagation(); setEditingSymbolId(symbol.id); }}
+                      title={t("editor.renameSymbol")}
+                      className="absolute -right-1 -top-1 hidden h-4 w-4 items-center justify-center rounded-full border border-yarn-sand bg-white text-[9px] text-yarn-warm-gray shadow-sm hover:text-yarn-terracotta group-hover:flex">
+                      ✎
+                    </button>
                   )}
-                </span>
-              </button>
-            ))}
+                </div>
+              );
+            })}
           </div>
         </div>
 

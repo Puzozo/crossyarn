@@ -10,3 +10,12 @@ prisma/dev.db-journal
 caddy/caddy.exe
 cookies.txt
 *.cookie
+# Uploaded source images for AI image-import jobs (runtime artifacts)
+import-uploads
+# Python recognition service local artifacts
+python-service/.venv
+python-service/__pycache__
+python-service/dataset
+python-service/model
+python-service/model-wide
+python-service/*.onnx

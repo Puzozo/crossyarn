@@ -18,20 +18,37 @@ export function getClientIp(request: Request): string {
   return request.headers.get("x-real-ip") ?? "unknown";
 }
 
-export function checkRateLimit(key: string): { allowed: boolean; retryAfterSeconds: number } {
+/**
+ * Generic fixed-window limiter. `key` namespaces the counter, so callers with
+ * different windows (auth vs imports, burst vs hourly) must use distinct keys.
+ *
+ * In-memory: one Map per Next process. Acceptable while we run a single PM2
+ * process; would need to move to the DB if Next is ever clustered. A restart
+ * resets all counters — fine for short anti-abuse windows.
+ */
+export function checkRateLimitWindow(
+  key: string,
+  maxAttempts: number,
+  windowMs: number
+): { allowed: boolean; retryAfterSeconds: number } {
   const now = Date.now();
   const entry = store.get(key);
 
   if (!entry || entry.resetAt <= now) {
-    store.set(key, { count: 1, resetAt: now + WINDOW_MS });
+    store.set(key, { count: 1, resetAt: now + windowMs });
     return { allowed: true, retryAfterSeconds: 0 };
   }
 
-  if (entry.count >= MAX_ATTEMPTS) {
+  if (entry.count >= maxAttempts) {
     const retryAfterSeconds = Math.ceil((entry.resetAt - now) / 1000);
     return { allowed: false, retryAfterSeconds };
   }
 
   entry.count += 1;
   return { allowed: true, retryAfterSeconds: 0 };
+}
+
+/** Auth limiter: 5 attempts / minute. Unchanged public API. */
+export function checkRateLimit(key: string): { allowed: boolean; retryAfterSeconds: number } {
+  return checkRateLimitWindow(key, MAX_ATTEMPTS, WINDOW_MS);
 }

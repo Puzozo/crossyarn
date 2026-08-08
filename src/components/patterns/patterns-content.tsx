@@ -16,7 +16,7 @@ type PatternData = {
   updatedAt: string;
 };
 
-export function PatternsContent({ patterns }: { patterns: PatternData[] }) {
+export function PatternsContent({ patterns, isPremium }: { patterns: PatternData[]; isPremium: boolean }) {
   const { t } = useTranslation();
   const [search, setSearch] = useState("");
 
@@ -40,7 +40,7 @@ export function PatternsContent({ patterns }: { patterns: PatternData[] }) {
           </p>
         </div>
         <div className="flex flex-wrap gap-3">
-          <ImportPatternCard />
+          <ImportPatternCard isPremium={isPremium} />
           <CreatePatternButton />
         </div>
       </div>

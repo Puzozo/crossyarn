@@ -1,0 +1,11 @@
+# Training-only deps (NOT needed by the inference service — keep that lean).
+# Install separately when training the symbol classifier:
+#   pip install -r requirements-train.txt
+torch>=2.2
+torchvision>=0.17
+onnx>=1.16
+numpy>=1.26
+pillow>=10
+onnxruntime>=1.18   # in-script torch-vs-onnx parity check + inference (classifier.py)
+# onnxscript only needed if you use torch's newer dynamo exporter; train.py uses
+# the legacy exporter (dynamo=False), so it's optional.
