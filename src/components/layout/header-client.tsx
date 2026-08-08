@@ -13,6 +13,7 @@ export function HeaderClient({ isAuthenticated }: Props) {
   const { t, lang, setLang } = useTranslation();
 
   const navLinks = [
+    { href: "/explore", label: t("nav.explore") },
     { href: "/patterns", label: t("nav.patterns") },
     { href: "/account", label: t("nav.account") }
   ];

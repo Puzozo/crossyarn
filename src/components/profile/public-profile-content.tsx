@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { useTranslation } from "@/lib/i18n/context";
 
@@ -8,6 +9,7 @@ type PublicPattern = {
   title: string;
   width: number;
   height: number;
+  updatedAtMs: number;
 };
 
 type Props = {
@@ -108,14 +110,26 @@ export function PublicProfileContent({ profile, patterns }: Props) {
               <Link
                 key={pattern.id}
                 href={`/p/${pattern.id}`}
-                className="group rounded-2xl bg-white/70 border border-yarn-sand/50 p-6 shadow-warm-sm hover:shadow-warm transition-all duration-300 hover:-translate-y-0.5"
+                className="group rounded-2xl bg-white/70 border border-yarn-sand/50 shadow-warm-sm hover:shadow-warm transition-all duration-300 hover:-translate-y-0.5 overflow-hidden"
               >
-                <h3 className="font-display text-lg font-semibold text-yarn-charcoal group-hover:text-yarn-terracotta transition-colors break-words [overflow-wrap:anywhere] line-clamp-2">
-                  {pattern.title}
-                </h3>
-                <p className="mt-1 text-sm text-yarn-warm-gray">
-                  {pattern.width} × {pattern.height}
-                </p>
+                <div className="relative aspect-square border-b border-yarn-sand/40 bg-white">
+                  <Image
+                    src={`/api/patterns/${pattern.id}/thumbnail?v=${pattern.updatedAtMs}`}
+                    alt={pattern.title}
+                    fill
+                    unoptimized
+                    loading="lazy"
+                    className="object-contain p-3"
+                  />
+                </div>
+                <div className="p-5">
+                  <h3 className="font-display text-lg font-semibold text-yarn-charcoal group-hover:text-yarn-terracotta transition-colors break-words [overflow-wrap:anywhere] line-clamp-2">
+                    {pattern.title}
+                  </h3>
+                  <p className="mt-1 text-sm text-yarn-warm-gray">
+                    {pattern.width} × {pattern.height}
+                  </p>
+                </div>
               </Link>
             ))}
           </div>

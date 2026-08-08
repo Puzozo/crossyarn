@@ -203,6 +203,20 @@ export const translations = {
     "publicProfile.noPatterns": "Поки що немає публічних схем",
     "publicProfile.backToSite": "На головну",
 
+    // Explore catalog
+    "nav.explore": "Каталог",
+    "explore.title": "Каталог схем",
+    "explore.subtitle": "Публічні схеми в'язання від авторів Crossyarn. Відкривайте, переглядайте та друкуйте.",
+    "explore.searchPlaceholder": "Пошук за назвою…",
+    "explore.searchButton": "Знайти",
+    "explore.resultsFor": "Знайдено {count} за запитом «{query}».",
+    "explore.clearSearch": "Скинути пошук",
+    "explore.empty": "У каталозі поки що немає публічних схем. Станьте першим автором — зробіть свою схему публічною!",
+    "explore.noResults": "Нічого не знайдено. Спробуйте інший запит.",
+    "explore.prevPage": "Попередня",
+    "explore.nextPage": "Наступна",
+    "explore.pageOf": "Сторінка {page} з {total}",
+
     // Pattern visibility
     "visibility.label": "Видимість",
     "visibility.private": "Приватна",
@@ -512,6 +526,20 @@ export const translations = {
     "publicProfile.patternsTitle": "Public patterns",
     "publicProfile.noPatterns": "No public patterns yet",
     "publicProfile.backToSite": "Home",
+
+    // Explore catalog
+    "nav.explore": "Explore",
+    "explore.title": "Pattern catalog",
+    "explore.subtitle": "Public knitting patterns from Crossyarn authors. Discover, view and print.",
+    "explore.searchPlaceholder": "Search by title…",
+    "explore.searchButton": "Search",
+    "explore.resultsFor": "Found {count} for “{query}”.",
+    "explore.clearSearch": "Clear search",
+    "explore.empty": "No public patterns in the catalog yet. Be the first author — make your pattern public!",
+    "explore.noResults": "Nothing found. Try another query.",
+    "explore.prevPage": "Previous",
+    "explore.nextPage": "Next",
+    "explore.pageOf": "Page {page} of {total}",
 
     // Pattern visibility
     "visibility.label": "Visibility",

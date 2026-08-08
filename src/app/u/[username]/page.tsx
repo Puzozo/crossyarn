@@ -40,7 +40,7 @@ export default async function PublicProfilePage({
   const patterns = await db.pattern.findMany({
     where: { userId: user.id, visibility: "PUBLIC" },
     orderBy: { updatedAt: "desc" },
-    select: { id: true, title: true, width: true, height: true }
+    select: { id: true, title: true, width: true, height: true, updatedAt: true }
   });
 
   return (
@@ -52,7 +52,13 @@ export default async function PublicProfilePage({
         location: user.location,
         website: user.website
       }}
-      patterns={patterns}
+      patterns={patterns.map((p) => ({
+        id: p.id,
+        title: p.title,
+        width: p.width,
+        height: p.height,
+        updatedAtMs: p.updatedAt.getTime()
+      }))}
     />
   );
 }
