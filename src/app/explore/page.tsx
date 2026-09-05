@@ -41,7 +41,9 @@ export default async function ExplorePage({
       width: true,
       height: true,
       updatedAt: true,
-      user: { select: { name: true, username: true, profilePublic: true } }
+      user: {
+        select: { name: true, username: true, profilePublic: true, avatarData: true, updatedAt: true }
+      }
     }
   });
 
@@ -66,7 +68,13 @@ export default async function ExplorePage({
         // Same rule as /p/[id]: attribute only authors with a public profile.
         author:
           p.user.profilePublic && p.user.username
-            ? { name: p.user.name, username: p.user.username }
+            ? {
+                name: p.user.name,
+                username: p.user.username,
+                avatarUrl: p.user.avatarData
+                  ? `/api/users/${p.user.username}/avatar?v=${p.user.updatedAt.getTime()}`
+                  : null
+              }
             : null
       }))}
       query={query}

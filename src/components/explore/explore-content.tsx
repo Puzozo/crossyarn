@@ -10,7 +10,7 @@ type ExplorePattern = {
   width: number;
   height: number;
   updatedAtMs: number;
-  author: { name: string | null; username: string } | null;
+  author: { name: string | null; username: string; avatarUrl: string | null } | null;
 };
 
 type Props = {
@@ -106,8 +106,25 @@ export function ExploreContent({ patterns, query, page, totalPages, totalCount }
                 {pattern.author ? (
                   <Link
                     href={`/u/${pattern.author.username}`}
-                    className="text-xs font-medium text-yarn-warm-gray hover:text-yarn-terracotta transition-colors"
+                    className="inline-flex items-center gap-1.5 text-xs font-medium text-yarn-warm-gray hover:text-yarn-terracotta transition-colors"
                   >
+                    {pattern.author.avatarUrl ? (
+                      <Image
+                        src={pattern.author.avatarUrl}
+                        alt=""
+                        width={20}
+                        height={20}
+                        unoptimized
+                        className="h-5 w-5 rounded-full object-cover border border-yarn-sand/60"
+                      />
+                    ) : (
+                      <span
+                        aria-hidden
+                        className="flex h-5 w-5 items-center justify-center rounded-full bg-yarn-terracotta/15 text-[10px] font-bold text-yarn-terracotta"
+                      >
+                        {(pattern.author.name?.trim() || pattern.author.username).charAt(0).toUpperCase()}
+                      </span>
+                    )}
                     {pattern.author.name?.trim() || pattern.author.username}{" "}
                     <span className="text-yarn-warm-gray/70">@{pattern.author.username}</span>
                   </Link>

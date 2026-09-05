@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { useTranslation } from "@/lib/i18n/context";
 import { SignOutButton } from "@/components/layout/sign-out-button";
@@ -7,9 +8,10 @@ import { MobileNav } from "@/components/layout/mobile-nav";
 
 type Props = {
   isAuthenticated: boolean;
+  user?: { initial: string; avatarVersion: number | null } | null;
 };
 
-export function HeaderClient({ isAuthenticated }: Props) {
+export function HeaderClient({ isAuthenticated, user }: Props) {
   const { t, lang, setLang } = useTranslation();
 
   const navLinks = [
@@ -73,7 +75,34 @@ export function HeaderClient({ isAuthenticated }: Props) {
 
           <div className="ml-3 pl-3 border-l border-yarn-sand flex items-center gap-2">
             {isAuthenticated ? (
-              <SignOutButton />
+              <>
+                {user ? (
+                  <Link
+                    href="/account"
+                    aria-label={t("nav.account")}
+                    className="rounded-full ring-offset-2 hover:ring-2 hover:ring-yarn-terracotta/40 transition-shadow"
+                  >
+                    {user.avatarVersion ? (
+                      <Image
+                        src={`/api/me/avatar?v=${user.avatarVersion}`}
+                        alt=""
+                        width={32}
+                        height={32}
+                        unoptimized
+                        className="h-8 w-8 rounded-full object-cover border border-yarn-sand/60"
+                      />
+                    ) : (
+                      <span
+                        aria-hidden
+                        className="flex h-8 w-8 items-center justify-center rounded-full bg-yarn-terracotta/15 text-sm font-bold text-yarn-terracotta"
+                      >
+                        {user.initial}
+                      </span>
+                    )}
+                  </Link>
+                ) : null}
+                <SignOutButton />
+              </>
             ) : (
               <>
                 <Link
