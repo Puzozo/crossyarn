@@ -19,6 +19,7 @@ type Props = {
     bio: string | null;
     location: string | null;
     website: string | null;
+    avatarUrl: string | null;
   };
   patterns: PublicPattern[];
 };
@@ -47,12 +48,23 @@ export function PublicProfileContent({ profile, patterns }: Props) {
       {/* Profile header */}
       <header className="rounded-3xl bg-white/70 border border-yarn-sand/50 p-6 sm:p-8 shadow-warm-sm">
         <div className="flex items-start gap-4 sm:gap-5">
-          <div
-            aria-hidden
-            className="flex h-16 w-16 shrink-0 items-center justify-center rounded-full bg-yarn-terracotta/15 text-2xl font-bold text-yarn-terracotta"
-          >
-            {displayName.charAt(0).toUpperCase()}
-          </div>
+          {profile.avatarUrl ? (
+            <Image
+              src={profile.avatarUrl}
+              alt={displayName}
+              width={64}
+              height={64}
+              unoptimized
+              className="h-16 w-16 shrink-0 rounded-full object-cover border border-yarn-sand/60"
+            />
+          ) : (
+            <div
+              aria-hidden
+              className="flex h-16 w-16 shrink-0 items-center justify-center rounded-full bg-yarn-terracotta/15 text-2xl font-bold text-yarn-terracotta"
+            >
+              {displayName.charAt(0).toUpperCase()}
+            </div>
+          )}
           <div className="min-w-0">
             <h1 className="font-display text-2xl sm:text-3xl font-bold text-yarn-charcoal break-words [overflow-wrap:anywhere]">
               {displayName}

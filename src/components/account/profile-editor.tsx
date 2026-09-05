@@ -1,7 +1,8 @@
 "use client";
 
-import { FormEvent, useState } from "react";
+import { FormEvent, useRef, useState } from "react";
 import Link from "next/link";
+/* eslint-disable @next/next/no-img-element -- avatar preview is a data URI */
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useTranslation } from "@/lib/i18n/context";
@@ -13,17 +14,50 @@ export type ProfileValues = {
   bio: string;
   location: string;
   website: string;
+  avatar: string;
   profilePublic: boolean;
 };
 
 const USERNAME_RE = /^[a-zA-Z0-9_]{3,30}$/;
+const AVATAR_SIZE = 256;
 
 const ERROR_KEYS: Record<string, TranslationKey> = {
   USERNAME_TAKEN: "profile.errUsernameTaken",
   USERNAME_RESERVED: "profile.errUsernameReserved",
   USERNAME_REQUIRED_FOR_PUBLIC: "profile.errUsernameRequired",
-  INVALID_WEBSITE: "profile.errWebsite"
+  INVALID_WEBSITE: "profile.errWebsite",
+  INVALID_AVATAR: "profile.errAvatar"
 };
+
+/** Center-crop the picked image to a 256×256 JPEG data URI (client-side, keeps uploads tiny). */
+function fileToAvatarDataUri(file: File): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const url = URL.createObjectURL(file);
+    const img = new window.Image();
+    img.onload = () => {
+      URL.revokeObjectURL(url);
+      try {
+        const side = Math.min(img.naturalWidth, img.naturalHeight);
+        const sx = (img.naturalWidth - side) / 2;
+        const sy = (img.naturalHeight - side) / 2;
+        const canvas = document.createElement("canvas");
+        canvas.width = AVATAR_SIZE;
+        canvas.height = AVATAR_SIZE;
+        const ctx = canvas.getContext("2d");
+        if (!ctx) throw new Error("no canvas");
+        ctx.drawImage(img, sx, sy, side, side, 0, 0, AVATAR_SIZE, AVATAR_SIZE);
+        resolve(canvas.toDataURL("image/jpeg", 0.85));
+      } catch (e) {
+        reject(e);
+      }
+    };
+    img.onerror = () => {
+      URL.revokeObjectURL(url);
+      reject(new Error("decode failed"));
+    };
+    img.src = url;
+  });
+}
 
 export function ProfileEditor({ initial }: { initial: ProfileValues }) {
   const { t } = useTranslation();
@@ -31,6 +65,16 @@ export function ProfileEditor({ initial }: { initial: ProfileValues }) {
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  async function handleAvatarFile(file: File | undefined) {
+    if (!file) return;
+    try {
+      set("avatar", await fileToAvatarDataUri(file));
+    } catch {
+      setError(t("profile.errAvatar"));
+    }
+  }
 
   function set<K extends keyof ProfileValues>(key: K, value: ProfileValues[K]) {
     setValues((v) => ({ ...v, [key]: value }));
@@ -72,6 +116,7 @@ export function ProfileEditor({ initial }: { initial: ProfileValues }) {
         bio: data.bio ?? "",
         location: data.location ?? "",
         website: data.website ?? "",
+        avatar: data.avatarData ?? "",
         profilePublic: data.profilePublic
       });
       setSaved(true);
@@ -102,6 +147,56 @@ export function ProfileEditor({ initial }: { initial: ProfileValues }) {
       </div>
 
       <form onSubmit={handleSubmit} className="mt-6 space-y-5">
+        <div>
+          <span className="block text-sm font-medium text-yarn-charcoal mb-1.5">{t("profile.avatar")}</span>
+          <div className="flex items-center gap-4">
+            {values.avatar ? (
+              <img
+                src={values.avatar}
+                alt=""
+                width={64}
+                height={64}
+                className="h-16 w-16 shrink-0 rounded-full object-cover border border-yarn-sand/60"
+              />
+            ) : (
+              <div
+                aria-hidden
+                className="flex h-16 w-16 shrink-0 items-center justify-center rounded-full bg-yarn-terracotta/15 text-xl font-bold text-yarn-terracotta"
+              >
+                {(values.name.trim() || values.username.trim() || "?").charAt(0).toUpperCase()}
+              </div>
+            )}
+            <div className="flex flex-wrap items-center gap-3">
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/*"
+                className="hidden"
+                onChange={(e) => {
+                  void handleAvatarFile(e.target.files?.[0]);
+                  e.target.value = "";
+                }}
+              />
+              <button
+                type="button"
+                onClick={() => fileInputRef.current?.click()}
+                className="rounded-xl border border-yarn-sand bg-white px-4 py-2 text-sm font-medium text-yarn-charcoal hover:border-yarn-terracotta/40 hover:bg-yarn-terracotta-light/30 transition-colors"
+              >
+                {t("profile.avatarChange")}
+              </button>
+              {values.avatar ? (
+                <button
+                  type="button"
+                  onClick={() => set("avatar", "")}
+                  className="text-sm font-medium text-yarn-warm-gray hover:text-red-500 transition-colors"
+                >
+                  {t("profile.avatarRemove")}
+                </button>
+              ) : null}
+            </div>
+          </div>
+        </div>
+
         <div>
           <label htmlFor="pf-name" className="block text-sm font-medium text-yarn-charcoal mb-1.5">
             {t("profile.name")}

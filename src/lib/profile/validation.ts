@@ -52,10 +52,33 @@ export const profileUpdateSchema = z.object({
   bio: z.string().trim().max(300).optional().or(z.literal("")),
   location: z.string().trim().max(80).optional().or(z.literal("")),
   website: z.string().trim().max(200).optional().or(z.literal("")),
+  // Data URI; bounded here so an oversized body is rejected before decoding.
+  avatar: z.string().max(220_000).optional().or(z.literal("")),
   profilePublic: z.boolean()
 });
 
 export type ProfileUpdateInput = z.infer<typeof profileUpdateSchema>;
+
+export const AVATAR_MAX_BYTES = 150 * 1024;
+const AVATAR_DATA_URI_RE = /^data:image\/(png|jpeg|webp);base64,([A-Za-z0-9+/]+=*)$/;
+
+/**
+ * Validates an avatar data URI: allowed raster type only and a decoded-size cap.
+ * Blank input means "remove the avatar" and normalizes to null.
+ */
+export function validateAvatar(
+  raw: string | undefined | null
+): { ok: true; value: string | null } | { ok: false } {
+  const trimmed = (raw ?? "").trim();
+  if (!trimmed) return { ok: true, value: null };
+  const match = AVATAR_DATA_URI_RE.exec(trimmed);
+  if (!match) return { ok: false };
+  // Base64 → bytes without decoding: 3/4 of the payload length minus padding.
+  const b64 = match[2];
+  const bytes = Math.floor((b64.length * 3) / 4) - (b64.endsWith("==") ? 2 : b64.endsWith("=") ? 1 : 0);
+  if (bytes > AVATAR_MAX_BYTES) return { ok: false };
+  return { ok: true, value: trimmed };
+}
 
 /**
  * Normalizes a user-entered website to a safe absolute http(s) URL, or returns

@@ -22,6 +22,9 @@ model User {
   location      String?
   website       String?
   profilePublic Boolean           @default(false)
+  // Avatar as a data URI (image/jpeg|png|webp, ≤150KB decoded). Client downsizes
+  // to 256×256 before upload; served via /api/users/[username]/avatar.
+  avatarData    String?
   // Billing — forward-compatible with the planned WayForPay subscription.
   // Source of truth for Premium is derived (isPremium helper), never a separate boolean.
   // premiumUntil = null + plan="PREMIUM" means an open-ended manual grant (admin).

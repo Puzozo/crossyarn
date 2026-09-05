@@ -9,7 +9,16 @@ async function loadProfile(usernameParam: string) {
   // Only public profiles are exposed; a private/nonexistent handle 404s identically.
   return db.user.findFirst({
     where: { username, profilePublic: true },
-    select: { id: true, name: true, username: true, bio: true, location: true, website: true }
+    select: {
+      id: true,
+      name: true,
+      username: true,
+      bio: true,
+      location: true,
+      website: true,
+      avatarData: true,
+      updatedAt: true
+    }
   });
 }
 
@@ -57,7 +66,10 @@ export default async function PublicProfilePage({
         username: user.username,
         bio: user.bio,
         location: user.location,
-        website: user.website
+        website: user.website,
+        avatarUrl: user.avatarData
+          ? `/api/users/${user.username}/avatar?v=${user.updatedAt.getTime()}`
+          : null
       }}
       patterns={patterns.map((p) => ({
         id: p.id,

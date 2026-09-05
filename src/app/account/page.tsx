@@ -15,6 +15,7 @@ export default async function AccountPage() {
         bio: true,
         location: true,
         website: true,
+        avatarData: true,
         profilePublic: true
       }
     })
@@ -31,6 +32,7 @@ export default async function AccountPage() {
         bio: user?.bio ?? "",
         location: user?.location ?? "",
         website: user?.website ?? "",
+        avatar: user?.avatarData ?? "",
         profilePublic: user?.profilePublic ?? false
       }}
     />

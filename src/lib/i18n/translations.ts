@@ -196,6 +196,10 @@ export const translations = {
     "profile.errUsernameRequired": "Щоб зробити профіль публічним, спершу вкажіть нікнейм",
     "profile.errUsernameFormat": "Нікнейм: 3–30 символів, лише латиниця, цифри та «_»",
     "profile.errWebsite": "Некоректне посилання (дозволені лише http/https)",
+    "profile.avatar": "Аватар",
+    "profile.avatarChange": "Змінити фото",
+    "profile.avatarRemove": "Прибрати",
+    "profile.errAvatar": "Не вдалося обробити зображення. Спробуйте інший файл.",
     "profile.errGeneric": "Не вдалося зберегти. Спробуйте ще раз.",
 
     // Public profile page
@@ -520,6 +524,10 @@ export const translations = {
     "profile.errUsernameRequired": "Set a username first to make your profile public",
     "profile.errUsernameFormat": "Username: 3–30 characters, only letters, digits and “_”",
     "profile.errWebsite": "Invalid link (only http/https allowed)",
+    "profile.avatar": "Avatar",
+    "profile.avatarChange": "Change photo",
+    "profile.avatarRemove": "Remove",
+    "profile.errAvatar": "Could not process the image. Try another file.",
     "profile.errGeneric": "Could not save. Please try again.",
 
     // Public profile page

@@ -3,7 +3,7 @@ import { z } from "zod";
 import { Prisma } from "@prisma/client";
 import { db } from "@/lib/db";
 import { requireSession } from "@/lib/auth/session";
-import { profileUpdateSchema, normalizeWebsite, RESERVED_USERNAMES } from "@/lib/profile/validation";
+import { profileUpdateSchema, normalizeWebsite, validateAvatar, RESERVED_USERNAMES } from "@/lib/profile/validation";
 
 export async function PATCH(request: Request) {
   let session;
@@ -35,6 +35,11 @@ export async function PATCH(request: Request) {
       return NextResponse.json({ error: "INVALID_WEBSITE" }, { status: 400 });
     }
 
+    const avatar = validateAvatar(body.avatar);
+    if (!avatar.ok) {
+      return NextResponse.json({ error: "INVALID_AVATAR" }, { status: 400 });
+    }
+
     if (username) {
       const taken = await db.user.findFirst({
         where: { username, NOT: { id: session.userId } },
@@ -53,6 +58,7 @@ export async function PATCH(request: Request) {
         bio,
         location,
         website: website.value,
+        avatarData: avatar.value,
         profilePublic: body.profilePublic
       },
       select: {
@@ -61,6 +67,7 @@ export async function PATCH(request: Request) {
         bio: true,
         location: true,
         website: true,
+        avatarData: true,
         profilePublic: true
       }
     });
