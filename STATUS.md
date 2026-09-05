@@ -1,9 +1,9 @@
 # STATUS — Crossyarn
 
 ## Next (що робити далі)
+- [ ] Задеплоїти лайки/обране + og:image + bucket fill (site-verifier дав SAFE, чекає на пуш)
 - [ ] Підключити реальний білінг WayForPay до `User.plan`/`premiumUntil` (є `/premium` + `lib/billing`, бракує провайдера)
-- [ ] Обране/вподобання схем у каталозі (лайки + сторінка збережених)
-- [ ] og:image для `/p/[id]` — потрібен PNG-рендер прев'ю (соцмережі не їдять SVG)
+- [ ] UI історії версій (`PatternVersion` пишеться в БД, ніде не показується)
 - [ ] Верифікувати наскрізно image-import (Python-сайдкар + черга `lib/import-pipeline`) — у проді ще stub
 
 ## Blocked
@@ -11,9 +11,8 @@
 - Реальний білінг чекає на налаштований WayForPay (мерчант + ключі)
 
 ## Done recently
-- ЗАДЕПЛОЄНО на прод (4 пуші цю сесію): профілі, /explore з прев'ю, premium-скелет, import-пайплайн (сплячий), sitemap/robots/OG, прев'ю на /patterns, аватари — site-verifier дав SAFE, деплої перевірені на crossyarn.online
+- Лайки/обране: модель `PatternLike`, API POST/DELETE `/api/patterns/[id]/like`, серця на /explore і /p, сторінка /saved + пункт «Збережені» в навігації (verified SAFE, ще не запушено)
+- og:image для /p/[id]: PNG 1200×630 через next/og, кирилиця через Noto Sans у public/fonts, PRIVATE → 404 (verified SAFE)
+- Bucket fill у редакторі: 4-зв'язна заливка по (символ+колір), клавіша F, бар'єри для мультиклітинкових символів, один крок undo (verified SAFE)
+- ЗАДЕПЛОЄНО на прод (4 пуші минулу сесію): профілі, /explore з прев'ю, premium-скелет, import-пайплайн (сплячий), sitemap/robots/OG, прев'ю на /patterns, аватари
 - Аватар-чіпи авторів у /explore + аватар у хедері через `/api/me/avatar` (e6f92e3)
-- Аватари профілю: завантаження з клієнтським кропом 256×256, `/api/users/[username]/avatar`, показ на /u (19651ae)
-- SEO-фундамент: sitemap.xml (revalidate 1h), robots.txt, OG-теги на /p, /u, /explore (b8a2f20)
-- Публічний каталог /explore: пошук (кирилиця case-insensitive), пагінація, SVG-прев'ю (e268199)
-- Розібрано і закомічено накопичену роботу: профілі (2750920), premium (37e5120), import (5fe7157)

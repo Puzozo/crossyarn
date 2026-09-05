@@ -12,6 +12,7 @@
 
 ### Pattern editor (`/editor/[id]`, `pattern-editor.tsx` + `editor-state.ts` Zustand store)
 - Grid painting with symbols + color palette, undo/redo, autosave (1.2s debounce)
+- **Bucket fill** (`isFillMode`/`fillCells` in store, toggle button in sidebar, F key, Esc exits): 4-connected flood fill over cells matching the clicked (symbolId, color); multi-cell symbols act as barriers and can't be the fill symbol (toast); one undo step; mutually exclusive with selection/rapport-insert modes
 - Resize via W×H inputs; +/− buttons on all four grid edges (add/remove row/column, min 1×1)
 - Multi-cell symbols up to 6×6 (`occupiedByAnchor` mechanism, explicit CSS grid placement)
 - **Zoom**: ± toolbar + Ctrl+scroll, 40%–250% (`zoomLevel` in store, scales cell px)
@@ -48,9 +49,11 @@
 - **Pattern thumbnails** `GET /api/patterns/[id]/thumbnail` (`src/lib/export/pattern-thumbnail.ts`): compact grid-only SVG — RLE-merged color runs + text glyphs (never the base64 icons of the full export), 8k element budget with block downsample for huge grids. Access mirrors `/p/[id]` (PRIVATE owner-only 404, no-store; public cached 1h). Used by `/explore`, `/u/[username]` and own `/patterns` cards with `?v=<updatedAt ms>` cache-buster.
 - **Avatars** (`User.avatarData` data URI ≤150KB): client center-crops to 256×256 JPEG in `ProfileEditor` before upload; `validateAvatar` enforces type + decoded size. Served binary via `GET /api/users/[username]/avatar` (public profiles only, 1h cache); `/u/[username]` falls back to the initial-letter circle. Shown as author chips on `/explore` cards and as the signed-in user's header circle via `GET /api/me/avatar` (session-scoped, `Vary: Cookie`, 5m cache).
 - **SEO**: `/sitemap.xml` (hourly revalidate; PUBLIC patterns + public profiles), `/robots.txt` (blocks authed areas, allows public thumbnails), `metadataBase` + OG tags on `/p`, `/u`, `/explore` (canonical origin in `src/lib/site.ts`).
+- **og:image** for `/p/[id]`: file-convention `opengraph-image.tsx` renders a 1200×630 PNG via `next/og` ImageResponse — pattern preview (thumbnail SVG in font-free `glyphs: "dot"` mode, embedded as data URI) + title text using `public/fonts/NotoSans-SemiBold.ttf` (Cyrillic-capable; read from `process.cwd()/public`, which works in dev and standalone because deploy copies `public/` and server.js chdirs). PRIVATE always 404s; falls back to a text-free card if the font is missing.
+- **Likes / saved** (`PatternLike` model, `@@unique([userId, patternId])`): `POST`/`DELETE /api/patterns/[id]/like` (idempotent, returns `{liked, count}`; likeable = viewable, same rule as `/p/[id]`). `LikeButton` client component (optimistic, redirects signed-out users to `/sign-in`) on `/p/[id]` header and `/explore` cards (counts fetched per page via one `groupBy`). `/saved` (authed, noindex, in header nav only when signed in): user's liked patterns, 24/page, unlike removes the card; likes of patterns flipped back to PRIVATE are hidden but kept.
 
 ### Not yet implemented
-- Bucket fill, image import end-to-end in prod (sidecar not deployed), WayForPay billing provider, og:image previews (needs PNG rendering), ads
+- Image import end-to-end in prod (sidecar not deployed), WayForPay billing provider, ads, version history UI
 
 ## Build & Deploy
 ```bash
