@@ -324,6 +324,21 @@ export const translations = {
 
     // Toast
     "toast.notEnoughSpace": "Недостатньо місця — потрібно {needed} клітинок, доступно {available}",
+    "toast.fillSingleCellOnly": "Заливка працює лише з позначками 1×1",
+
+    // Likes / saved
+    "nav.saved": "Збережені",
+    "like.like": "Подобається",
+    "like.liked": "Збережено",
+    "like.unlike": "Прибрати з обраного",
+    "saved.title": "Збережені схеми",
+    "saved.subtitle": "Схеми, які ви вподобали. Вони завжди під рукою.",
+    "saved.empty": "Тут поки що порожньо. Вподобайте схему в каталозі — і вона з'явиться тут.",
+    "saved.goExplore": "До каталогу",
+
+    // Editor — fill tool
+    "editor.fillMode": "Заливка",
+    "editor.fillHint": "Клікніть на клітинку — заллється суцільна область того ж кольору і позначки.",
 
     // Mobile nav
     "mobileNav.openMenu": "Відкрити меню",
@@ -652,6 +667,21 @@ export const translations = {
 
     // Toast
     "toast.notEnoughSpace": "Not enough space \u2014 need {needed} cells, {available} available",
+    "toast.fillSingleCellOnly": "Fill works only with 1\u00d71 symbols",
+
+    // Likes / saved
+    "nav.saved": "Saved",
+    "like.like": "Like",
+    "like.liked": "Saved",
+    "like.unlike": "Remove from saved",
+    "saved.title": "Saved patterns",
+    "saved.subtitle": "Patterns you liked. Always at hand.",
+    "saved.empty": "Nothing here yet. Like a pattern in the catalog and it will appear here.",
+    "saved.goExplore": "Go to catalog",
+
+    // Editor \u2014 fill tool
+    "editor.fillMode": "Fill",
+    "editor.fillHint": "Click a cell to fill the connected area of the same color and symbol.",
 
     // Mobile nav
     "mobileNav.openMenu": "Open menu",

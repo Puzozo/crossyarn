@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { PatternGrid } from "@/components/patterns/pattern-grid";
 import { PatternLegend } from "@/components/patterns/pattern-legend";
+import { LikeButton } from "@/components/patterns/like-button";
 import { useTranslation } from "@/lib/i18n/context";
 import { PatternDocument, PatternSymbol } from "@/lib/patterns/model";
 
@@ -10,6 +11,7 @@ type Author = { name: string | null; username: string } | null;
 
 type Props = {
   pattern: {
+    id: string;
     title: string;
     description: string | null;
     width: number;
@@ -18,17 +20,36 @@ type Props = {
   document: PatternDocument;
   usedSymbols: PatternSymbol[];
   author: Author;
+  likeCount: number;
+  likedByMe: boolean;
+  isAuthenticated: boolean;
 };
 
-export function PublicPatternContent({ pattern, document, usedSymbols, author }: Props) {
+export function PublicPatternContent({
+  pattern,
+  document,
+  usedSymbols,
+  author,
+  likeCount,
+  likedByMe,
+  isAuthenticated
+}: Props) {
   const { t } = useTranslation();
 
   return (
     <section className="space-y-6">
       <div className="rounded-3xl bg-white/70 border border-yarn-sand/50 p-6 sm:p-8 shadow-warm-sm">
-        <h1 className="font-display text-3xl font-bold text-yarn-charcoal break-words [overflow-wrap:anywhere]">
-          {pattern.title}
-        </h1>
+        <div className="flex flex-wrap items-start justify-between gap-3">
+          <h1 className="font-display text-3xl font-bold text-yarn-charcoal break-words [overflow-wrap:anywhere]">
+            {pattern.title}
+          </h1>
+          <LikeButton
+            patternId={pattern.id}
+            initialCount={likeCount}
+            initialLiked={likedByMe}
+            isAuthenticated={isAuthenticated}
+          />
+        </div>
         <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-yarn-warm-gray">
           <span>
             {pattern.width} × {pattern.height}

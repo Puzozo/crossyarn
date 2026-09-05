@@ -56,6 +56,17 @@ export default async function PublicPatternPage({
   const pattern = await loadPattern(id);
   if (!pattern) notFound();
 
+  const session = await getSession();
+  const [likeCount, myLike] = await Promise.all([
+    db.patternLike.count({ where: { patternId: id } }),
+    session
+      ? db.patternLike.findUnique({
+          where: { userId_patternId: { userId: session.userId, patternId: id } },
+          select: { id: true }
+        })
+      : Promise.resolve(null)
+  ]);
+
   const document = hydrateBuiltinSymbols(pattern.patternData as unknown as PatternDocument);
 
   const usedSymbolIds = new Set<string>();
@@ -76,6 +87,7 @@ export default async function PublicPatternPage({
   return (
     <PublicPatternContent
       pattern={{
+        id: pattern.id,
         title: pattern.title,
         description: pattern.description,
         width: pattern.width,
@@ -84,6 +96,9 @@ export default async function PublicPatternPage({
       document={document}
       usedSymbols={usedSymbols}
       author={author}
+      likeCount={likeCount}
+      likedByMe={Boolean(myLike)}
+      isAuthenticated={Boolean(session)}
     />
   );
 }

@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { db } from "@/lib/db";
+import { getSession } from "@/lib/auth/session";
 import { ExploreContent } from "@/components/explore/explore-content";
 
 export const metadata: Metadata = {
@@ -57,14 +58,39 @@ export default async function ExplorePage({
   const currentPage = Math.min(requestedPage, totalPages);
   const pageItems = filtered.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE);
 
+  // Like data only for the visible page (≤24 patterns): counts in one groupBy,
+  // the signed-in user's own likes in one findMany.
+  const session = await getSession();
+  const pageIds = pageItems.map((p) => p.id);
+  const [likeGroups, myLikes] = await Promise.all([
+    pageIds.length
+      ? db.patternLike.groupBy({
+          by: ["patternId"],
+          where: { patternId: { in: pageIds } },
+          _count: { patternId: true }
+        })
+      : Promise.resolve([]),
+    session && pageIds.length
+      ? db.patternLike.findMany({
+          where: { userId: session.userId, patternId: { in: pageIds } },
+          select: { patternId: true }
+        })
+      : Promise.resolve([])
+  ]);
+  const likeCountById = new Map(likeGroups.map((g) => [g.patternId, g._count.patternId]));
+  const likedIds = new Set(myLikes.map((l) => l.patternId));
+
   return (
     <ExploreContent
+      isAuthenticated={Boolean(session)}
       patterns={pageItems.map((p) => ({
         id: p.id,
         title: p.title,
         width: p.width,
         height: p.height,
         updatedAtMs: p.updatedAt.getTime(),
+        likeCount: likeCountById.get(p.id) ?? 0,
+        likedByMe: likedIds.has(p.id),
         // Same rule as /p/[id]: attribute only authors with a public profile.
         author:
           p.user.profilePublic && p.user.username
