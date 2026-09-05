@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -19,6 +20,7 @@ type PatternData = {
   width: number;
   height: number;
   visibility: string;
+  updatedAt: string;
 };
 
 export function PatternCard({ pattern }: { pattern: PatternData }) {
@@ -51,7 +53,18 @@ export function PatternCard({ pattern }: { pattern: PatternData }) {
   }
 
   return (
-    <article className="group rounded-2xl bg-white/70 border border-yarn-sand/50 p-6 shadow-warm-sm hover:shadow-warm transition-all duration-300 hover:-translate-y-0.5">
+    <article className="group rounded-2xl bg-white/70 border border-yarn-sand/50 shadow-warm-sm hover:shadow-warm transition-all duration-300 hover:-translate-y-0.5 overflow-hidden">
+      <Link href={`/editor/${pattern.id}`} className="relative block aspect-[4/3] border-b border-yarn-sand/40 bg-white">
+        <Image
+          src={`/api/patterns/${pattern.id}/thumbnail?v=${Date.parse(pattern.updatedAt)}`}
+          alt={pattern.title}
+          fill
+          unoptimized
+          loading="lazy"
+          className="object-contain p-3"
+        />
+      </Link>
+      <div className="p-6">
       <div className="flex items-start justify-between gap-4">
         <div className="min-w-0">
           <h2 className="font-display text-lg font-semibold text-yarn-charcoal group-hover:text-yarn-terracotta transition-colors break-words [overflow-wrap:anywhere] line-clamp-2">
@@ -97,6 +110,7 @@ export function PatternCard({ pattern }: { pattern: PatternData }) {
         >
           {deleting ? "..." : t("patterns.delete")}
         </button>
+      </div>
       </div>
     </article>
   );

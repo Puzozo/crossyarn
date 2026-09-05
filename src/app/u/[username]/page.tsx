@@ -22,9 +22,16 @@ export async function generateMetadata({
   const user = await loadProfile(username);
   if (!user || !user.username) return { title: "Crossyarn" };
   const name = user.name?.trim() || user.username;
+  const description = user.bio ?? `Публічні схеми в'язання від ${name} на Crossyarn.`;
   return {
     title: `${name} (@${user.username}) — Crossyarn`,
-    description: user.bio ?? `Публічні схеми в'язання від ${name} на Crossyarn.`
+    description,
+    openGraph: {
+      title: `${name} (@${user.username})`,
+      description,
+      url: `/u/${user.username}`,
+      type: "profile"
+    }
   };
 }
 

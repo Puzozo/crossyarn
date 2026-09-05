@@ -5,7 +5,12 @@ import { ExploreContent } from "@/components/explore/explore-content";
 export const metadata: Metadata = {
   title: "Каталог схем — Crossyarn",
   description:
-    "Публічні схеми в'язання від авторів Crossyarn: перегляд, пошук і друк безкоштовних схем."
+    "Публічні схеми в'язання від авторів Crossyarn: перегляд, пошук і друк безкоштовних схем.",
+  openGraph: {
+    title: "Каталог схем — Crossyarn",
+    description: "Публічні схеми в'язання від авторів Crossyarn.",
+    url: "/explore"
+  }
 };
 
 const PAGE_SIZE = 24;

@@ -31,9 +31,17 @@ export async function generateMetadata({
   const { id } = await params;
   const pattern = await loadPattern(id);
   if (!pattern) return { title: "Crossyarn" };
+  const description =
+    pattern.description ?? `Схема в'язання ${pattern.width} × ${pattern.height} на Crossyarn.`;
   return {
     title: `${pattern.title} — Crossyarn`,
-    description: pattern.description ?? undefined,
+    description,
+    // OG on UNLISTED too — link previews are the whole point of link-sharing.
+    openGraph: {
+      title: pattern.title,
+      description,
+      url: `/p/${id}`
+    },
     // Only fully public patterns should be indexed; unlisted stays out of search.
     robots: pattern.visibility === "PUBLIC" ? undefined : { index: false, follow: false }
   };
