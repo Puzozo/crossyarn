@@ -112,11 +112,14 @@ type EditorState = {
   rapportInsertId: string | null;
   rapportMirror: RapportMirror;
   zoomLevel: number;
+  isFillMode: boolean;
 
   setZoom: (level: number) => void;
   setRapportMirror: (mirror: RapportMirror) => void;
   setPattern: (pattern: PatternDocument) => void;
   paintCell: (row: number, column: number) => void;
+  toggleFillMode: () => void;
+  fillCells: (row: number, column: number) => void;
   setSelectedSymbolId: (symbolId: string) => void;
   setSelectedColor: (color: string) => void;
   setSymbols: (symbols: PatternDocument["symbols"]) => void;
@@ -159,6 +162,7 @@ export const usePatternEditorStore = create<EditorState>((set, get) => ({
   rapportInsertId: null,
   rapportMirror: "none",
   zoomLevel: 1,
+  isFillMode: false,
 
   setZoom: (level) => set({ zoomLevel: Math.max(0.4, Math.min(2.5, level)) }),
   setRapportMirror: (rapportMirror) => set({ rapportMirror }),
@@ -212,6 +216,66 @@ export const usePatternEditorStore = create<EditorState>((set, get) => ({
       for (let c = column; c < column + width; c++) {
         if (r === row && c === column) continue;
         next.cells[r][c] = { symbolId: "empty", color: state.selectedColor, occupiedByAnchor: [row, column] };
+      }
+    }
+
+    set({ pattern: next, history: [...state.history, previous], future: [] });
+  },
+
+  toggleFillMode: () => {
+    const state = get();
+    set({
+      isFillMode: !state.isFillMode,
+      // Fill is mutually exclusive with selection and rapport-insert modes
+      isSelectionMode: false,
+      isSelecting: false,
+      selectionStart: null,
+      selectionEnd: null,
+      rapportInsertId: null
+    });
+  },
+
+  fillCells: (row, column) => {
+    const state = get();
+    if (!state.pattern) return;
+    const symbols = state.pattern.symbols;
+
+    // Multi-cell symbols can't tile a flood region — restrict fill to 1×1.
+    if (getSymbolWidth(state.selectedSymbolId, symbols) > 1 || getSymbolHeight(state.selectedSymbolId, symbols) > 1) {
+      set({ toastData: { key: "toast.fillSingleCellOnly" } });
+      return;
+    }
+
+    const start = state.pattern.cells[row]?.[column];
+    if (!start || start.occupiedByAnchor) return;
+    // Multi-cell anchors act as barriers too, not fillable seeds.
+    if (getSymbolWidth(start.symbolId, symbols) > 1 || getSymbolHeight(start.symbolId, symbols) > 1) return;
+
+    const targetSymbolId = start.symbolId;
+    const targetColor = (start.color ?? "").trim().toLowerCase();
+    const newColor = state.selectedColor;
+    if (targetSymbolId === state.selectedSymbolId && targetColor === newColor.trim().toLowerCase()) return;
+
+    const previous = clonePattern(state.pattern);
+    const next = clonePattern(state.pattern);
+    const { width, height } = next;
+
+    // 4-connected flood fill over cells matching the clicked (symbol, color).
+    const visited = new Uint8Array(width * height);
+    const stack: [number, number][] = [[row, column]];
+    visited[row * width + column] = 1;
+    while (stack.length > 0) {
+      const [r, c] = stack.pop()!;
+      next.cells[r][c] = { symbolId: state.selectedSymbolId, color: newColor };
+      for (const [nr, nc] of [[r - 1, c], [r + 1, c], [r, c - 1], [r, c + 1]] as const) {
+        if (nr < 0 || nr >= height || nc < 0 || nc >= width) continue;
+        if (visited[nr * width + nc]) continue;
+        const cell = next.cells[nr][nc];
+        if (cell.occupiedByAnchor) continue;
+        if (cell.symbolId !== targetSymbolId) continue;
+        if ((cell.color ?? "").trim().toLowerCase() !== targetColor) continue;
+        visited[nr * width + nc] = 1;
+        stack.push([nr, nc]);
       }
     }
 
@@ -329,6 +393,7 @@ export const usePatternEditorStore = create<EditorState>((set, get) => ({
       selectionStart: next ? state.selectionStart : null,
       selectionEnd: next ? state.selectionEnd : null,
       rapportInsertId: next ? null : state.rapportInsertId,
+      isFillMode: next ? false : state.isFillMode,
     });
   },
 
@@ -347,9 +412,9 @@ export const usePatternEditorStore = create<EditorState>((set, get) => ({
       return;
     }
 
-    let r1 = Math.min(state.selectionStart[0], state.selectionEnd[0]);
+    const r1 = Math.min(state.selectionStart[0], state.selectionEnd[0]);
     let r2 = Math.max(state.selectionStart[0], state.selectionEnd[0]);
-    let c1 = Math.min(state.selectionStart[1], state.selectionEnd[1]);
+    const c1 = Math.min(state.selectionStart[1], state.selectionEnd[1]);
     let c2 = Math.max(state.selectionStart[1], state.selectionEnd[1]);
 
     // Expand to fully include any multi-cell symbol with anchor in selection
@@ -453,7 +518,8 @@ export const usePatternEditorStore = create<EditorState>((set, get) => ({
       isSelectionMode: false,
       isSelecting: false,
       selectionStart: null,
-      selectionEnd: null
+      selectionEnd: null,
+      isFillMode: false
     });
   },
 

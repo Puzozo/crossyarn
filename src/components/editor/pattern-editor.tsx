@@ -64,7 +64,10 @@ export function PatternEditor({ patternId, initialPattern, title, description }:
     zoomLevel,
     setZoom,
     rapportMirror,
-    setRapportMirror
+    setRapportMirror,
+    isFillMode,
+    toggleFillMode,
+    fillCells
   } = usePatternEditorStore();
   const { t } = useTranslation();
   const [saveState, setSaveState] = useState("saved");
@@ -190,6 +193,11 @@ export function PatternEditor({ patternId, initialPattern, title, description }:
       if (e.key === "Escape") {
         if (store.rapportInsertId) store.cancelRapportInsert();
         if (store.isSelectionMode) store.toggleSelectionMode();
+        if (store.isFillMode) store.toggleFillMode();
+        return;
+      }
+      if (!e.ctrlKey && !e.metaKey && !e.altKey && e.key.toLowerCase() === "f") {
+        store.toggleFillMode();
         return;
       }
       if (!e.ctrlKey && !e.metaKey && !e.altKey && /^[1-9]$/.test(e.key)) {
@@ -296,6 +304,25 @@ export function PatternEditor({ patternId, initialPattern, title, description }:
           <span className="font-mono text-sm leading-none">{pattern.view.skipPurlRows ? "1 3 5" : "1 2 3"}</span>
           {t("editor.skipPurlRows")}
         </button>
+
+        {/* Fill tool */}
+        <button type="button" onClick={toggleFillMode} title={`${t("editor.fillMode")} (F)`}
+          className={`flex w-full items-center gap-2 rounded-xl px-3 py-2 text-xs font-medium transition-colors ${
+            isFillMode
+              ? "bg-yarn-terracotta-light text-yarn-terracotta border border-yarn-terracotta/30"
+              : "bg-yarn-oatmeal/60 text-yarn-charcoal hover:bg-yarn-oatmeal"
+          }`}>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+            <path d="m19 11-8-8-8.6 8.6a2 2 0 0 0 0 2.8l5.2 5.2c.8.8 2 .8 2.8 0L19 11Z" />
+            <path d="m5 2 5 5" />
+            <path d="M2 13h15" />
+            <path d="M22 20a2 2 0 1 1-4 0c0-1.6 1.7-2.4 2-4 .3 1.6 2 2.4 2 4Z" />
+          </svg>
+          {t("editor.fillMode")}
+        </button>
+        {isFillMode && (
+          <p className="text-[11px] text-yarn-warm-gray/80 -mt-2 px-1">{t("editor.fillHint")}</p>
+        )}
 
         {/* Symbols */}
         <div className="space-y-2">
@@ -599,6 +626,7 @@ export function PatternEditor({ patternId, initialPattern, title, description }:
                     onClick={() => {
                       if (isSelectionMode) return;
                       if (rapportInsertId) { insertRapport(rowIndex, columnIndex); return; }
+                      if (isFillMode) { fillCells(rowIndex, columnIndex); return; }
                       paintCell(rowIndex, columnIndex);
                     }}
                     onPointerDown={(e) => {
@@ -612,7 +640,7 @@ export function PatternEditor({ patternId, initialPattern, title, description }:
                     }}
                     className={[
                       "flex items-center justify-center text-xs font-semibold text-yarn-charcoal transition-shadow relative",
-                      isSelectionMode ? "cursor-crosshair" : rapportInsertId ? "cursor-crosshair hover:ring-2 hover:ring-amber-400/70" : "hover:ring-1 hover:ring-yarn-terracotta/40",
+                      isSelectionMode ? "cursor-crosshair" : rapportInsertId ? "cursor-crosshair hover:ring-2 hover:ring-amber-400/70" : isFillMode ? "cursor-cell hover:ring-2 hover:ring-yarn-terracotta/60" : "hover:ring-1 hover:ring-yarn-terracotta/40",
                       selected ? "ring-2 ring-inset ring-blue-500" : ""
                     ].join(" ")}
                     style={{
