@@ -22,6 +22,15 @@ function isBackground(color: string | undefined): boolean {
  */
 const MAX_ELEMENTS = 8000;
 
+type ThumbnailOptions = {
+  /**
+   * "text" (default) draws symbol glyphs as <text> — fine for browsers.
+   * "dot" draws them as small vector dots instead: font-independent, for
+   * rasterizers without font support (og:image via satori/resvg).
+   */
+  glyphs?: "text" | "dot";
+};
+
 /**
  * Compact grid-only SVG preview for catalog/profile cards: color runs are
  * RLE-merged per row and symbols are drawn as text glyphs — never as the
@@ -32,7 +41,8 @@ const MAX_ELEMENTS = 8000;
  * hidden row are simply dropped (the full export projects them), and past the
  * element budget the grid is downsampled to color blocks without glyphs.
  */
-export function patternToThumbnailSvg(pattern: PatternDocument): string {
+export function patternToThumbnailSvg(pattern: PatternDocument, options: ThumbnailOptions = {}): string {
+  const glyphMode = options.glyphs ?? "text";
   const skipPurl = pattern.view.skipPurlRows ?? false;
   const visibleRowIndexes = Array.from({ length: pattern.height }, (_, i) => i)
     .filter((i) => !skipPurl || (pattern.height - i) % 2 === 1);
@@ -73,11 +83,17 @@ export function patternToThumbnailSvg(pattern: PatternDocument): string {
       const cell = row[col];
       if (!cell || cell.occupiedByAnchor || cell.symbolId === "empty") continue;
       const symbol = symbolById.get(cell.symbolId);
-      const glyph = symbol?.glyph ?? "·";
       const span = Math.min(symbol?.width ?? 1, width - col);
-      texts.push(
-        `<text x="${col + span / 2}" y="${displayIdx + 0.78}" text-anchor="middle" font-size="0.8" font-family="sans-serif" fill="#1f2937">${escapeXml(glyph)}</text>`
-      );
+      if (glyphMode === "dot") {
+        texts.push(
+          `<circle cx="${col + span / 2}" cy="${displayIdx + 0.5}" r="0.22" fill="#1f2937"/>`
+        );
+      } else {
+        const glyph = symbol?.glyph ?? "·";
+        texts.push(
+          `<text x="${col + span / 2}" y="${displayIdx + 0.78}" text-anchor="middle" font-size="0.8" font-family="sans-serif" fill="#1f2937">${escapeXml(glyph)}</text>`
+        );
+      }
     }
   });
 
