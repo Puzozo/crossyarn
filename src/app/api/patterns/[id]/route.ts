@@ -79,6 +79,9 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
     if (title.length < 2 || title.length > 120) {
       return NextResponse.json({ error: "Некоректна назва" }, { status: 400 });
     }
+    if (description.length > 500) {
+      return NextResponse.json({ error: "Задовгий опис" }, { status: 400 });
+    }
 
     const existing = await db.pattern.findFirst({ where: { id, userId: session.userId } });
     if (!existing) {

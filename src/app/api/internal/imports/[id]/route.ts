@@ -1,3 +1,4 @@
+import { timingSafeEqual } from "node:crypto";
 import { NextResponse } from "next/server";
 import { completeJob } from "@/lib/import-pipeline/queue";
 import { ImportErrorType, ImportResult } from "@/lib/import-pipeline/contracts";
@@ -13,9 +14,9 @@ export const runtime = "nodejs";
  * listener. The Python process reaches it over 127.0.0.1.
  */
 export async function PATCH(request: Request, { params }: { params: Promise<{ id: string }> }) {
-  const key = request.headers.get("X-Internal-Key");
-  const expected = process.env.INTERNAL_API_KEY;
-  if (!expected || key !== expected) {
+  const key = Buffer.from(request.headers.get("X-Internal-Key") ?? "");
+  const expected = Buffer.from(process.env.INTERNAL_API_KEY ?? "");
+  if (expected.length === 0 || key.length !== expected.length || !timingSafeEqual(key, expected)) {
     return NextResponse.json({ error: "UNAUTHORIZED" }, { status: 401 });
   }
 

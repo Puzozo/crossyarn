@@ -1,3 +1,5 @@
 crossyarn.online {
+    # Internal service-to-service callbacks are reached over 127.0.0.1 only.
+    respond /api/internal/* 404
     reverse_proxy localhost:3000
 }

@@ -7,6 +7,7 @@ the shared INTERNAL_API_KEY header in both directions — never a user session.
 """
 import os
 import asyncio
+import hmac
 import httpx
 from fastapi import FastAPI, Header, HTTPException
 from pydantic import BaseModel
@@ -28,7 +29,7 @@ class ProcessRequest(BaseModel):
 
 
 def _require_key(x_internal_key: str | None):
-    if not INTERNAL_API_KEY or x_internal_key != INTERNAL_API_KEY:
+    if not INTERNAL_API_KEY or not hmac.compare_digest(x_internal_key or "", INTERNAL_API_KEY):
         raise HTTPException(status_code=401, detail="unauthorized")
 
 
