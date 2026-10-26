@@ -17,8 +17,17 @@ export type SessionPayload = {
   email: string;
 };
 
+// Tokens issued before sessionVersion existed have no `sv`; treat them as 0 so
+// the rollout doesn't sign everyone out.
+type SessionClaims = SessionPayload & { sv?: number };
+
 export async function createSession(payload: SessionPayload) {
-  const token = await new SignJWT(payload)
+  const user = await db.user.findUnique({
+    where: { id: payload.userId },
+    select: { sessionVersion: true }
+  });
+  const claims: SessionClaims = { ...payload, sv: user?.sessionVersion ?? 0 };
+  const token = await new SignJWT(claims)
     .setProtectedHeader({ alg: "HS256" })
     .setIssuedAt()
     .setExpirationTime("7d")
@@ -41,14 +50,16 @@ export async function getSession() {
     return null;
   }
   try {
-    const verified = await jwtVerify<SessionPayload>(token, getSecret());
-    // Reject sessions of users blocked after the token was issued (token lives 7d).
+    const verified = await jwtVerify<SessionClaims>(token, getSecret());
+    // Reject sessions of users blocked after the token was issued (token lives 7d),
+    // and sessions issued before the last password reset.
     const user = await db.user.findUnique({
       where: { id: verified.payload.userId },
-      select: { isDisabled: true }
+      select: { isDisabled: true, sessionVersion: true }
     });
     if (!user || user.isDisabled) return null;
-    return verified.payload;
+    if ((verified.payload.sv ?? 0) !== user.sessionVersion) return null;
+    return { userId: verified.payload.userId, email: verified.payload.email };
   } catch {
     return null;
   }

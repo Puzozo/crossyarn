@@ -1,8 +1,10 @@
 import type { Metadata } from "next";
+import type { Prisma } from "@prisma/client";
 import { db } from "@/lib/db";
 import { getSession } from "@/lib/auth/session";
 import { ExploreContent } from "@/components/explore/explore-content";
 import { parseTags } from "@/lib/utils";
+import { translit } from "@/lib/translit";
 
 export const metadata: Metadata = {
   title: "Каталог схем — Crossyarn",
@@ -40,11 +42,14 @@ export default async function ExplorePage({
   const sortedTags = [...allTags].sort();
 
   // Build the SQL-like Prisma filter: combine titleTranslit search + tag filter.
-  const where: any = { visibility: "PUBLIC" };
+  const where: Prisma.PatternWhereInput = { visibility: "PUBLIC" };
   if (query) {
+    // SQLite has no `mode: "insensitive"` (Prisma throws → 500) and its LIKE folds
+    // case only for ASCII. Matching the transliterated query against titleTranslit
+    // makes Cyrillic searches case-insensitive too.
     where.OR = [
-      { titleTranslit: { contains: query, mode: "insensitive" } },
-      { title: { contains: query, mode: "insensitive" } },
+      { titleTranslit: { contains: translit(query) } },
+      { title: { contains: query } },
       { tags: { contains: query } },
     ];
   }

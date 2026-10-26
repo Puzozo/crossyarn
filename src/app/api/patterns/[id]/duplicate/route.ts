@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { requireSession } from "@/lib/auth/session";
+import { translit } from "@/lib/translit";
 
 export async function POST(_: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
@@ -15,10 +16,16 @@ export async function POST(_: Request, { params }: { params: Promise<{ id: strin
       return NextResponse.json({ error: "Not found" }, { status: 404 });
     }
 
+    // Keep within the 120-char title limit enforced on create/update.
+    const suffix = " (копія)";
+    const title = existing.title.slice(0, 120 - suffix.length) + suffix;
+
     const duplicate = await db.pattern.create({
       data: {
         userId: session.userId,
-        title: `${existing.title} (копія)`,
+        title,
+        titleTranslit: translit(title),
+        tags: existing.tags,
         description: existing.description,
         width: existing.width,
         height: existing.height,

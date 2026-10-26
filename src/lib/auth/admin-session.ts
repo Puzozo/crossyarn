@@ -15,8 +15,16 @@ export type AdminSessionPayload = {
   email: string;
 };
 
+// `sv` mirrors User.sessionVersion (see session.ts); absent on older tokens = 0.
+type AdminSessionClaims = AdminSessionPayload & { sv?: number };
+
 export async function createAdminSession(payload: AdminSessionPayload) {
-  const token = await new SignJWT(payload)
+  const user = await db.user.findUnique({
+    where: { id: payload.userId },
+    select: { sessionVersion: true }
+  });
+  const claims: AdminSessionClaims = { ...payload, sv: user?.sessionVersion ?? 0 };
+  const token = await new SignJWT(claims)
     .setProtectedHeader({ alg: "HS256" })
     .setIssuedAt()
     .setExpirationTime("8h")
@@ -37,15 +45,16 @@ export async function getAdminSession(): Promise<AdminSessionPayload | null> {
   const token = cookieStore.get(COOKIE_NAME)?.value;
   if (!token) return null;
   try {
-    const verified = await jwtVerify<AdminSessionPayload>(token, getSecret());
+    const verified = await jwtVerify<AdminSessionClaims>(token, getSecret());
     // Re-validate against the DB so a demoted/blocked admin loses access immediately
     // instead of keeping it until the 8h token expires.
     const user = await db.user.findUnique({
       where: { id: verified.payload.userId },
-      select: { isAdmin: true, isDisabled: true }
+      select: { isAdmin: true, isDisabled: true, sessionVersion: true }
     });
     if (!user || !user.isAdmin || user.isDisabled) return null;
-    return verified.payload;
+    if ((verified.payload.sv ?? 0) !== user.sessionVersion) return null;
+    return { userId: verified.payload.userId, email: verified.payload.email };
   } catch {
     return null;
   }

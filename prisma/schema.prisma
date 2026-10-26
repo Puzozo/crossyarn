@@ -33,6 +33,9 @@ model User {
   // Password reset — token is a random string, hashed before storing.
   resetToken     String?  @unique
   resetTokenExpiry DateTime?
+  // Bumped on password reset; session JWTs carry it (`sv`) and are rejected once
+  // it no longer matches, so a reset signs out every other device.
+  sessionVersion Int      @default(0)
   createdAt    DateTime           @default(now())
   updatedAt    DateTime           @updatedAt
   patterns     Pattern[]

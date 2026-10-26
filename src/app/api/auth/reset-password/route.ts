@@ -34,13 +34,14 @@ export async function POST(req: Request) {
     // Hash the new password
     const passwordHash = await bcrypt.hash(password, 12);
 
-    // Update password and clear reset token
+    // Update password, clear reset token and sign out all existing sessions
     await db.user.update({
       where: { id: user.id },
       data: {
         passwordHash,
         resetToken: null,
         resetTokenExpiry: null,
+        sessionVersion: { increment: 1 },
       },
     });
 

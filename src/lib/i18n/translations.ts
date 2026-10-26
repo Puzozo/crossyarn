@@ -133,6 +133,10 @@ export const translations = {
     "notFound.title": "Сторінку не знайдено",
     "notFound.description": "Можливо, її було видалено або адреса введена неправильно.",
     "notFound.back": "До моїх схем",
+    "error.title": "Щось пішло не так",
+    "error.description": "Сталася неочікувана помилка. Спробуйте ще раз або поверніться пізніше.",
+    "error.retry": "Спробувати ще раз",
+    "error.home": "На головну",
 
     // Print
     "print.breadcrumb": "Схеми",
@@ -539,6 +543,10 @@ export const translations = {
     "notFound.title": "Page not found",
     "notFound.description": "It may have been deleted, or the address was typed incorrectly.",
     "notFound.back": "Back to my patterns",
+    "error.title": "Something went wrong",
+    "error.description": "An unexpected error occurred. Try again or come back later.",
+    "error.retry": "Try again",
+    "error.home": "Go home",
 
     // Print
     "print.breadcrumb": "Patterns",
