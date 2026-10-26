@@ -181,7 +181,8 @@ export const translations = {
     "auth.passwordTooShort": "Пароль має містити щонайменше 8 символів.",
     "auth.confirmPassword": "Підтвердіть пароль",
     "auth.confirmPasswordPlaceholder": "повторіть новий пароль",
-    "auth.invalidToken": "Недійсне або прострочене посилання для відновлення. Запитайте нове на сторінці входу.",
+    "auth.invalidToken": "Посилання недійсне: його вже використано або термін дії минув.",
+    "auth.requestNewLink": "Запитати нове посилання",
     "auth.newPassword": "Новий пароль",
     "auth.backToSignIn": "Повернутись до входу",
 
@@ -586,7 +587,8 @@ export const translations = {
     "auth.passwordTooShort": "Password must be at least 8 characters.",
     "auth.confirmPassword": "Confirm password",
     "auth.confirmPasswordPlaceholder": "repeat new password",
-    "auth.invalidToken": "Invalid or expired reset link. Request a new one from the sign-in page.",
+    "auth.invalidToken": "This link is no longer valid: it was already used or has expired.",
+    "auth.requestNewLink": "Request a new link",
     "auth.newPassword": "New password",
     "auth.backToSignIn": "Back to sign in",
 

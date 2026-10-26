@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useTranslation } from "@/lib/i18n/context";
 
-export function ResetPasswordContent() {
+export function ResetPasswordContent({ tokenValid }: { tokenValid: boolean }) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { t } = useTranslation();
@@ -41,8 +41,8 @@ export function ResetPasswordContent() {
         body: JSON.stringify({ token, password }),
       });
       if (!res.ok) {
-        const data = await res.json().catch(() => null);
-        setError(data?.error ?? t("auth.genericError"));
+        // 400 = token used/expired meanwhile; the API message is English-only
+        setError(res.status === 400 ? t("auth.invalidToken") : t("auth.genericError"));
         return;
       }
       setSuccess(true);
@@ -104,9 +104,17 @@ export function ResetPasswordContent() {
           </div>
         ) : (
           <form onSubmit={handleSubmit} className="rounded-2xl bg-white/80 backdrop-blur border border-yarn-sand/50 p-8 shadow-warm space-y-5">
-            {!token ? (
-              <div className="rounded-xl bg-yellow-50 border border-yellow-200 px-4 py-3 text-sm text-yellow-700">
-                {t("auth.invalidToken")}
+            {!token || !tokenValid ? (
+              <div className="space-y-4">
+                <div className="rounded-xl bg-yellow-50 border border-yellow-200 px-4 py-3 text-sm text-yellow-700">
+                  {t("auth.invalidToken")}
+                </div>
+                <Link
+                  href="/forgot-password"
+                  className="block rounded-xl bg-yarn-terracotta px-5 py-2.5 text-center text-sm font-semibold text-white shadow-warm-sm transition-colors hover:bg-yarn-terracotta-hover"
+                >
+                  {t("auth.requestNewLink")}
+                </Link>
               </div>
             ) : (
               <>
