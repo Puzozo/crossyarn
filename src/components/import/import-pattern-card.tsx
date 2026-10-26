@@ -82,19 +82,24 @@ export function ImportPatternCard({ isPremium }: { isPremium: boolean }) {
 
   return (
     <>
-      <label className="inline-flex cursor-pointer items-center gap-2">
-        <input
-          ref={inputRef}
-          type="file"
-          accept="image/png,image/jpeg,image/webp"
-          className="hidden"
-          onChange={handleImport}
-          disabled={pending}
-        />
-        <Button type="button" variant="secondary" disabled={pending}>
-          {pending ? t("import.uploading") : t("patterns.importBtn")}
-        </Button>
-      </label>
+      <input
+        ref={inputRef}
+        type="file"
+        accept="image/png,image/jpeg,image/webp"
+        className="hidden"
+        onChange={handleImport}
+        disabled={pending}
+      />
+      {/* Open the picker explicitly: a <button> nested in a <label> swallows the
+          click, so the label never forwards it to the hidden input. */}
+      <Button
+        type="button"
+        variant="secondary"
+        disabled={pending}
+        onClick={() => inputRef.current?.click()}
+      >
+        {pending ? t("import.uploading") : t("patterns.importBtn")}
+      </Button>
       {error ? <span className="ml-2 text-sm text-red-600">{error}</span> : null}
       {gateOpen && <PremiumGate onClose={() => setGateOpen(false)} />}
     </>
