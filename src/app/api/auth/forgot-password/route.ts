@@ -65,7 +65,7 @@ export async function POST(req: Request) {
         // Created per request: the constructor throws without RESEND_API_KEY,
         // which at module level breaks `next build` and the whole route.
         const resend = new Resend(process.env.RESEND_API_KEY);
-        await resend.emails.create({
+        const { error } = await resend.emails.create({
           from: "Crossyarn <noreply@crossyarn.online>",
           to: [normalizedEmail],
           subject: "Відновлення пароля / Reset your password — Crossyarn",
@@ -77,6 +77,9 @@ export async function POST(req: Request) {
             `<hr style="border:none;border-top:1px solid #E8DFD3;margin:24px 0;">` +
             `<p>Hi!</p><p>Someone (probably you) requested a password reset for your Crossyarn account.</p><p>If this was you, click the button below:</p>${button("Reset password")}<p>The link expires in 24 hours.</p><p>If this wasn't you — just ignore this email. Your password hasn't changed.</p><p>Best regards,<br>The Crossyarn Team</p>`
         });
+        // The SDK reports API failures (bad key, unverified domain) in the
+        // result instead of throwing, so they'd be silent without this.
+        if (error) console.error("Failed to send password reset email:", error);
       } catch (emailError) {
         // Log the error but don't leak it to the user
         console.error("Failed to send password reset email:", emailError);
