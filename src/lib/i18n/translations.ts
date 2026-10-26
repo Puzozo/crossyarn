@@ -340,6 +340,16 @@ export const translations = {
     "editor.fillMode": "Заливка",
     "editor.fillHint": "Клікніть на клітинку — заллється суцільна область того ж кольору і позначки.",
 
+    // Version history
+    "versions.title": "Історія",
+    "versions.listLabel": "Історія версій",
+    "versions.versionLabel": "Версія {n}",
+    "versions.current": "Поточна",
+    "versions.restore": "Відновити цю версію",
+    "versions.restored": "Версію відновлено",
+    "versions.loading": "Завантаження історії…",
+    "versions.restoreConfirm": "Це створить новий знімок із вмістом цієї версії. Продовжити?",
+
     // Mobile nav
     "mobileNav.openMenu": "Відкрити меню",
     "mobileNav.closeMenu": "Закрити меню"
@@ -682,6 +692,16 @@ export const translations = {
     // Editor \u2014 fill tool
     "editor.fillMode": "Fill",
     "editor.fillHint": "Click a cell to fill the connected area of the same color and symbol.",
+
+    // Version history
+    "versions.title": "History",
+    "versions.listLabel": "Version history",
+    "versions.versionLabel": "Version {n}",
+    "versions.current": "Current",
+    "versions.restore": "Restore this version",
+    "versions.restored": "Version restored",
+    "versions.loading": "Loading history…",
+    "versions.restoreConfirm": "This creates a new snapshot with the restored content. Continue?",
 
     // Mobile nav
     "mobileNav.openMenu": "Open menu",

@@ -7,6 +7,7 @@ import { PatternDocument } from "@/lib/patterns/model";
 import { usePatternEditorStore } from "@/lib/patterns/editor-state";
 import { useTranslation } from "@/lib/i18n/context";
 import { TranslationKey } from "@/lib/i18n/translations";
+import { VersionHistory } from "./version-history";
 
 type Props = {
   patternId: string;
@@ -323,6 +324,9 @@ export function PatternEditor({ patternId, initialPattern, title, description }:
         {isFillMode && (
           <p className="text-[11px] text-yarn-warm-gray/80 -mt-2 px-1">{t("editor.fillHint")}</p>
         )}
+
+        {/* Version history */}
+        <VersionHistory patternId={patternId} />
 
         {/* Symbols */}
         <div className="space-y-2">
