@@ -271,6 +271,14 @@ export const translations = {
     "publicPattern.notPublic": "Ця схема недоступна",
     "publicPattern.share": "Поділитися",
     "publicPattern.linkCopied": "Посилання скопійовано!",
+    "knitting.start": "Режим в'язання",
+    "knitting.stop": "Вийти з режиму",
+    "knitting.rowOf": "Ряд {row} з {total}",
+    "knitting.prev": "Попередній ряд",
+    "knitting.next": "Наступний ряд",
+    "knitting.reset": "Скинути прогрес",
+    "knitting.hint": "Натисніть на номер ряду, щоб перейти до нього. Клавіші: → наступний, ← попередній.",
+    "knitting.progress": "Зв'язано {percent}%",
 
     // Symbol library
     "symbols.title": "Бібліотека позначок",
@@ -668,6 +676,14 @@ export const translations = {
     "publicPattern.notPublic": "This pattern is unavailable",
     "publicPattern.share": "Share",
     "publicPattern.linkCopied": "Link copied!",
+    "knitting.start": "Knitting mode",
+    "knitting.stop": "Exit knitting mode",
+    "knitting.rowOf": "Row {row} of {total}",
+    "knitting.prev": "Previous row",
+    "knitting.next": "Next row",
+    "knitting.reset": "Reset progress",
+    "knitting.hint": "Click a row number to jump to it. Keys: → next, ← previous.",
+    "knitting.progress": "{percent}% done",
 
     // Symbol library
     "symbols.title": "Symbol Library",

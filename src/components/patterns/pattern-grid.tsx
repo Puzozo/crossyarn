@@ -11,7 +11,15 @@ import { PatternDocument } from "@/lib/patterns/model";
  * `print:` utility classes are kept so the print page renders identically; they
  * are inert on screen (public page).
  */
-export function PatternGrid({ document }: { document: PatternDocument }) {
+export function PatternGrid({
+  document,
+  highlightRow,
+  onRowClick
+}: {
+  document: PatternDocument;
+  highlightRow?: number; // row number as shown on the scheme (document.height - rowIndex)
+  onRowClick?: (rowNumber: number) => void;
+}) {
   const skipPurl = document.view.skipPurlRows ?? false;
   const visibleRowIndexes = Array.from({ length: document.height }, (_, i) => i).filter(
     (i) => !skipPurl || (document.height - i) % 2 === 1
@@ -57,7 +65,11 @@ export function PatternGrid({ document }: { document: PatternDocument }) {
                 gridColumn: `${columnIndex + 1} / span ${w}`,
                 gridRow: `${displayIdx + 1} / span ${h}`,
                 backgroundColor: cell.color,
-                aspectRatio: w === 1 && h === 1 ? "1" : undefined
+                aspectRatio: w === 1 && h === 1 ? "1" : undefined,
+                opacity:
+                  highlightRow !== undefined && document.height - rowIndex < highlightRow
+                    ? 0.35
+                    : undefined
               }}
             >
               {symbol?.imageData ? (
@@ -74,13 +86,40 @@ export function PatternGrid({ document }: { document: PatternDocument }) {
             </div>
           );
         }),
-        <div
-          key={`row-num-${rowIndex}`}
-          className="flex min-h-4 items-center justify-center bg-yarn-oatmeal print:bg-gray-100 text-[10px] font-mono font-semibold text-yarn-warm-gray print:text-gray-600"
-          style={{ gridColumn: document.width + 1, gridRow: displayIdx + 1 }}
-        >
-          {document.height - rowIndex}
-        </div>
+        ...(highlightRow !== undefined && document.height - rowIndex === highlightRow
+          ? [
+              <div
+                key={`row-hl-${rowIndex}`}
+                aria-hidden
+                data-knit-current-row
+                className="pointer-events-none z-10 rounded-sm ring-2 ring-yarn-terracotta print:hidden"
+                style={{ gridColumn: `1 / span ${document.width}`, gridRow: displayIdx + 1 }}
+              />
+            ]
+          : []),
+        (() => {
+          const rowNumber = document.height - rowIndex;
+          const isCurrent = rowNumber === highlightRow;
+          const className = `flex min-h-4 items-center justify-center print:bg-gray-100 text-[10px] font-mono font-semibold print:text-gray-600 ${
+            isCurrent ? "bg-yarn-terracotta text-white" : "bg-yarn-oatmeal text-yarn-warm-gray"
+          }`;
+          const style = { gridColumn: document.width + 1, gridRow: displayIdx + 1 };
+          return onRowClick ? (
+            <button
+              key={`row-num-${rowIndex}`}
+              type="button"
+              className={`${className} cursor-pointer${isCurrent ? "" : " hover:bg-yarn-sand"}`}
+              onClick={() => onRowClick(rowNumber)}
+              style={style}
+            >
+              {rowNumber}
+            </button>
+          ) : (
+            <div key={`row-num-${rowIndex}`} className={className} style={style}>
+              {rowNumber}
+            </div>
+          );
+        })()
       ])}
       {Array.from({ length: document.width }, (_, columnIndex) => (
         <div

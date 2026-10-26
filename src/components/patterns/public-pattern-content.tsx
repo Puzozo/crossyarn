@@ -1,13 +1,15 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { PatternGrid } from "@/components/patterns/pattern-grid";
 import { PatternLegend } from "@/components/patterns/pattern-legend";
 import { LikeButton } from "@/components/patterns/like-button";
 import { useTranslation } from "@/lib/i18n/context";
 import { PatternDocument, PatternSymbol } from "@/lib/patterns/model";
 import { Button } from "@/components/ui/button";
+import { KnittingModeBar } from "@/components/patterns/knitting-mode-bar";
+import { useKnittingProgress } from "@/lib/patterns/knitting-progress";
 
 type Author = { name: string | null; username: string } | null;
 
@@ -37,6 +39,19 @@ export function PublicPatternContent({
   isAuthenticated
 }: Props) {
   const { t } = useTranslation();
+  const knitting = useKnittingProgress(
+    pattern.id,
+    document.height,
+    document.view.skipPurlRows ?? false
+  );
+  const gridContainerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!knitting.active) return;
+    gridContainerRef.current
+      ?.querySelector("[data-knit-current-row]")
+      ?.scrollIntoView({ block: "nearest", inline: "nearest" });
+  }, [knitting.active, knitting.row]);
 
   return (
     <section className="space-y-6">
@@ -80,8 +95,16 @@ export function PublicPatternContent({
         ) : null}
       </div>
 
-      <div className="rounded-2xl bg-white/70 border border-yarn-sand/50 p-6 shadow-warm-sm overflow-x-auto">
-        <PatternGrid document={document} />
+      <div
+        ref={gridContainerRef}
+        className="rounded-2xl bg-white/70 border border-yarn-sand/50 p-6 shadow-warm-sm overflow-x-auto"
+      >
+        <KnittingModeBar knitting={knitting} />
+        <PatternGrid
+          document={document}
+          highlightRow={knitting.active ? knitting.row : undefined}
+          onRowClick={knitting.active ? knitting.goTo : undefined}
+        />
         <PatternLegend usedSymbols={usedSymbols} />
       </div>
     </section>

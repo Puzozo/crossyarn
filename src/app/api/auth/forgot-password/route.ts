@@ -4,8 +4,6 @@ import { requireUserPage } from "@/lib/auth/guards";
 import { Resend } from "resend";
 import crypto from "crypto";
 
-const resend = new Resend(process.env.RESEND_API_KEY);
-
 export async function POST(req: Request) {
   try {
     const { email } = await req.json();
@@ -41,6 +39,9 @@ export async function POST(req: Request) {
 
       // Send the email (UA and EN versions)
       try {
+        // Created per request: the constructor throws without RESEND_API_KEY,
+        // which at module level breaks `next build` and the whole route.
+        const resend = new Resend(process.env.RESEND_API_KEY);
         await resend.emails.create({
           from: "Crossyarn <noreply@crossyarn.online>",
           to: [normalizedEmail],
