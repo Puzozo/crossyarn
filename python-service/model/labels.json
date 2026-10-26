@@ -1,0 +1,39 @@
+{
+  "classes": [
+    "bobble",
+    "cross-knit",
+    "cross-purl",
+    "empty",
+    "five-from-one",
+    "five-knit",
+    "five-together",
+    "four-from-one",
+    "four-together",
+    "k2tog-left",
+    "k2tog-right",
+    "k3tog",
+    "knit",
+    "p2tog-left",
+    "p2tog-right",
+    "p3tog",
+    "purl",
+    "purl-in-yarn-over",
+    "slip-back",
+    "slip-front",
+    "three-from-one",
+    "two-from-one",
+    "wrap",
+    "yarn-over"
+  ],
+  "img_size": 48,
+  "mean": [
+    0.5,
+    0.5,
+    0.5
+  ],
+  "std": [
+    0.5,
+    0.5,
+    0.5
+  ]
+}

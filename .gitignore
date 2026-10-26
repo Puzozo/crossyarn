@@ -16,6 +16,12 @@ import-uploads
 python-service/.venv
 python-service/__pycache__
 python-service/dataset
-python-service/model
-python-service/model-wide
+# Ship only the ONNX models + labels the prod sidecar loads (~0.8 MB); keep
+# training checkpoints (model.pt) out of git.
+python-service/model/*
+!python-service/model/symbol-classifier.onnx
+!python-service/model/labels.json
+python-service/model-wide/*
+!python-service/model-wide/symbol-classifier.onnx
+!python-service/model-wide/labels.json
 python-service/*.onnx

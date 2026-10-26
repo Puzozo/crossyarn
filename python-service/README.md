@@ -77,9 +77,23 @@ uvicorn app:app --host 127.0.0.1 --port 8001
 
 ## PM2 (prod)
 
+One-time setup on the VPS (as root, from `/opt/crossyarn`):
+
 ```bash
-pm2 start "uvicorn app:app --host 127.0.0.1 --port 8001" --name crossyarn-import
+apt install -y python3-venv tesseract-ocr tesseract-ocr-ukr
+python3 -m venv python-service/.venv
+python-service/.venv/bin/pip install -r python-service/requirements.txt
+mkdir -p /opt/crossyarn-data/import-uploads
+# .env (shared with Next): INTERNAL_API_KEY, IMPORT_UPLOAD_DIR=/opt/crossyarn-data/import-uploads
+pm2 start python-service/start.sh --name crossyarn-import --interpreter bash && pm2 save
+# once /health answers: IMPORT_PYTHON_URL=http://127.0.0.1:8001 in .env, restart Next
 ```
+
+`start.sh` reads `INTERNAL_API_KEY` / `IMPORT_UPLOAD_DIR` from the project `.env`.
+The ONNX models are committed (`model*/symbol-classifier.onnx` + `labels.json`); the deploy
+workflow restarts `crossyarn-import` if it exists, but re-run `pip install` by hand when
+`requirements.txt` changes. `IMPORT_UPLOAD_DIR` must be an absolute path outside `.next/`
+(the build wipes it) and identical for both processes.
 Caddy must NOT proxy port 8001 and must block `/api/internal/*` from the public listener.
 
 ## Training data (synthetic, from our own symbols)
