@@ -4,7 +4,7 @@ import Image from "next/image";
 import { ChangeEvent, FormEvent, useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { PatternSymbol } from "@/lib/patterns/model";
+import { PatternSymbol, SYMBOL_SPAN_OPTIONS } from "@/lib/patterns/model";
 import { useTranslation } from "@/lib/i18n/context";
 import { apiErrorMessage } from "@/lib/i18n/api-errors";
 
@@ -117,7 +117,7 @@ export function SymbolLibraryManager({ initialSymbols }: Props) {
               onChange={(e) => setWidth(Number(e.target.value))}
               className="w-full rounded-lg border border-yarn-sand bg-white px-3 py-2 text-sm text-yarn-charcoal focus:outline-none focus:border-yarn-terracotta"
             >
-              {[1, 2, 3, 4, 5, 6].map((w) => (
+              {SYMBOL_SPAN_OPTIONS.map((w) => (
                 <option key={w} value={w}>{w}</option>
               ))}
             </select>
@@ -129,7 +129,7 @@ export function SymbolLibraryManager({ initialSymbols }: Props) {
               onChange={(e) => setHeight(Number(e.target.value))}
               className="w-full rounded-lg border border-yarn-sand bg-white px-3 py-2 text-sm text-yarn-charcoal focus:outline-none focus:border-yarn-terracotta"
             >
-              {[1, 2, 3, 4, 5, 6].map((h) => (
+              {SYMBOL_SPAN_OPTIONS.map((h) => (
                 <option key={h} value={h}>{h}</option>
               ))}
             </select>
@@ -137,7 +137,7 @@ export function SymbolLibraryManager({ initialSymbols }: Props) {
         </div>
         {imageData ? (
           <div className="mt-4">
-            <Image src={imageData} alt="preview" width={width * 64} height={height * 64} className="rounded-lg border border-yarn-sand object-contain" />
+            <Image src={imageData} alt="preview" width={width * 64} height={height * 64} className="max-w-full h-auto max-h-80 rounded-lg border border-yarn-sand object-contain" />
           </div>
         ) : null}
         <div className="mt-4 flex items-center gap-3">

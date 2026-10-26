@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import { ChangeEvent, FormEvent, useState } from "react";
+import { SYMBOL_SPAN_OPTIONS } from "@/lib/patterns/model";
 
 type SymbolEntry = {
   id: string;
@@ -181,14 +182,14 @@ export function OfficialSymbolManager({
               <label className="block text-sm font-medium text-gray-300">Ширина (клітинок)</label>
               <select value={width} onChange={(e) => setWidth(Number(e.target.value))}
                 className="w-full rounded-lg bg-gray-800 border border-gray-700 text-white px-3 py-2 text-sm focus:outline-none focus:border-indigo-500">
-                {[1, 2, 3, 4, 5, 6].map((w) => <option key={w} value={w}>{w}</option>)}
+                {SYMBOL_SPAN_OPTIONS.map((w) => <option key={w} value={w}>{w}</option>)}
               </select>
             </div>
             <div className="space-y-1.5">
               <label className="block text-sm font-medium text-gray-300">Висота (клітинок)</label>
               <select value={height} onChange={(e) => setHeight(Number(e.target.value))}
                 className="w-full rounded-lg bg-gray-800 border border-gray-700 text-white px-3 py-2 text-sm focus:outline-none focus:border-indigo-500">
-                {[1, 2, 3, 4, 5, 6].map((h) => <option key={h} value={h}>{h}</option>)}
+                {SYMBOL_SPAN_OPTIONS.map((h) => <option key={h} value={h}>{h}</option>)}
               </select>
             </div>
           </div>
@@ -261,14 +262,14 @@ export function OfficialSymbolManager({
                             <label className="text-[10px] text-gray-500 block mb-0.5">Ширина</label>
                             <select value={editWidth} onChange={(e) => setEditWidth(Number(e.target.value))}
                               className="w-full rounded-lg bg-gray-800 border border-gray-700 text-white px-2 py-1.5 text-sm focus:outline-none focus:border-indigo-500">
-                              {[1, 2, 3, 4, 5, 6].map((w) => <option key={w} value={w}>{w}</option>)}
+                              {SYMBOL_SPAN_OPTIONS.map((w) => <option key={w} value={w}>{w}</option>)}
                             </select>
                           </div>
                           <div>
                             <label className="text-[10px] text-gray-500 block mb-0.5">Висота</label>
                             <select value={editHeight} onChange={(e) => setEditHeight(Number(e.target.value))}
                               className="w-full rounded-lg bg-gray-800 border border-gray-700 text-white px-2 py-1.5 text-sm focus:outline-none focus:border-indigo-500">
-                              {[1, 2, 3, 4, 5, 6].map((h) => <option key={h} value={h}>{h}</option>)}
+                              {SYMBOL_SPAN_OPTIONS.map((h) => <option key={h} value={h}>{h}</option>)}
                             </select>
                           </div>
                         </div>

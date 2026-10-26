@@ -1,12 +1,13 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
+import { MAX_SYMBOL_SPAN } from "@/lib/patterns/model";
 import { db } from "@/lib/db";
 import { getAdminSession } from "@/lib/auth/admin-session";
 
 const updateSchema = z.object({
   name: z.string().min(2).max(80).optional(),
   description: z.string().min(2).max(300).optional(),
-  width: z.number().int().min(1).max(6).optional()
+  width: z.number().int().min(1).max(MAX_SYMBOL_SPAN).optional()
 });
 
 export async function PUT(

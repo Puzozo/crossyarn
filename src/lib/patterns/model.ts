@@ -7,6 +7,10 @@ export type PatternCell = {
   occupiedByAnchor?: [number, number];
 };
 
+// Multi-cell symbols span up to this many cells in each direction.
+export const MAX_SYMBOL_SPAN = 20;
+export const SYMBOL_SPAN_OPTIONS = Array.from({ length: MAX_SYMBOL_SPAN }, (_, i) => i + 1);
+
 export type PatternSymbol = {
   id: string;
   label: string;

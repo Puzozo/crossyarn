@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { MAX_SYMBOL_SPAN } from "@/lib/patterns/model";
 import { isSafeImageDataUri, MAX_SYMBOL_IMAGE_BYTES } from "@/lib/patterns/image-data";
 
 // Colors only ever come from the palette / color picker, i.e. hex (#rgb / #rrggbb / #rrggbbaa).
@@ -38,8 +39,8 @@ export const patternDocumentSchema = z.object({
           .optional(),
         description: z.string().max(1000).optional(),
         source: z.enum(["builtin", "user"]).optional(),
-        width: z.number().int().min(1).max(6).optional(),
-        height: z.number().int().min(1).max(6).optional()
+        width: z.number().int().min(1).max(MAX_SYMBOL_SPAN).optional(),
+        height: z.number().int().min(1).max(MAX_SYMBOL_SPAN).optional()
       })
     )
     .max(500),
