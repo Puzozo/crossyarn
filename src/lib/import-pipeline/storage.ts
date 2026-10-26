@@ -41,7 +41,7 @@ export async function saveImportImage(
   const dir = uploadDir();
   await mkdir(dir, { recursive: true });
   const filename = `${jobId}.${ext}`;
-  await writeFile(path.join(dir, filename), bytes);
+  await writeFile(path.join(/*turbopackIgnore: true*/ dir, filename), bytes);
   return filename;
 }
 
@@ -53,7 +53,7 @@ export async function readImportImage(
     return null;
   }
   try {
-    const data = await readFile(path.join(uploadDir(), filename));
+    const data = await readFile(path.join(/*turbopackIgnore: true*/ uploadDir(), filename));
     const ext = filename.split(".").pop() ?? "";
     return { data, contentType: TYPE_BY_EXT[ext] ?? "application/octet-stream" };
   } catch {
@@ -66,7 +66,7 @@ export async function deleteImportImage(filename: string): Promise<void> {
     return;
   }
   try {
-    await unlink(path.join(uploadDir(), filename));
+    await unlink(path.join(/*turbopackIgnore: true*/ uploadDir(), filename));
   } catch {
     /* already gone — ignore */
   }
@@ -75,7 +75,7 @@ export async function deleteImportImage(filename: string): Promise<void> {
 /** Used by the cleanup sweep: filenames older than `maxAgeMs`. */
 export async function listImportImages(): Promise<string[]> {
   try {
-    return await readdir(uploadDir());
+    return await readdir(/*turbopackIgnore: true*/ uploadDir());
   } catch {
     return [];
   }

@@ -27,6 +27,8 @@ const securityHeaders = [
 
 const nextConfig: NextConfig = {
   output: "standalone",
+  // The Python sidecar (incl. its .venv on the VPS) is not part of the Next server.
+  outputFileTracingExcludes: { "/*": ["python-service/**"] },
   poweredByHeader: false,
   async headers() {
     return [{ source: "/:path*", headers: securityHeaders }];
