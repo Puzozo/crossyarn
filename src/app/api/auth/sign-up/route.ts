@@ -17,7 +17,7 @@ export async function POST(request: Request) {
   if (limited) return limited;
 
   try {
-    const body = schema.parse(await request.json());
+    const body = schema.parse(await request.json().catch(() => null));
     const user = await createUser(body.email, body.password, body.name);
     await createSession({
       userId: user.id,

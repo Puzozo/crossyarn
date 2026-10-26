@@ -25,7 +25,7 @@ export async function PUT(
     const isValid = DEFAULT_SYMBOLS.some((s) => s.id === builtinId);
     if (!isValid) return NextResponse.json({ error: "Unknown builtin symbol" }, { status: 404 });
 
-    const body = updateSchema.parse(await request.json());
+    const body = updateSchema.parse(await request.json().catch(() => null));
 
     const symbol = await db.userSymbol.upsert({
       where: { builtinId },

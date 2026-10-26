@@ -24,7 +24,7 @@ export async function POST(req: Request) {
   }
 
   try {
-    const parsed = schema.safeParse(await req.json());
+    const parsed = schema.safeParse(await req.json().catch(() => null));
     if (!parsed.success) {
       return NextResponse.json({ error: "Email is required" }, { status: 400 });
     }

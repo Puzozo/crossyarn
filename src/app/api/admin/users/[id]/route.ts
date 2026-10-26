@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
+import { Prisma } from "@prisma/client";
 import { db } from "@/lib/db";
 import { getAdminSession } from "@/lib/auth/admin-session";
 
@@ -71,7 +72,7 @@ export async function PATCH(
       return NextResponse.json({ error: "Не можна заблокувати себе" }, { status: 400 });
     }
 
-    const { action } = patchSchema.parse(await request.json());
+    const { action } = patchSchema.parse(await request.json().catch(() => null));
     const user = await db.user.update({
       where: { id },
       data: { isDisabled: action === "block" },
@@ -79,7 +80,13 @@ export async function PATCH(
     });
 
     return NextResponse.json(user);
-  } catch {
+  } catch (error) {
+    if (error instanceof z.ZodError) {
+      return NextResponse.json({ error: "Некоректні дані" }, { status: 400 });
+    }
+    if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === "P2025") {
+      return NextResponse.json({ error: "Not found" }, { status: 404 });
+    }
     return NextResponse.json({ error: "Server error" }, { status: 500 });
   }
 }

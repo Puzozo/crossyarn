@@ -32,7 +32,7 @@ export async function PUT(request: Request, { params }: { params: Promise<{ id: 
     const limited = limitWrite(session.userId, "save");
     if (limited) return limited;
     const { id } = await params;
-    const body = updatePatternSchema.parse(await request.json());
+    const body = updatePatternSchema.parse(await request.json().catch(() => null));
 
     const existing = await db.pattern.findFirst({
       where: {
@@ -81,7 +81,7 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
     const limited = limitWrite(session.userId, "write");
     if (limited) return limited;
     const { id } = await params;
-    const body = await request.json();
+    const body = await request.json().catch(() => null);
     const title = typeof body.title === "string" ? body.title.trim() : "";
     const description = typeof body.description === "string" ? body.description.trim() : "";
 
@@ -114,12 +114,13 @@ export async function DELETE(_: Request, { params }: { params: Promise<{ id: str
     const limited = limitWrite(session.userId, "write");
     if (limited) return limited;
     const { id } = await params;
-    await db.pattern.deleteMany({
+    const { count } = await db.pattern.deleteMany({
       where: {
         id,
         userId: session.userId
       }
     });
+    if (count === 0) return NextResponse.json({ error: "Not found" }, { status: 404 });
     return NextResponse.json({ ok: true });
   } catch {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });

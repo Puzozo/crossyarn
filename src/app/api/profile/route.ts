@@ -17,7 +17,7 @@ export async function PATCH(request: Request) {
   if (limited) return limited;
 
   try {
-    const body = profileUpdateSchema.parse(await request.json());
+    const body = profileUpdateSchema.parse(await request.json().catch(() => null));
 
     const name = body.name?.trim() || null;
     const bio = body.bio?.trim() || null;

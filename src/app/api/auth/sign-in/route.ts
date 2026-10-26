@@ -20,7 +20,7 @@ export async function POST(request: Request) {
   }
 
   try {
-    const body = schema.parse(await request.json());
+    const body = schema.parse(await request.json().catch(() => null));
     const user = await verifyUser(body.email, body.password);
     if (!user) {
       return NextResponse.json({ error: "Невірний email або пароль" }, { status: 401 });

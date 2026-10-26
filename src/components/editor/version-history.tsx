@@ -36,7 +36,6 @@ export function VersionHistory({ patternId }: { patternId: string }) {
   }, [patternId]);
 
   useEffect(() => {
-    setLoading(true);
     fetchVersions();
   }, [fetchVersions]);
 
@@ -62,12 +61,9 @@ export function VersionHistory({ patternId }: { patternId: string }) {
       });
       if (!res.ok) return;
       setToast(t("versions.restored"));
-      // Refresh list
-      const listRes = await fetch(`/api/patterns/${patternId}/versions`);
-      if (listRes.ok) {
-        const data = await listRes.json();
-        setVersions(data);
-      }
+      // The server rewrote the pattern; reload so the editor state (and autosave)
+      // starts from the restored document instead of overwriting it.
+      window.location.reload();
     } catch {
       // ignore
     } finally {

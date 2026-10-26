@@ -17,7 +17,7 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
     const limited = limitWrite(session.userId, "write");
     if (limited) return limited;
     const { id } = await params;
-    const { visibility } = bodySchema.parse(await request.json());
+    const { visibility } = bodySchema.parse(await request.json().catch(() => null));
 
     const existing = await db.pattern.findFirst({
       where: { id, userId: session.userId },

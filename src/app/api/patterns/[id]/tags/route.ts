@@ -15,7 +15,7 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
     const limited = limitWrite(session.userId, "write");
     if (limited) return limited;
     const { id } = await params;
-    const body = await request.json();
+    const body = await request.json().catch(() => null);
     const tag = typeof body.tag === "string" ? body.tag.trim().toLowerCase() : "";
 
     if (!tag || tag.length > MAX_TAG_LENGTH || !TAG_PATTERN.test(tag)) {
@@ -57,7 +57,7 @@ export async function DELETE(request: Request, { params }: { params: Promise<{ i
     const limited = limitWrite(session.userId, "write");
     if (limited) return limited;
     const { id } = await params;
-    const body = await request.json();
+    const body = await request.json().catch(() => null);
     const tag = typeof body.tag === "string" ? body.tag.trim() : "";
 
     if (!tag) {

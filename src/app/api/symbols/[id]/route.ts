@@ -41,12 +41,13 @@ export async function DELETE(_: Request, { params }: { params: Promise<{ id: str
     const limited = limitWrite(session.userId, "write");
     if (limited) return limited;
     const { id } = await params;
-    await db.userSymbol.deleteMany({
+    const { count } = await db.userSymbol.deleteMany({
       where: {
         id,
         userId: session.userId
       }
     });
+    if (count === 0) return NextResponse.json({ error: "Not found" }, { status: 404 });
     return NextResponse.json({ ok: true });
   } catch {
     return NextResponse.json({ error: "Не вдалося видалити позначку" }, { status: 400 });

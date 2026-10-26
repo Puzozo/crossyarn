@@ -29,7 +29,7 @@ export async function POST(request: Request) {
     const session = await requireSession();
     const limited = limitWrite(session.userId, "create");
     if (limited) return limited;
-    const body = createSymbolSchema.parse(await request.json());
+    const body = createSymbolSchema.parse(await request.json().catch(() => null));
     const symbol = await db.userSymbol.create({
       data: {
         userId: session.userId,

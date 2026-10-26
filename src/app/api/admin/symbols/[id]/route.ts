@@ -18,7 +18,7 @@ export async function PUT(
     if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
     const { id } = await params;
-    const body = updateSchema.parse(await request.json());
+    const body = updateSchema.parse(await request.json().catch(() => null));
     const symbol = await db.userSymbol.update({
       where: { id, isOfficial: true },
       data: body
@@ -41,7 +41,8 @@ export async function DELETE(
     if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
     const { id } = await params;
-    await db.userSymbol.delete({ where: { id, isOfficial: true } });
+    const { count } = await db.userSymbol.deleteMany({ where: { id, isOfficial: true } });
+    if (count === 0) return NextResponse.json({ error: "Not found" }, { status: 404 });
     return NextResponse.json({ ok: true });
   } catch {
     return NextResponse.json({ error: "Server error" }, { status: 500 });

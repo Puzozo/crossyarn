@@ -4,11 +4,13 @@ import { db } from "@/lib/db";
 import { requireSession } from "@/lib/auth/session";
 import { limitWrite } from "@/lib/auth/rate-limit";
 import { pruneVersions } from "@/lib/patterns/versions";
+import { patternDocumentSchema } from "@/lib/patterns/validation";
+import { hydrateBuiltinSymbols } from "@/lib/patterns/normalize-symbols";
 
 /**
  * POST /api/patterns/[id]/versions/[versionId]/restore
- * Restores a version snapshot by creating a new PatternVersion entry.
- * Returns the newly created version id.
+ * Writes the snapshot back into the pattern (like a save) and records it as a new
+ * PatternVersion. Returns the new version id; the editor reloads to show it.
  */
 export async function POST(_: Request, { params }: { params: Promise<{ id: string; versionId: string }> }) {
   try {
@@ -34,6 +36,24 @@ export async function POST(_: Request, { params }: { params: Promise<{ id: strin
     if (!version) {
       return NextResponse.json({ error: "Not found" }, { status: 404 });
     }
+
+    // Old snapshots predate some validation rules — never write back a document
+    // the renderers can't handle.
+    const parsed = patternDocumentSchema.safeParse(version.snapshot);
+    if (!parsed.success) {
+      return NextResponse.json({ error: "Цю версію неможливо відновити" }, { status: 422 });
+    }
+    const doc = parsed.data;
+    await db.pattern.update({
+      where: { id },
+      data: {
+        width: doc.width,
+        height: doc.height,
+        patternData: hydrateBuiltinSymbols(doc),
+        paletteData: doc.palette,
+        symbolSetData: doc.symbols
+      }
+    });
 
     // Create a new version entry representing this restore point
     const restored = await db.patternVersion.create({
