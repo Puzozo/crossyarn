@@ -4,33 +4,46 @@ export const metadata = {
   title: "Premium — Crossyarn"
 };
 
-// Placeholder until WayForPay subscription is implemented (see the billing plan).
-// The image-import feature gates on Premium; this page is where the upsell CTA lands.
+// Universal Premium is active until 2026-11-15. When billing goes live,
+// replace this with a WayForPay checkout CTA and remove the banner.
 export default function PremiumPage() {
   return (
     <section className="mx-auto max-w-lg space-y-6 py-12 text-center">
-      <span className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-yarn-terracotta-light text-yarn-terracotta">
+      <span className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-yarn-sage-light text-yarn-sage">
         <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6">
-          <path d="M3 8l4 3 5-6 5 6 4-3-2 11H5L3 8z" strokeLinejoin="round" />
+          <path d="M9 12l2 2 4-4" strokeLinecap="round" strokeLinejoin="round" />
+          <path d="M12 2a10 10 0 1 1 0 20 10 10 0 0 1 0-20z" strokeLinecap="round" />
         </svg>
       </span>
       <div className="space-y-2">
         <h1 className="font-display text-3xl font-bold text-yarn-charcoal">Crossyarn Premium</h1>
         <p className="text-yarn-warm-gray">
-          AI-імпорт схем із зображень, без реклами та безліміт схем. Підписка скоро.
+          Зараз Premium доступний для всіх користувачів безкоштовно!
+        </p>
+        <p className="text-sm text-yarn-warm-gray/70">
+          Ми працюємо над підпискою — до 15 листопада 2026 всі функції відкриті.
         </p>
       </div>
       <ul className="mx-auto inline-block space-y-2 text-left text-sm text-yarn-charcoal">
-        <li>• AI-розпізнавання схем із зображень</li>
-        <li>• Без реклами</li>
-        <li>• Безліміт схем і кастомних позначок</li>
+        <li>✅ AI-розпізнавання схем із зображень</li>
+        <li>✅ Без реклами</li>
+        <li>✅ Безліміт схем і кастомних позначок</li>
       </ul>
-      <div>
+      <div className="rounded-2xl bg-yarn-sage-light/40 border border-yarn-sage/30 px-4 py-3 text-xs text-yarn-sage">
+        Дякуємо за тестування! 🧶
+      </div>
+      <div className="flex gap-3 justify-center">
         <Link
           href="/patterns"
           className="inline-block rounded-full bg-yarn-oatmeal border border-yarn-sand px-5 py-2.5 text-sm font-semibold text-yarn-charcoal hover:bg-yarn-sand transition-colors"
         >
           ← До моїх схем
+        </Link>
+        <Link
+          href="/explore"
+          className="inline-block rounded-full bg-yarn-terracotta px-5 py-2.5 text-sm font-semibold text-white hover:bg-yarn-terracotta-hover transition-colors"
+        >
+          Досліджуйте схеми
         </Link>
       </div>
     </section>

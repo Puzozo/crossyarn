@@ -1,18 +1,19 @@
 # STATUS — Crossyarn
 
 ## Next (що робити далі)
-- [ ] Задеплоїти лайки/обране + og:image + bucket fill (site-verifier дав SAFE, чекає на пуш)
-- [ ] Підключити реальний білінг WayForPay до `User.plan`/`premiumUntil` (є `/premium` + `lib/billing`, бракує провайдера)
-- [ ] UI історії версій (`PatternVersion` пишеться в БД, ніде не показується)
-- [ ] Верифікувати наскрізно image-import (Python-сайдкар + черга `lib/import-pipeline`) — у проді ще stub
+- [ ] Задеплоїти лайки/обране + og:image + bucket fill (SAFE, чекає на пуш)
+- [ ] WayForPay billing: HMAC generator + callback handler + /premium CTA
+- [ ] Image import: Python-сайдкар (FastAPI + ONNX) + PM2 процес на VPS
+- [ ] Version history UI: API + sidebar в редакторі
+- [ ] SEO: кириличний пошук (translit column) + теги/категорії
 
 ## Blocked
-- Image-import у проді потребує запущеного Python-сайдкара (2-й PM2-процес, ONNX CPU)
-- Реальний білінг чекає на налаштований WayForPay (мерчант + ключі)
+- WayForPay: потрібні мерчант-ключі (test mode)
+- Image import Python: потрібен сервер з ONNX CPU runtime
 
 ## Done recently
-- Лайки/обране: модель `PatternLike`, API POST/DELETE `/api/patterns/[id]/like`, серця на /explore і /p, сторінка /saved + пункт «Збережені» в навігації (verified SAFE, ще не запушено)
-- og:image для /p/[id]: PNG 1200×630 через next/og, кирилиця через Noto Sans у public/fonts, PRIVATE → 404 (verified SAFE)
-- Bucket fill у редакторі: 4-зв'язна заливка по (символ+колір), клавіша F, бар'єри для мультиклітинкових символів, один крок undo (verified SAFE)
-- ЗАДЕПЛОЄНО на прод (4 пуші минулу сесію): профілі, /explore з прев'ю, premium-скелет, import-пайплайн (сплячий), sitemap/robots/OG, прев'ю на /patterns, аватари
-- Аватар-чіпи авторів у /explore + аватар у хедері через `/api/me/avatar` (e6f92e3)
+- Створено ROADMAP-week-2026-W44.md (7 пріоритетів на тиждень)
+- Лайки/обране: модель `PatternLike`, API, серця на /explore і /p, /saved (SAFE, чекає на пуш)
+- og:image для /p/[id]: PNG 1200×630, next/og, кирилиця (SAFE, чекає на пуш)
+- Bucket fill: 4-зв'язна заливка, F key, бар'єри мульти-символів (SAFE, чекає на пуш)
+- ЗАДЕПЛОЄНО: профілі, /explore, premium-скелет, import-пайплайн, sitemap/robots/OG, аватари

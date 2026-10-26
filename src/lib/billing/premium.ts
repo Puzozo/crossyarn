@@ -8,6 +8,14 @@ import { requireSession } from "@/lib/auth/session";
  */
 const GRACE_DAYS = 3;
 
+/**
+ * Temporary: all users get Premium access regardless of plan.
+ * The owner cannot set up a payment processor (ФОП) yet; this grants
+ * universal access until the cutoff so the import pipeline can be tested
+ * by real users without gating on a non-existent billing flow.
+ */
+const UNIVERSAL_PREMIUM_UNTIL = new Date("2026-11-15T00:00:00Z");
+
 export type PremiumFields = {
   plan: string;
   premiumUntil: Date | null;
@@ -23,6 +31,9 @@ export type PremiumFields = {
  * - premiumUntil in future (+ grace) → active subscription
  */
 export function isPremium(user: PremiumFields): boolean {
+  // Temporary universal Premium: the owner cannot enable billing yet.
+  if (Date.now() < UNIVERSAL_PREMIUM_UNTIL.getTime()) return true;
+
   if (user.plan !== "PREMIUM") return false;
   if (user.premiumUntil === null) return true;
   const graceMs = GRACE_DAYS * 24 * 60 * 60 * 1000;
