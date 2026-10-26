@@ -41,7 +41,7 @@ systemctl reload caddy
 
 echo "=== 8. Запуск через PM2 ==="
 cd /opt/crossyarn
-PORT=3000 HOSTNAME=0.0.0.0 pm2 start .next/standalone/server.js --name crossyarn
+PORT=3000 HOSTNAME=127.0.0.1 pm2 start .next/standalone/server.js --name crossyarn
 pm2 save
 pm2 startup systemd -u root --hp /root
 

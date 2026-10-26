@@ -35,7 +35,9 @@ jobs:
       - name: Restart app
         run: |
           cd /opt/crossyarn
-          pm2 restart crossyarn || pm2 start .next/standalone/server.js --name crossyarn
+          # Bind to loopback only: Caddy is the public entry (a 0.0.0.0 bind exposed :3000
+          # directly, bypassing Caddy's /api/internal block and the XFF-based rate limits).
+          pm2 restart crossyarn || HOSTNAME=127.0.0.1 pm2 start .next/standalone/server.js --name crossyarn
           # Recognition sidecar (python-service): restart only if it was set up on the
           # VPS; its venv/deps are installed manually (python-service/README.md).
           pm2 restart crossyarn-import 2>/dev/null || true

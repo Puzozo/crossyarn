@@ -10,7 +10,7 @@ Write-Host ""
 $nextJob = Start-Job -ScriptBlock {
     Set-Location "C:\ProG\MAMA\Crossyarn"
     $env:PORT = "3000"
-    $env:HOSTNAME = "0.0.0.0"
+    $env:HOSTNAME = "127.0.0.1"
     node .next/standalone/server.js
 }
 

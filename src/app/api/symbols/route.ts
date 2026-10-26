@@ -3,11 +3,12 @@ import { z } from "zod";
 import { db } from "@/lib/db";
 import { requireSession } from "@/lib/auth/session";
 import { getAvailableSymbols } from "@/lib/patterns/user-symbols";
+import { isSafeImageDataUri, MAX_SYMBOL_IMAGE_BYTES } from "@/lib/patterns/image-data";
 
 const createSymbolSchema = z.object({
   name: z.string().min(2).max(80),
   description: z.string().min(2).max(300),
-  imageData: z.string().startsWith("data:image/").max(300_000),
+  imageData: z.string().max(MAX_SYMBOL_IMAGE_BYTES).refine(isSafeImageDataUri, "Must be a base64 image data URI"),
   width: z.number().int().min(1).max(6).optional(),
   height: z.number().int().min(1).max(6).optional()
 });

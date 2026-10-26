@@ -1,12 +1,13 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
+import { isSafeImageDataUri, MAX_SYMBOL_IMAGE_BYTES } from "@/lib/patterns/image-data";
 import { db } from "@/lib/db";
 import { getAdminSession } from "@/lib/auth/admin-session";
 
 const createSchema = z.object({
   name: z.string().min(2).max(80),
   description: z.string().min(2).max(300),
-  imageData: z.string().min(1).max(300_000).refine((v) => v.startsWith("data:image/"), "Must be image data URI"),
+  imageData: z.string().max(MAX_SYMBOL_IMAGE_BYTES).refine(isSafeImageDataUri, "Must be a base64 image data URI"),
   width: z.number().int().min(1).max(6).optional(),
   height: z.number().int().min(1).max(6).optional()
 });

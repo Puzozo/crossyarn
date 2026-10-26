@@ -35,6 +35,21 @@ export function patternToSvg(pattern: PatternDocument, title: string) {
   usedIds.delete("empty");
   const usedSymbols = pattern.symbols.filter((s) => usedIds.has(s.id));
 
+  // One <symbol> def per image symbol (rendered once in <defs>, referenced via <use>)
+  const symbolDefIds = new Map<string, string>();
+  pattern.symbols
+    .filter((s) => s.imageData)
+    .forEach((s, index) => symbolDefIds.set(s.id, `sym-${index}`));
+
+  const imageDefs = pattern.symbols
+    .filter((s) => s.imageData)
+    .map((s, index) => {
+      const w = s.width ?? 1;
+      return `<symbol id="sym-${index}" viewBox="0 0 ${w} 1" preserveAspectRatio="xMidYMid meet"><image href="${escapeXml(s.imageData!)}" width="${w}" height="1" preserveAspectRatio="xMidYMid meet" /></symbol>`;
+    })
+    .join("");
+  const defsMarkup = imageDefs ? `<defs>${imageDefs}</defs>` : "";
+
   // Legend layout
   const legendTop = gridBottom + bottomGutter + 24;
   const legendRowHeight = 28;
@@ -89,7 +104,7 @@ export function patternToSvg(pattern: PatternDocument, title: string) {
         const y = displayIdx * cellSize;
         const spanWidth = cellSize * symbolWidth;
         const symbolMarkup = symbol?.imageData
-          ? `<image href="${escapeXml(symbol.imageData)}" x="${x + 4}" y="${y + 4}" width="${spanWidth - 8}" height="${cellSize - 8}" />`
+          ? `<use href="#${symbolDefIds.get(symbol.id)}" x="${x + 4}" y="${y + 4}" width="${spanWidth - 8}" height="${cellSize - 8}" />`
           : `<text x="${x + spanWidth / 2}" y="${y + 16}" text-anchor="middle" font-size="12" fill="#111827">${escapeXml(glyph)}</text>`;
         return `
           <g>
@@ -114,7 +129,7 @@ export function patternToSvg(pattern: PatternDocument, title: string) {
       const y = legendTop + 24 + row * legendRowHeight;
 
       const iconMarkup = symbol.imageData
-        ? `<image href="${escapeXml(symbol.imageData)}" x="${x}" y="${y}" width="20" height="20" />`
+        ? `<use href="#${symbolDefIds.get(symbol.id)}" x="${x}" y="${y}" width="20" height="20" />`
         : `<text x="${x + 10}" y="${y + 15}" text-anchor="middle" font-size="14" fill="#1e293b">${escapeXml(symbol.glyph ?? "\u00B7")}</text>`;
 
       const label = symbol.description ?? symbol.label;
@@ -128,6 +143,7 @@ export function patternToSvg(pattern: PatternDocument, title: string) {
 
   return `
     <svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${totalHeight}" viewBox="0 0 ${width} ${totalHeight}">
+      ${defsMarkup}
       <rect width="100%" height="100%" fill="#ffffff" />
       <text x="0" y="24" font-size="20" font-family="Arial" fill="#111827">${escapeXml(title)}</text>
       ${columnNumbers}

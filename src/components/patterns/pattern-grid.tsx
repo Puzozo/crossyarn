@@ -1,7 +1,8 @@
 "use client";
 
-import Image from "next/image";
+import { useId } from "react";
 import { PatternDocument } from "@/lib/patterns/model";
+import { isSafeImageDataUri } from "@/lib/patterns/image-data";
 
 /**
  * Read-only render of a pattern grid. Extracted from PrintContent so the print
@@ -21,6 +22,20 @@ export function PatternGrid({
   onRowClick?: (rowNumber: number) => void;
 }) {
   const skipPurl = document.view.skipPurlRows ?? false;
+
+  // Each symbol image goes into one CSS rule and cells reference it by class.
+  // Inlining the data URI per cell made a 300KB image × 40k cells ≈ GBs of HTML
+  // (anonymous DoS via /p/[id]). Only validated base64 data URIs are emitted,
+  // so the value can't break out of url("…").
+  const classPrefix = `cy${useId().replace(/[^a-zA-Z0-9_-]/g, "")}`;
+  const imageClassBySymbolId = new Map<string, string>();
+  const imageRules: string[] = [];
+  for (const symbol of document.symbols) {
+    if (!isSafeImageDataUri(symbol.imageData) || imageClassBySymbolId.has(symbol.id)) continue;
+    const className = `${classPrefix}-${imageClassBySymbolId.size}`;
+    imageClassBySymbolId.set(symbol.id, className);
+    imageRules.push(`.${className}{background-image:url("${symbol.imageData}")}`);
+  }
   const visibleRowIndexes = Array.from({ length: document.height }, (_, i) => i).filter(
     (i) => !skipPurl || (document.height - i) % 2 === 1
   );
@@ -29,10 +44,14 @@ export function PatternGrid({
     <div
       className="grid gap-px bg-yarn-sand/60 print:bg-gray-300"
       style={{
+        // Symbols and cell colours are backgrounds; keep them when printing.
+        printColorAdjust: "exact",
+        WebkitPrintColorAdjust: "exact",
         gridTemplateColumns: `repeat(${document.width}, minmax(16px, 1fr)) 32px`,
         gridTemplateRows: `repeat(${visibleRowIndexes.length}, minmax(16px, auto))`
       }}
     >
+      {imageRules.length > 0 ? <style>{imageRules.join("")}</style> : null}
       {visibleRowIndexes.flatMap((rowIndex, displayIdx) => [
         ...document.cells[rowIndex].map((cell, columnIndex) => {
           // In skip mode vertical spans collapse; a symbol anchored in a hidden
@@ -57,10 +76,15 @@ export function PatternGrid({
           const symbol = document.symbols.find((item) => item.id === displaySymbolId);
           const w = symbol?.width ?? 1;
           const h = skipPurl ? 1 : symbol?.height ?? 1;
+          const imageClass = imageClassBySymbolId.get(displaySymbolId);
           return (
             <div
               key={`${rowIndex}-${columnIndex}`}
-              className="flex items-center justify-center bg-white text-[10px] font-semibold text-yarn-charcoal print:text-black"
+              className={`flex items-center justify-center bg-white text-[10px] font-semibold text-yarn-charcoal print:text-black${
+                imageClass ? ` bg-contain bg-center bg-no-repeat ${imageClass}` : ""
+              }`}
+              role={imageClass ? "img" : undefined}
+              aria-label={imageClass ? symbol?.label : undefined}
               style={{
                 gridColumn: `${columnIndex + 1} / span ${w}`,
                 gridRow: `${displayIdx + 1} / span ${h}`,
@@ -72,17 +96,7 @@ export function PatternGrid({
                     : undefined
               }}
             >
-              {symbol?.imageData ? (
-                <Image
-                  src={symbol.imageData}
-                  alt={symbol.label}
-                  width={16 * w}
-                  height={16 * h}
-                  className="object-contain w-full h-full"
-                />
-              ) : (
-                symbol?.glyph ?? "·"
-              )}
+              {imageClass ? null : symbol?.glyph ?? "·"}
             </div>
           );
         }),
