@@ -350,7 +350,7 @@ export function ImportPreviewContent({ importId, initialStatus }: Props) {
         ))}
       </div>
 
-      <div className="lg:grid lg:grid-cols-[1fr,1fr,320px] lg:gap-5">
+      <div className="lg:grid lg:grid-cols-[1fr_1fr_320px] lg:gap-5">
         {/* Panel A — original + overlay */}
         <div className={`${activeTab === "original" ? "block" : "hidden"} space-y-3 lg:block`}>
           <OriginalOverlay

@@ -98,7 +98,7 @@ export function HomeContent({ isAuthenticated }: Props) {
           </svg>
         </div>
 
-        <div className="relative grid gap-10 lg:grid-cols-[1.3fr,0.7fr] items-center">
+        <div className="relative grid gap-10 lg:grid-cols-[1.3fr_0.7fr] items-center">
           <div className="space-y-6">
             <span className="inline-flex items-center gap-2 rounded-full bg-yarn-terracotta-light px-4 py-1.5 text-sm font-semibold text-yarn-terracotta">
               <svg width="14" height="14" viewBox="0 0 14 14" fill="currentColor">

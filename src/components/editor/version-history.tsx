@@ -14,7 +14,8 @@ interface VersionItem {
  * preview a snapshot and restore it (creates a new version entry).
  */
 export function VersionHistory({ patternId }: { patternId: string }) {
-  const { t } = useTranslation();
+  const { t, lang } = useTranslation();
+  const locale = lang === "uk" ? "uk-UA" : "en-GB";
   const [versions, setVersions] = useState<VersionItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [expandedId, setExpandedId] = useState<string | null>(null);
@@ -74,7 +75,6 @@ export function VersionHistory({ patternId }: { patternId: string }) {
   if (loading && versions.length === 0) {
     return (
       <div className="space-y-2">
-        <p className="text-xs font-semibold uppercase tracking-wider text-yarn-warm-gray">{t("versions.title")}</p>
         <p className="text-xs text-yarn-warm-gray">{t("versions.loading")}</p>
       </div>
     );
@@ -86,18 +86,17 @@ export function VersionHistory({ patternId }: { patternId: string }) {
 
   return (
     <div className="space-y-2">
-      <p className="text-xs font-semibold uppercase tracking-wider text-yarn-warm-gray">{t("versions.title")}</p>
       <div className="space-y-1" role="list" aria-label={t("versions.listLabel")}>
         {versions.map((v, idx) => {
           const n = versions.length - idx;
           const isExpanded = expandedId === v.id;
           const date = new Date(v.createdAt);
-          const dateStr = date.toLocaleDateString(undefined, {
+          const dateStr = date.toLocaleDateString(locale, {
             day: "2-digit",
             month: "2-digit",
             year: "2-digit",
           });
-          const timeStr = date.toLocaleTimeString(undefined, {
+          const timeStr = date.toLocaleTimeString(locale, {
             hour: "2-digit",
             minute: "2-digit",
           });

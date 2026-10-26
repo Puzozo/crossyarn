@@ -2,13 +2,14 @@
 
 import Image from "next/image";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { Button } from "@/components/ui/button";
 import { PatternDocument } from "@/lib/patterns/model";
 import { usePatternEditorStore } from "@/lib/patterns/editor-state";
 import { useTranslation } from "@/lib/i18n/context";
 import { apiErrorMessage } from "@/lib/i18n/api-errors";
 import { TranslationKey } from "@/lib/i18n/translations";
 import { VersionHistory } from "./version-history";
+import { EditorToolbar, SaveState } from "./editor-toolbar";
+import { CollapsiblePanel } from "@/components/ui/collapsible-panel";
 
 type Props = {
   patternId: string;
@@ -73,7 +74,7 @@ export function PatternEditor({ patternId, initialPattern, title, description, i
     fillCells
   } = usePatternEditorStore();
   const { t } = useTranslation();
-  const [saveState, setSaveState] = useState("saved");
+  const [saveState, setSaveState] = useState<SaveState>("saved");
   const [resizing, setResizing] = useState(false);
   const [draftWidth, setDraftWidth] = useState(0);
   const [draftHeight, setDraftHeight] = useState(0);
@@ -316,18 +317,20 @@ export function PatternEditor({ patternId, initialPattern, title, description, i
 
   const cellPx = Math.round(40 * zoomLevel);
 
+  // Grid columns = width + the row-number column; ~90px go to the section padding
+  // and the +/- edge buttons. setZoom clamps to its 40%..250% range.
+  const fitZoomToWidth = () => {
+    const section = gridSectionRef.current;
+    if (!section) return;
+    const available = section.clientWidth - 90;
+    setZoom(available / ((pattern.width + 1) * 40));
+  };
+
   return (
-    <div className="grid gap-4 lg:gap-6 lg:grid-cols-[300px,1fr]">
+    <div className="grid gap-4 lg:gap-6 lg:grid-cols-[300px_1fr]">
       {/* Sidebar */}
       <aside className="space-y-4 rounded-2xl bg-white/70 border border-yarn-sand/50 p-4 lg:p-5 shadow-warm-sm">
-        <div className="flex items-center justify-between">
-          <h2 className="font-display text-lg font-semibold text-yarn-charcoal">{t("editor.tools")}</h2>
-          <span className={`text-xs font-medium px-2 py-1 rounded-full ${
-            saveState === "saved" ? "bg-yarn-sage-light text-yarn-sage"
-            : saveState === "error" ? "bg-red-50 text-red-600"
-            : "bg-yarn-terracotta-light text-yarn-terracotta"
-          }`}>{saveLabel}</span>
-        </div>
+        <h2 className="font-display text-lg font-semibold text-yarn-charcoal">{t("editor.tools")}</h2>
 
         {/* Grid size / resize */}
         {resizing ? (
@@ -385,81 +388,9 @@ export function PatternEditor({ patternId, initialPattern, title, description, i
           {t("editor.skipPurlRows")}
         </button>
 
-        {/* Fill tool */}
-        <button type="button" onClick={toggleFillMode} title={`${t("editor.fillMode")} (F)`}
-          className={`flex w-full items-center gap-2 rounded-xl px-3 py-2 text-xs font-medium transition-colors ${
-            isFillMode
-              ? "bg-yarn-terracotta-light text-yarn-terracotta border border-yarn-terracotta/30"
-              : "bg-yarn-oatmeal/60 text-yarn-charcoal hover:bg-yarn-oatmeal"
-          }`}>
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
-            <path d="m19 11-8-8-8.6 8.6a2 2 0 0 0 0 2.8l5.2 5.2c.8.8 2 .8 2.8 0L19 11Z" />
-            <path d="m5 2 5 5" />
-            <path d="M2 13h15" />
-            <path d="M22 20a2 2 0 1 1-4 0c0-1.6 1.7-2.4 2-4 .3 1.6 2 2.4 2 4Z" />
-          </svg>
-          {t("editor.fillMode")}
-        </button>
-        {isFillMode && (
-          <p className="text-[11px] text-yarn-warm-gray/80 -mt-2 px-1">{t("editor.fillHint")}</p>
-        )}
-
-        {/* Version history */}
-        <VersionHistory patternId={patternId} />
-
-        {/* Tags */}
-        <div className="space-y-2">
-          <p className="text-xs font-semibold uppercase tracking-wider text-yarn-warm-gray">{t("editor.tags")}</p>
-          <div className="flex flex-wrap gap-1.5">
-            {tags.map((tag) => (
-              <span
-                key={tag}
-                className="inline-flex items-center gap-1 rounded-full bg-yarn-oatmeal/80 px-2 py-0.5 text-[11px] font-medium text-yarn-charcoal"
-              >
-                {tag}
-                <button
-                  type="button"
-                  onClick={() => removeTag(tag)}
-                  disabled={tagLoading}
-                  title={t("editor.tagRemove")}
-                  className="text-yarn-warm-gray/50 hover:text-red-400 transition-colors leading-none disabled:opacity-40"
-                >
-                  ×
-                </button>
-              </span>
-            ))}
-          </div>
-          <div className="flex gap-1.5">
-            <input
-              type="text"
-              maxLength={40}
-              value={tagInput}
-              onChange={(e) => {
-                setTagInput(e.target.value);
-                setTagError(null);
-              }}
-              onKeyDown={(e) => {
-                if (e.key === "Enter") void addTag();
-              }}
-              placeholder={t("editor.tagPlaceholder")}
-              disabled={tagLoading}
-              className="flex-1 rounded-lg border border-yarn-sand bg-white px-2.5 py-1.5 text-xs text-yarn-charcoal placeholder:text-yarn-warm-gray/60 focus:outline-none focus:border-yarn-terracotta disabled:opacity-50"
-            />
-            <button
-              type="button"
-              onClick={() => void addTag()}
-              disabled={tagLoading || !tagInput.trim()}
-              className="rounded-lg bg-yarn-terracotta px-3 py-1.5 text-xs font-medium text-white disabled:opacity-40 hover:bg-yarn-terracotta-hover transition-colors"
-            >
-              {t("editor.tagAdd")}
-            </button>
-          </div>
-          {tagError ? <p className="mt-1 text-xs text-red-600" role="alert">{tagError}</p> : null}
-        </div>
-
         {/* Symbols */}
+        <CollapsiblePanel title={t("editor.symbols")}>
         <div className="space-y-2">
-          <p className="text-xs font-semibold uppercase tracking-wider text-yarn-warm-gray">{t("editor.symbols")}</p>
           <div className="flex max-h-56 lg:max-h-80 flex-wrap gap-1.5 overflow-auto">
             {availableSymbols.map((symbol) => {
               const isUser = symbol.source === "user" || symbol.id.startsWith("user-");
@@ -521,10 +452,11 @@ export function PatternEditor({ patternId, initialPattern, title, description, i
             })}
           </div>
         </div>
+        </CollapsiblePanel>
 
         {/* Palette */}
+        <CollapsiblePanel title={t("editor.palette")}>
         <div className="space-y-2">
-          <p className="text-xs font-semibold uppercase tracking-wider text-yarn-warm-gray">{t("editor.palette")}</p>
           <div className="flex flex-wrap gap-2">
             {pattern.palette.map((color) => (
               <button key={color.id} type="button" title={color.name} onClick={() => setSelectedColor(color.hex)}
@@ -535,11 +467,72 @@ export function PatternEditor({ patternId, initialPattern, title, description, i
             ))}
           </div>
         </div>
+        </CollapsiblePanel>
+
+        {/* Tags */}
+        <CollapsiblePanel title={t("editor.tags")} defaultOpen={false}>
+        <div className="space-y-2">
+          <div className="flex flex-wrap gap-1.5">
+            {tags.map((tag) => (
+              <span
+                key={tag}
+                className="inline-flex items-center gap-1 rounded-full bg-yarn-oatmeal/80 px-2 py-0.5 text-[11px] font-medium text-yarn-charcoal"
+              >
+                {tag}
+                <button
+                  type="button"
+                  onClick={() => removeTag(tag)}
+                  disabled={tagLoading}
+                  title={t("editor.tagRemove")}
+                  className="text-yarn-warm-gray/50 hover:text-red-400 transition-colors leading-none disabled:opacity-40"
+                >
+                  ×
+                </button>
+              </span>
+            ))}
+          </div>
+          <div className="flex gap-1.5">
+            <input
+              type="text"
+              maxLength={40}
+              value={tagInput}
+              onChange={(e) => {
+                setTagInput(e.target.value);
+                setTagError(null);
+              }}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") void addTag();
+              }}
+              placeholder={t("editor.tagPlaceholder")}
+              disabled={tagLoading}
+              className="flex-1 rounded-lg border border-yarn-sand bg-white px-2.5 py-1.5 text-xs text-yarn-charcoal placeholder:text-yarn-warm-gray/60 focus:outline-none focus:border-yarn-terracotta disabled:opacity-50"
+            />
+            <button
+              type="button"
+              onClick={() => void addTag()}
+              disabled={tagLoading || !tagInput.trim()}
+              className="rounded-lg bg-yarn-terracotta px-3 py-1.5 text-xs font-medium text-white disabled:opacity-40 hover:bg-yarn-terracotta-hover transition-colors"
+            >
+              {t("editor.tagAdd")}
+            </button>
+          </div>
+          {tagError ? <p className="mt-1 text-xs text-red-600" role="alert">{tagError}</p> : null}
+        </div>
+        </CollapsiblePanel>
+
+        {/* Version history */}
+        <CollapsiblePanel title={t("editor.panelHistory")} defaultOpen={false}>
+          <VersionHistory patternId={patternId} />
+        </CollapsiblePanel>
 
         {/* ── Rapports ── */}
-        <div className="space-y-2 border-t border-yarn-sand/40 pt-3">
-          <div className="flex items-center justify-between">
-            <p className="text-xs font-semibold uppercase tracking-wider text-yarn-warm-gray">{t("editor.rapports")}</p>
+        <CollapsiblePanel
+          title={t("editor.rapports")}
+          defaultOpen={false}
+          forceOpen={isSelectionMode || hasSelection || Boolean(rapportInsertId)}
+        >
+        <div className="space-y-2">
+          <div className="flex items-center justify-end">
             <button type="button" onClick={toggleSelectionMode}
               className={`text-xs px-2.5 py-1 rounded-lg border transition-colors ${
                 isSelectionMode
@@ -649,42 +642,37 @@ export function PatternEditor({ patternId, initialPattern, title, description, i
             </p>
           )}
         </div>
+        </CollapsiblePanel>
 
-        {/* Actions */}
-        <div className="flex flex-wrap gap-2 pt-2 border-t border-yarn-sand/40">
-          <Button variant="secondary" size="sm" onClick={undo}>
-            <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="mr-1.5">
-              <path d="M3 5h6a3 3 0 0 1 0 6H7" /><path d="M5 3L3 5l2 2" />
-            </svg>
-            {t("editor.undo")}
-          </Button>
-          <Button variant="secondary" size="sm" onClick={redo}>
-            <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="mr-1.5">
-              <path d="M11 5H5a3 3 0 0 0 0 6h2" /><path d="M9 3l2 2-2 2" />
-            </svg>
-            {t("editor.redo")}
-          </Button>
-        </div>
       </aside>
 
-      {/* Grid canvas */}
+      {/* Grid column: on mobile it comes first, the sidebar follows. The toolbar sits
+          outside the scrolling section so it can stick to the viewport. */}
+      <div className="order-first min-w-0 space-y-3 lg:order-none">
+      <EditorToolbar
+        symbols={availableSymbols}
+        selectedSymbolId={selectedSymbolId}
+        onSelectSymbol={setSelectedSymbolId}
+        palette={pattern.palette}
+        selectedColor={selectedColor}
+        onSelectColor={setSelectedColor}
+        onUndo={undo}
+        onRedo={redo}
+        isFillMode={isFillMode}
+        onToggleFill={toggleFillMode}
+        saveState={saveState}
+        saveLabel={saveLabel}
+        zoomLevel={zoomLevel}
+        onZoomIn={() => setZoom(zoomLevel + 0.2)}
+        onZoomOut={() => setZoom(zoomLevel - 0.2)}
+        onZoomReset={() => setZoom(1)}
+        onZoomFit={fitZoomToWidth}
+      />
+      {isFillMode && (
+        <p className="px-1 text-[11px] text-yarn-warm-gray/80">{t("editor.fillHint")}</p>
+      )}
       <section ref={gridSectionRef} className="overflow-auto rounded-2xl bg-white/70 border border-yarn-sand/50 p-3 sm:p-4 lg:p-5 shadow-warm-sm">
-        {/* Zoom toolbar */}
-        <div className="flex items-center justify-end gap-1 mb-2">
-          <button type="button" onClick={() => setZoom(zoomLevel - 0.2)} title={t("editor.zoomOut")}
-            className="flex h-7 w-7 items-center justify-center rounded-lg border border-yarn-sand/60 bg-white text-sm font-bold text-yarn-charcoal hover:bg-yarn-oatmeal transition-colors">
-            −
-          </button>
-          <button type="button" onClick={() => setZoom(1)} title={t("editor.zoomReset")}
-            className="h-7 min-w-12 rounded-lg border border-yarn-sand/60 bg-white px-1.5 text-[11px] font-mono font-semibold text-yarn-warm-gray hover:bg-yarn-oatmeal transition-colors">
-            {Math.round(zoomLevel * 100)}%
-          </button>
-          <button type="button" onClick={() => setZoom(zoomLevel + 0.2)} title={t("editor.zoomIn")}
-            className="flex h-7 w-7 items-center justify-center rounded-lg border border-yarn-sand/60 bg-white text-sm font-bold text-yarn-charcoal hover:bg-yarn-oatmeal transition-colors">
-            +
-          </button>
-          <span className="ml-1 hidden lg:inline text-[10px] text-yarn-warm-gray/70">{t("editor.zoomScrollHint")}</span>
-        </div>
+        <p className="mb-2 hidden text-right text-[10px] text-yarn-warm-gray/70 lg:block">{t("editor.zoomScrollHint")}</p>
 
         {/* Add/remove row top */}
         <div className="flex justify-center gap-1 mb-1">
@@ -837,6 +825,7 @@ export function PatternEditor({ patternId, initialPattern, title, description, i
           </button>
         </div>
       </section>
+      </div>
 
       {/* Toast */}
       {toastData && (
