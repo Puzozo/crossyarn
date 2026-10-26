@@ -335,6 +335,10 @@ export const translations = {
     "import.fileTooLarge": "Файл завеликий (макс. 8 МБ)",
     "import.invalidFormat": "Підтримуються PNG, JPEG, WebP",
     "import.rateLimited": "Забагато імпортів. Спробуйте пізніше.",
+    "import.hint": "PNG, JPG або WebP до 8 МБ. Найкраще — рівне фото або скан схеми при доброму світлі.",
+    "import.reviewHint": "Клітинки з рамкою розпізнано невпевнено. Призначте позначки в «Нерозпізнаних позначках» або виправте клітинки пізніше в редакторі.",
+    "import.unknownHint": "Дайте назву кожній позначці — вона застосується до всіх таких клітинок.",
+    "import.savedToast": "Схему створено з фото — перевірте й допрацюйте її тут",
     // Import — processing
     "import.processing": "Розпізнаємо схему...",
     "import.processingSubtitle": "Це може зайняти до хвилини",
@@ -416,6 +420,11 @@ export const translations = {
     "versions.restored": "Версію відновлено",
     "versions.loading": "Завантаження історії…",
     "versions.restoreConfirm": "Це створить новий знімок із вмістом цієї версії. Продовжити?",
+    "versions.restoreTitle": "Відновити цю версію?",
+    "versions.restoreN": "Відновити версію {n}",
+    "versions.restoredToast": "Версію №{n} відновлено",
+    "common.cancel": "Скасувати",
+    "common.delete": "Видалити",
 
     // Mobile nav
     "mobileNav.openMenu": "Відкрити меню",
@@ -761,6 +770,10 @@ export const translations = {
     "import.fileTooLarge": "File too large (max 8 MB)",
     "import.invalidFormat": "Supported formats: PNG, JPEG, WebP",
     "import.rateLimited": "Too many imports. Try again later.",
+    "import.hint": "PNG, JPG or WebP up to 8 MB. Best: a straight photo or scan in good light.",
+    "import.reviewHint": "Outlined cells were recognized with low confidence. Assign marks under “Unrecognized marks” or fix the cells later in the editor.",
+    "import.unknownHint": "Name each mark — it applies to every cell that uses it.",
+    "import.savedToast": "Pattern created from your photo — review and polish it here",
     // Import — processing
     "import.processing": "Recognizing chart...",
     "import.processingSubtitle": "This may take up to a minute",
@@ -842,6 +855,11 @@ export const translations = {
     "versions.restored": "Version restored",
     "versions.loading": "Loading history…",
     "versions.restoreConfirm": "This creates a new snapshot with the restored content. Continue?",
+    "versions.restoreTitle": "Restore this version?",
+    "versions.restoreN": "Restore version {n}",
+    "versions.restoredToast": "Version #{n} restored",
+    "common.cancel": "Cancel",
+    "common.delete": "Delete",
 
     // Mobile nav
     "mobileNav.openMenu": "Open menu",

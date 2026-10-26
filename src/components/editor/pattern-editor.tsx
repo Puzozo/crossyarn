@@ -168,6 +168,25 @@ export function PatternEditor({ patternId, initialPattern, title, description, i
     setPattern(initialPattern);
   }, [initialPattern, setPattern]);
 
+  // One-shot toast left by the page that sent us here (version restore reloads,
+  // import save redirects) — shown once, then cleared.
+  useEffect(() => {
+    try {
+      const raw = sessionStorage.getItem("crossyarn:toast");
+      if (!raw) return;
+      sessionStorage.removeItem("crossyarn:toast");
+      const parsed = JSON.parse(raw) as { key?: unknown; params?: unknown };
+      if (typeof parsed.key !== "string") return;
+      const params =
+        parsed.params && typeof parsed.params === "object"
+          ? (parsed.params as Record<string, string | number>)
+          : undefined;
+      usePatternEditorStore.setState({ toastData: { key: parsed.key, params } });
+    } catch {
+      /* storage unavailable or bad JSON */
+    }
+  }, []);
+
   const symbolsLoadedRef = useRef(false);
   useEffect(() => {
     if (symbolsLoadedRef.current || !pattern) return;

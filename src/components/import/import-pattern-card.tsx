@@ -92,15 +92,18 @@ export function ImportPatternCard({ isPremium }: { isPremium: boolean }) {
       />
       {/* Open the picker explicitly: a <button> nested in a <label> swallows the
           click, so the label never forwards it to the hidden input. */}
-      <Button
-        type="button"
-        variant="secondary"
-        disabled={pending}
-        onClick={() => inputRef.current?.click()}
-      >
-        {pending ? t("import.uploading") : t("patterns.importBtn")}
-      </Button>
-      {error ? <span className="ml-2 text-sm text-red-600">{error}</span> : null}
+      <div className="flex flex-col items-start gap-1">
+        <Button
+          type="button"
+          variant="secondary"
+          disabled={pending}
+          onClick={() => inputRef.current?.click()}
+        >
+          {pending ? t("import.uploading") : t("patterns.importBtn")}
+        </Button>
+        <span className="text-[11px] leading-snug text-yarn-warm-gray">{t("import.hint")}</span>
+        {error ? <span role="alert" className="text-xs text-red-600">{error}</span> : null}
+      </div>
       {gateOpen && <PremiumGate onClose={() => setGateOpen(false)} />}
     </>
   );

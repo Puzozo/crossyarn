@@ -294,6 +294,11 @@ export function ImportPreviewContent({ importId, initialStatus }: Props) {
         setSaving(false);
         return;
       }
+      try {
+        sessionStorage.setItem("crossyarn:toast", JSON.stringify({ key: "import.savedToast" }));
+      } catch {
+        /* storage unavailable */
+      }
       // The source photo is no longer needed once the pattern exists.
       void fetch(`/api/imports/${importId}`, { method: "DELETE" }).catch(() => {});
       router.push(`/editor/${data.id}`);
@@ -316,8 +321,12 @@ export function ImportPreviewContent({ importId, initialStatus }: Props) {
     <div className="space-y-4 pb-24 lg:pb-6">
       {/* Top bar */}
       <div className="sticky top-0 z-20 flex items-center gap-3 border-b border-yarn-sand/40 bg-yarn-cream/95 px-1 py-3 backdrop-blur-sm">
-        <Link href="/patterns" className="text-sm text-yarn-warm-gray hover:text-yarn-charcoal">
-          ← {t("import.backToPatterns")}
+        <Link
+          href="/patterns"
+          aria-label={t("import.backToPatterns")}
+          className="shrink-0 text-sm text-yarn-warm-gray hover:text-yarn-charcoal"
+        >
+          ←<span className="hidden sm:inline"> {t("import.backToPatterns")}</span>
         </Link>
         <input
           value={title}
@@ -399,6 +408,9 @@ export function ImportPreviewContent({ importId, initialStatus }: Props) {
               ? t("import.lowConfidenceWarning", { n: lowConfidenceCount })
               : t("import.allChecked")}
           </p>
+          {lowConfidenceCount > 0 && (
+            <p className="text-xs text-yarn-warm-gray/90">{t("import.reviewHint")}</p>
+          )}
           <PreviewGrid
             cells={cells}
             width={realW}
@@ -776,6 +788,7 @@ function UnknownPanel({
       <p className="text-xs font-semibold uppercase tracking-wider text-yarn-warm-gray">
         {t("import.unknownTitle")}
       </p>
+      <p className="text-[11px] text-yarn-warm-gray">{t("import.unknownHint")}</p>
       <div className="space-y-1.5">
         {glyphs.map((g) => (
           <div key={g.hash} className="flex items-center gap-2 rounded-lg border border-yarn-sand/40 bg-white p-2">

@@ -2,6 +2,9 @@
 
 import { useEffect, useState, useCallback } from "react";
 import { useTranslation } from "@/lib/i18n/context";
+import { ConfirmDialog } from "@/components/ui/confirm-dialog";
+import { PatternGrid } from "@/components/patterns/pattern-grid";
+import type { PatternDocument } from "@/lib/patterns/model";
 
 interface VersionItem {
   id: string;
@@ -19,9 +22,9 @@ export function VersionHistory({ patternId }: { patternId: string }) {
   const [versions, setVersions] = useState<VersionItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [expandedId, setExpandedId] = useState<string | null>(null);
-  const [snapshot, setSnapshot] = useState<object | null>(null);
+  const [snapshot, setSnapshot] = useState<PatternDocument | null>(null);
+  const [restoreTarget, setRestoreTarget] = useState<string | null>(null);
   const [restoring, setRestoring] = useState(false);
-  const [toast, setToast] = useState<string | null>(null);
 
   const fetchVersions = useCallback(async () => {
     try {
@@ -53,15 +56,23 @@ export function VersionHistory({ patternId }: { patternId: string }) {
     }
   };
 
-  const handleRestore = async (versionId: string) => {
-    if (!confirm(t("versions.restoreConfirm"))) return;
+  const restoreVersion = async (versionId: string, n: number) => {
     setRestoring(true);
     try {
       const res = await fetch(`/api/patterns/${patternId}/versions/${versionId}/restore`, {
         method: "POST",
       });
       if (!res.ok) return;
-      setToast(t("versions.restored"));
+      // The editor re-reads this toast after the reload; keep it in sessionStorage
+      // so the message survives window.location.reload().
+      try {
+        sessionStorage.setItem(
+          "crossyarn:toast",
+          JSON.stringify({ key: "versions.restoredToast", params: { n } })
+        );
+      } catch {
+        // storage unavailable
+      }
       // The server rewrote the pattern; reload so the editor state (and autosave)
       // starts from the restored document instead of overwriting it.
       window.location.reload();
@@ -114,29 +125,51 @@ export function VersionHistory({ patternId }: { patternId: string }) {
                 >
                   #{n} — {dateStr} {timeStr}
                 </button>
-                <button
-                  type="button"
-                  onClick={() => handleRestore(v.id)}
-                  disabled={restoring}
-                  className="text-[10px] py-1 px-2 rounded-lg bg-yarn-terracotta-light text-yarn-terracotta hover:bg-yarn-terracotta-hover hover:text-white transition-colors disabled:opacity-50"
-                  title={t("versions.restore")}
-                >
-                  ↺
-                </button>
+                {idx === 0 ? (
+                  <span className="rounded-full bg-yarn-sage-light px-2 py-0.5 text-[10px] font-medium text-yarn-sage">
+                    {t("versions.current")}
+                  </span>
+                ) : (
+                  <button
+                    type="button"
+                    onClick={() => setRestoreTarget(v.id)}
+                    disabled={restoring}
+                    className="text-[10px] py-1 px-2 rounded-lg bg-yarn-terracotta-light text-yarn-terracotta hover:bg-yarn-terracotta-hover hover:text-white transition-colors disabled:opacity-50 min-h-8 min-w-8"
+                    title={t("versions.restore")}
+                    aria-label={t("versions.restoreN", { n })}
+                  >
+                    ↺
+                  </button>
+                )}
               </div>
-              {isExpanded && snapshot && (
-                <div className="text-[10px] text-yarn-warm-gray bg-yarn-oatmeal/60 rounded-lg p-2 max-h-32 overflow-auto">
-                  <pre className="whitespace-pre-wrap font-mono leading-relaxed">
-                    {JSON.stringify(snapshot, null, 2).slice(0, 2000)}
-                  </pre>
+              {isExpanded && snapshot && Array.isArray(snapshot.cells) && (
+                <div className="text-[10px] text-yarn-warm-gray">
+                  <div className="max-h-48 overflow-auto rounded-lg bg-yarn-oatmeal/60 p-2">
+                    <div style={{ zoom: 0.4 }}>
+                      <PatternGrid document={snapshot} />
+                    </div>
+                  </div>
                 </div>
               )}
             </div>
           );
         })}
       </div>
-      {toast && (
-        <p className="text-xs text-yarn-sage font-medium animate-fade-in">{toast}</p>
+      {restoreTarget && (
+        <ConfirmDialog
+          open
+          title={t("versions.restoreTitle")}
+          message={t("versions.restoreConfirm")}
+          confirmLabel={t("versions.restore")}
+          cancelLabel={t("common.cancel")}
+          busy={restoring}
+          onConfirm={() => {
+            const n = versions.length - versions.findIndex((v) => v.id === restoreTarget);
+            setRestoreTarget(null);
+            void restoreVersion(restoreTarget, n);
+          }}
+          onCancel={() => setRestoreTarget(null)}
+        />
       )}
     </div>
   );

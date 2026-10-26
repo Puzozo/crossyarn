@@ -4,6 +4,7 @@ import Image from "next/image";
 import { ChangeEvent, FormEvent, useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 import { PatternSymbol, SYMBOL_SPAN_OPTIONS } from "@/lib/patterns/model";
 import { useTranslation } from "@/lib/i18n/context";
 import { apiErrorMessage } from "@/lib/i18n/api-errors";
@@ -21,6 +22,7 @@ export function SymbolLibraryManager({ initialSymbols }: Props) {
   const [width, setWidth] = useState(1);
   const [height, setHeight] = useState(1);
   const [error, setError] = useState<string | null>(null);
+  const [deleteTarget, setDeleteTarget] = useState<string | null>(null);
   const customSymbols = useMemo(() => symbols.filter((item) => item.source === "user"), [symbols]);
 
   async function handleFile(event: ChangeEvent<HTMLInputElement>) {
@@ -73,7 +75,6 @@ export function SymbolLibraryManager({ initialSymbols }: Props) {
   }
 
   async function handleDelete(symbolId: string) {
-    if (!confirm(t("symbols.deleteConfirm"))) return;
     const rawId = symbolId.replace("user-", "");
     const response = await fetch(`/api/symbols/${rawId}`, { method: "DELETE" });
     if (!response.ok) {
@@ -178,7 +179,7 @@ export function SymbolLibraryManager({ initialSymbols }: Props) {
                     className="mt-2"
                     variant="danger"
                     size="sm"
-                    onClick={() => void handleDelete(symbol.id)}
+                    onClick={() => setDeleteTarget(symbol.id)}
                   >
                     {t("symbols.deleteBtn")}
                   </Button>
@@ -188,6 +189,19 @@ export function SymbolLibraryManager({ initialSymbols }: Props) {
           </div>
         )}
       </div>
+      <ConfirmDialog
+        open={deleteTarget !== null}
+        title={t("symbols.deleteConfirm")}
+        confirmLabel={t("common.delete")}
+        cancelLabel={t("common.cancel")}
+        danger
+        onConfirm={() => {
+          const target = deleteTarget;
+          setDeleteTarget(null);
+          if (target) void handleDelete(target);
+        }}
+        onCancel={() => setDeleteTarget(null)}
+      />
     </section>
   );
 }

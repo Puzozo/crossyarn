@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useTranslation } from "@/lib/i18n/context";
+import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 import { TranslationKey } from "@/lib/i18n/translations";
 
 const VISIBILITY_LABEL_KEYS: Record<string, TranslationKey> = {
@@ -28,6 +29,7 @@ export function PatternCard({ pattern }: { pattern: PatternData }) {
   const router = useRouter();
   const [duplicating, setDuplicating] = useState(false);
   const [deleting, setDeleting] = useState(false);
+  const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
 
   async function handleDuplicate() {
     setDuplicating(true);
@@ -42,7 +44,6 @@ export function PatternCard({ pattern }: { pattern: PatternData }) {
   }
 
   async function handleDelete() {
-    if (!confirm(t("patterns.deleteConfirm"))) return;
     setDeleting(true);
     try {
       await fetch(`/api/patterns/${pattern.id}`, { method: "DELETE" });
@@ -104,7 +105,7 @@ export function PatternCard({ pattern }: { pattern: PatternData }) {
         </button>
         <button
           type="button"
-          onClick={() => void handleDelete()}
+          onClick={() => setDeleteConfirmOpen(true)}
           disabled={deleting || duplicating}
           className="ml-auto inline-flex items-center min-h-11 text-sm font-medium text-red-400 hover:text-red-600 transition-colors disabled:opacity-50"
         >
@@ -112,6 +113,18 @@ export function PatternCard({ pattern }: { pattern: PatternData }) {
         </button>
       </div>
       </div>
+      <ConfirmDialog
+        open={deleteConfirmOpen}
+        title={t("patterns.deleteConfirm")}
+        confirmLabel={t("common.delete")}
+        cancelLabel={t("common.cancel")}
+        danger
+        onConfirm={() => {
+          setDeleteConfirmOpen(false);
+          void handleDelete();
+        }}
+        onCancel={() => setDeleteConfirmOpen(false)}
+      />
     </article>
   );
 }
