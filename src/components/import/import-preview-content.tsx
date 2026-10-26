@@ -294,6 +294,8 @@ export function ImportPreviewContent({ importId, initialStatus }: Props) {
         setSaving(false);
         return;
       }
+      // The source photo is no longer needed once the pattern exists.
+      void fetch(`/api/imports/${importId}`, { method: "DELETE" }).catch(() => {});
       router.push(`/editor/${data.id}`);
     } catch {
       setActionError(t("import.saveError"));

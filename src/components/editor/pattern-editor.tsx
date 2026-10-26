@@ -397,6 +397,7 @@ export function PatternEditor({ patternId, initialPattern, title, description, i
           <div className="flex gap-1.5">
             <input
               type="text"
+              maxLength={40}
               value={tagInput}
               onChange={(e) => setTagInput(e.target.value)}
               onKeyDown={(e) => {

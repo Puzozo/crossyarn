@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 import { db } from "@/lib/db";
 import { requireSession } from "@/lib/auth/session";
+import { limitWrite } from "@/lib/auth/rate-limit";
 import { getAvailableSymbols } from "@/lib/patterns/user-symbols";
 import { isSafeImageDataUri, MAX_SYMBOL_IMAGE_BYTES } from "@/lib/patterns/image-data";
 
@@ -26,6 +27,8 @@ export async function GET() {
 export async function POST(request: Request) {
   try {
     const session = await requireSession();
+    const limited = limitWrite(session.userId, "create");
+    if (limited) return limited;
     const body = createSymbolSchema.parse(await request.json());
     const symbol = await db.userSymbol.create({
       data: {

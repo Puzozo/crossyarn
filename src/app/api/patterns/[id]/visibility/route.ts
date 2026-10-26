@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 import { db } from "@/lib/db";
 import { requireSession } from "@/lib/auth/session";
+import { limitWrite } from "@/lib/auth/rate-limit";
 import { patternVisibilitySchema } from "@/lib/patterns/validation";
 
 const bodySchema = z.object({ visibility: patternVisibilitySchema });
@@ -13,6 +14,8 @@ const bodySchema = z.object({ visibility: patternVisibilitySchema });
 export async function PATCH(request: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
     const session = await requireSession();
+    const limited = limitWrite(session.userId, "write");
+    if (limited) return limited;
     const { id } = await params;
     const { visibility } = bodySchema.parse(await request.json());
 

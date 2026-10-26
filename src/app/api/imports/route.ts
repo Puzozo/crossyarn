@@ -3,7 +3,7 @@ import { db } from "@/lib/db";
 import { requireSession } from "@/lib/auth/session";
 import { requirePremium, PremiumRequiredError } from "@/lib/billing/premium";
 import { checkRateLimitWindow } from "@/lib/auth/rate-limit";
-import { saveImportImage, extForType } from "@/lib/import-pipeline/storage";
+import { saveImportImage, extForType, matchesImageSignature, sweepOldImportImages } from "@/lib/import-pipeline/storage";
 import { dispatchQueue } from "@/lib/import-pipeline/queue";
 
 export const runtime = "nodejs";
@@ -98,6 +98,10 @@ export async function POST(request: Request) {
   //    service which decodes the image; we cap byte size + type here.
   try {
     const bytes = Buffer.from(await file.arrayBuffer());
+    if (!matchesImageSignature(bytes, file.type)) {
+      return NextResponse.json({ error: "INVALID_FORMAT" }, { status: 400 });
+    }
+    void sweepOldImportImages();
     const job = await db.patternImportJob.create({
       data: {
         userId: session.userId,

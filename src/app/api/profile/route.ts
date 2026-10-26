@@ -3,6 +3,7 @@ import { z } from "zod";
 import { Prisma } from "@prisma/client";
 import { db } from "@/lib/db";
 import { requireSession } from "@/lib/auth/session";
+import { limitWrite } from "@/lib/auth/rate-limit";
 import { profileUpdateSchema, normalizeWebsite, validateAvatar, RESERVED_USERNAMES } from "@/lib/profile/validation";
 
 export async function PATCH(request: Request) {
@@ -12,6 +13,8 @@ export async function PATCH(request: Request) {
   } catch {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
+  const limited = limitWrite(session.userId, "write");
+  if (limited) return limited;
 
   try {
     const body = profileUpdateSchema.parse(await request.json());

@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { requireSession } from "@/lib/auth/session";
+import { limitWrite } from "@/lib/auth/rate-limit";
 
 /**
  * Like / unlike a pattern. A pattern can be liked by anyone who can view it:
@@ -21,6 +22,8 @@ async function loadLikeablePattern(id: string, userId: string) {
 export async function POST(_: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
     const session = await requireSession();
+    const limited = limitWrite(session.userId, "write");
+    if (limited) return limited;
     const { id } = await params;
 
     const pattern = await loadLikeablePattern(id, session.userId);
@@ -44,6 +47,8 @@ export async function POST(_: Request, { params }: { params: Promise<{ id: strin
 export async function DELETE(_: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
     const session = await requireSession();
+    const limited = limitWrite(session.userId, "write");
+    if (limited) return limited;
     const { id } = await params;
 
     await db.patternLike.deleteMany({

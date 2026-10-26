@@ -1,3 +1,5 @@
+import { NextResponse } from "next/server";
+
 type Entry = { count: number; resetAt: number };
 const store = new Map<string, Entry>();
 const WINDOW_MS = 60 * 1000;
@@ -32,6 +34,10 @@ export function checkRateLimitWindow(
   windowMs: number
 ): { allowed: boolean; retryAfterSeconds: number } {
   const now = Date.now();
+  // Drop expired counters now and then so per-user/per-IP keys don't accumulate forever.
+  if (store.size > 10_000) {
+    for (const [k, e] of store) if (e.resetAt <= now) store.delete(k);
+  }
   const entry = store.get(key);
 
   if (!entry || entry.resetAt <= now) {
@@ -51,4 +57,31 @@ export function checkRateLimitWindow(
 /** Auth limiter: 5 attempts / minute. Unchanged public API. */
 export function checkRateLimit(key: string): { allowed: boolean; retryAfterSeconds: number } {
   return checkRateLimitWindow(key, MAX_ATTEMPTS, WINDOW_MS);
+}
+
+/** 429 response for a limiter verdict, or null when the request may proceed. */
+export function rateLimitResponse(
+  key: string,
+  maxAttempts: number,
+  windowMs: number
+): NextResponse | null {
+  const { allowed, retryAfterSeconds } = checkRateLimitWindow(key, maxAttempts, windowMs);
+  if (allowed) return null;
+  return NextResponse.json(
+    { error: `Забагато запитів. Спробуйте через ${retryAfterSeconds} сек.` },
+    { status: 429, headers: { "Retry-After": String(retryAfterSeconds) } }
+  );
+}
+
+// Per-user budgets for authenticated writes. `save` covers editor autosave
+// (debounced 1.2s, so ~50/min while drawing nonstop); `create` adds new rows.
+const WRITE_LIMITS = {
+  save: { max: 120, windowMs: 60_000 },
+  write: { max: 60, windowMs: 60_000 },
+  create: { max: 60, windowMs: 3_600_000 }
+} as const;
+
+export function limitWrite(userId: string, bucket: keyof typeof WRITE_LIMITS): NextResponse | null {
+  const { max, windowMs } = WRITE_LIMITS[bucket];
+  return rateLimitResponse(`write:${bucket}:${userId}`, max, windowMs);
 }

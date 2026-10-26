@@ -1,11 +1,14 @@
 import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { requireSession } from "@/lib/auth/session";
+import { limitWrite } from "@/lib/auth/rate-limit";
 import { translit } from "@/lib/translit";
 
 export async function POST(_: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
     const session = await requireSession();
+    const limited = limitWrite(session.userId, "create");
+    if (limited) return limited;
     const { id } = await params;
 
     const existing = await db.pattern.findFirst({

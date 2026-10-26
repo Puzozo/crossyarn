@@ -2,17 +2,24 @@ import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import bcrypt from "bcryptjs";
 import crypto from "crypto";
+import { z } from "zod";
+import { getClientIp, rateLimitResponse } from "@/lib/auth/rate-limit";
+
+const schema = z.object({
+  token: z.string().regex(/^[0-9a-f]{64}$/),
+  password: z.string().min(8).max(128)
+});
 
 export async function POST(req: Request) {
-  try {
-    const { token, password } = await req.json();
-    if (!token || !password) {
-      return NextResponse.json({ error: "Token and password are required" }, { status: 400 });
-    }
+  const limited = rateLimitResponse(`reset-password:${getClientIp(req)}`, 10, 60 * 60 * 1000);
+  if (limited) return limited;
 
-    if (password.length < 8) {
-      return NextResponse.json({ error: "Password must be at least 8 characters" }, { status: 400 });
+  try {
+    const parsed = schema.safeParse(await req.json().catch(() => null));
+    if (!parsed.success) {
+      return NextResponse.json({ error: "Invalid or expired reset token" }, { status: 400 });
     }
+    const { token, password } = parsed.data;
 
     // Hash the provided token to look up in the database
     const tokenHash = crypto.createHash("sha256").update(token).digest("hex");

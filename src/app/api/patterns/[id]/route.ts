@@ -1,8 +1,10 @@
 import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { requireSession } from "@/lib/auth/session";
+import { limitWrite } from "@/lib/auth/rate-limit";
 import { updatePatternSchema } from "@/lib/patterns/validation";
 import { hydrateBuiltinSymbols } from "@/lib/patterns/normalize-symbols";
+import { pruneVersions } from "@/lib/patterns/versions";
 import { translit } from "@/lib/translit";
 
 export async function GET(_: Request, { params }: { params: Promise<{ id: string }> }) {
@@ -27,6 +29,8 @@ export async function GET(_: Request, { params }: { params: Promise<{ id: string
 export async function PUT(request: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
     const session = await requireSession();
+    const limited = limitWrite(session.userId, "save");
+    if (limited) return limited;
     const { id } = await params;
     const body = updatePatternSchema.parse(await request.json());
 
@@ -63,6 +67,7 @@ export async function PUT(request: Request, { params }: { params: Promise<{ id: 
         snapshot: body.patternData
       }
     });
+    await pruneVersions(id);
 
     return NextResponse.json(pattern);
   } catch {
@@ -73,6 +78,8 @@ export async function PUT(request: Request, { params }: { params: Promise<{ id: 
 export async function PATCH(request: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
     const session = await requireSession();
+    const limited = limitWrite(session.userId, "write");
+    if (limited) return limited;
     const { id } = await params;
     const body = await request.json();
     const title = typeof body.title === "string" ? body.title.trim() : "";
@@ -104,6 +111,8 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
 export async function DELETE(_: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
     const session = await requireSession();
+    const limited = limitWrite(session.userId, "write");
+    if (limited) return limited;
     const { id } = await params;
     await db.pattern.deleteMany({
       where: {

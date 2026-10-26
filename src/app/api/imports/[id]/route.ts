@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { requireSession } from "@/lib/auth/session";
+import { deleteImportImage } from "@/lib/import-pipeline/storage";
 
 export const runtime = "nodejs";
 
@@ -36,4 +37,34 @@ export async function GET(_: Request, { params }: { params: Promise<{ id: string
     errorMessage: job.errorMessage,
     result
   });
+}
+
+/**
+ * Discard a finished job and its uploaded image — called by the preview page once
+ * the pattern is saved, so chart photos don't linger on disk. Jobs still being
+ * processed are left alone (the recognition callback would target a missing row).
+ */
+export async function DELETE(_: Request, { params }: { params: Promise<{ id: string }> }) {
+  let session;
+  try {
+    session = await requireSession();
+  } catch {
+    return NextResponse.json({ error: "UNAUTHORIZED" }, { status: 401 });
+  }
+
+  const { id } = await params;
+  const job = await db.patternImportJob.findUnique({
+    where: { id },
+    select: { userId: true, status: true, sourceImageUrl: true }
+  });
+  if (!job || job.userId !== session.userId) {
+    return NextResponse.json({ error: "NOT_FOUND" }, { status: 404 });
+  }
+  if (job.status !== "READY" && job.status !== "FAILED") {
+    return NextResponse.json({ error: "JOB_IN_PROGRESS" }, { status: 409 });
+  }
+
+  await deleteImportImage(job.sourceImageUrl);
+  await db.patternImportJob.delete({ where: { id } });
+  return NextResponse.json({ ok: true });
 }

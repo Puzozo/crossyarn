@@ -1,4 +1,4 @@
-import { mkdir, writeFile, readFile, unlink, readdir } from "node:fs/promises";
+import { mkdir, writeFile, readFile, unlink, readdir, stat } from "node:fs/promises";
 import path from "node:path";
 
 /**
@@ -30,6 +30,20 @@ const TYPE_BY_EXT: Record<string, string> = {
 
 export function extForType(contentType: string): string | null {
   return EXT_BY_TYPE[contentType] ?? null;
+}
+
+/** True when the bytes really are the declared image type (the client's MIME type is just a claim). */
+export function matchesImageSignature(bytes: Buffer, contentType: string): boolean {
+  switch (contentType) {
+    case "image/png":
+      return bytes.subarray(0, 8).equals(Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]));
+    case "image/jpeg":
+      return bytes[0] === 0xff && bytes[1] === 0xd8 && bytes[2] === 0xff;
+    case "image/webp":
+      return bytes.subarray(0, 4).toString("ascii") === "RIFF" && bytes.subarray(8, 12).toString("ascii") === "WEBP";
+    default:
+      return false;
+  }
 }
 
 export async function saveImportImage(
@@ -72,7 +86,30 @@ export async function deleteImportImage(filename: string): Promise<void> {
   }
 }
 
-/** Used by the cleanup sweep: filenames older than `maxAgeMs`. */
+const SWEEP_MAX_AGE_MS = 24 * 60 * 60 * 1000;
+const SWEEP_INTERVAL_MS = 60 * 60 * 1000;
+let lastSweepAt = 0;
+
+/**
+ * Delete upload files older than 24h (abandoned previews; saved imports are deleted
+ * right away via DELETE /api/imports/[id]). Called opportunistically on new uploads
+ * and throttled to once an hour, so no cron is needed.
+ */
+export async function sweepOldImportImages(): Promise<void> {
+  const now = Date.now();
+  if (now - lastSweepAt < SWEEP_INTERVAL_MS) return;
+  lastSweepAt = now;
+  for (const name of await listImportImages()) {
+    try {
+      const info = await stat(path.join(/*turbopackIgnore: true*/ uploadDir(), name));
+      if (info.isFile() && now - info.mtimeMs > SWEEP_MAX_AGE_MS) await deleteImportImage(name);
+    } catch {
+      /* raced with another delete — ignore */
+    }
+  }
+}
+
+/** Filenames currently in the upload dir. */
 export async function listImportImages(): Promise<string[]> {
   try {
     return await readdir(/*turbopackIgnore: true*/ uploadDir());

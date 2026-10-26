@@ -29,17 +29,26 @@ export default async function ExplorePage({
   const query = (q ?? "").trim();
   const requestedPage = Math.max(1, Number.parseInt(page ?? "1", 10) || 1);
 
-  // Collect all tags across the full PUBLIC set for the filter bar.
+  // Count tag frequency across the full PUBLIC set for the filter bar.
   // Bounded by RECENT_CAP to keep the query fast.
-  const allTags = new Set<string>();
+  // Only the 50 most used tags, so one user can't flood the filter bar.
+  const tagCounts = new Map<string, number>();
   const allPatterns = await db.pattern.findMany({
     where: { visibility: "PUBLIC" },
     orderBy: { updatedAt: "desc" },
     take: RECENT_CAP,
     select: { tags: true }
   });
-  for (const t of allPatterns.flatMap((p) => parseTags(p.tags))) allTags.add(t);
-  const sortedTags = [...allTags].sort();
+  for (const t of allPatterns.flatMap((p) => parseTags(p.tags))) {
+    // Skip tags longer than the validation limit (legacy data).
+    if (t.length > 40) continue;
+    tagCounts.set(t, (tagCounts.get(t) ?? 0) + 1);
+  }
+  const sortedTags = [...tagCounts.entries()]
+    .sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]))
+    .slice(0, 50)
+    .map(([t]) => t)
+    .sort((a, b) => a.localeCompare(b));
 
   // Build the SQL-like Prisma filter: combine titleTranslit search + tag filter.
   const where: Prisma.PatternWhereInput = { visibility: "PUBLIC" };

@@ -1,6 +1,9 @@
+import type { Prisma } from "@prisma/client";
 import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { requireSession } from "@/lib/auth/session";
+import { limitWrite } from "@/lib/auth/rate-limit";
+import { pruneVersions } from "@/lib/patterns/versions";
 
 /**
  * POST /api/patterns/[id]/versions/[versionId]/restore
@@ -10,6 +13,8 @@ import { requireSession } from "@/lib/auth/session";
 export async function POST(_: Request, { params }: { params: Promise<{ id: string; versionId: string }> }) {
   try {
     const session = await requireSession();
+    const limited = limitWrite(session.userId, "write");
+    if (limited) return limited;
     const { id, versionId } = await params;
 
     // Verify ownership
@@ -34,10 +39,11 @@ export async function POST(_: Request, { params }: { params: Promise<{ id: strin
     const restored = await db.patternVersion.create({
       data: {
         patternId: id,
-        snapshot: version.snapshot as any,
+        snapshot: version.snapshot as Prisma.InputJsonValue,
       },
       select: { id: true }
     });
+    await pruneVersions(id);
 
     return NextResponse.json({ id: restored.id });
   } catch {

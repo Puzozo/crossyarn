@@ -1,4 +1,8 @@
 crossyarn.online {
+    # Largest legit body: an 8MB import upload (patterns ≤ ~4MB of symbol images).
+    request_body {
+        max_size 10MB
+    }
     # Internal service-to-service callbacks are reached over 127.0.0.1 only.
     respond /api/internal/* 404
     reverse_proxy localhost:3000

@@ -1,8 +1,10 @@
 import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { requireSession } from "@/lib/auth/session";
+import { limitWrite } from "@/lib/auth/rate-limit";
 import { createEmptyPattern } from "@/lib/patterns/model";
 import { createPatternRequestSchema } from "@/lib/patterns/validation";
+import { pruneVersions } from "@/lib/patterns/versions";
 import { translit } from "@/lib/translit";
 
 export async function GET() {
@@ -25,6 +27,8 @@ export async function POST(request: Request) {
   } catch {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
+  const limited = limitWrite(session.userId, "create");
+  if (limited) return limited;
 
   const parsed = createPatternRequestSchema.safeParse(await request.json().catch(() => ({})));
   if (!parsed.success) {
@@ -54,6 +58,7 @@ export async function POST(request: Request) {
         snapshot: patternData
       }
     });
+    await pruneVersions(pattern.id);
 
     return NextResponse.json({ id: pattern.id }, { status: 201 });
   } catch (error) {
