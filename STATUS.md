@@ -1,21 +1,18 @@
 # STATUS — Crossyarn
 
-## Next (що робити далі)
-- [ ] P5 (SEO): протестувати SQL LIKE пошук + теги на /explore, deploy schema changes
-- [ ] P6: аудит безпеки (reliability-security-auditor agent)
-- [ ] P7: UX аудит (ux-auditor agent)
+## Next (що робити далі, див. ROADMAP-week-2026-W44.md v2)
+- [ ] P1b: точність розпізнавання — зібрати 10-20 реальних фото/сканів зі «правильною» схемою, заміряти, донавчити класифікатор; ручне підлаштування 4 кутів у preview для фото
+- [ ] P4d (low): tablet header 768, /explore empty state + екранування % у пошуку, title сторінок, soft-404 на /patterns/[bad], дрібні tap-таргети (× тегів), перевірити малювання свайпом на телефоні; білі смуги в сітці на вузькому екрані
+- [ ] P5 (SEO): блог /blog/[slug] + 3-5 статей
+- [ ] Дрібне: невикористані імпорти (Button у public-pattern-content, router у reset-password-content); рядок у CLAUDE.md про режим в'язання не закомічено
 
 ## Blocked
-- Image import Python: потрібен сервер з ONNX CPU runtime (чекаємо на залізо)
+- P2 billing WayForPay → перенесено на тиждень 2026-11-02 (йде оформлення ФОП); Universal Premium згорає 2026-11-15 — якщо не встигаємо, продовжити дату
+- Billing: мерчант-ключі WayForPay/LiqPay (ФОП) — dry-run mock покриває
 
 ## Done recently
-- P5 (SEO): transliteration utility (DSTU 3971:2003) + titleTranslit column in schema
-- P5 (SEO): server-side SQL LIKE search on /explore (titleTranslit + title + tags JSON)
-- P5 (SEO): tag filtering on /explore with URL-driven navigation (?tag=)
-- P5 (SEO): tag management UI in editor sidebar (add/remove tags) + API endpoint
-- P5 (SEO): UA/EN translations for tag UI
-- P4: історія версій (sidebar в редакторі + 3 API ендпоінти) — ЗАДЕПЛОЄНО
-- Universal Premium: всі користувачі мають Premium до 2026-11-15 (isPremium override + /premium page)
-- ЗАДЕПЛОЄНО: лайки/обране + og:image + bucket fill
-- ЗАДЕПЛОЄНО: профілі, /explore, premium-скелет, import-пайплайн, sitemap/robots/OG, аватари
-- Створено ROADMAP-week-2026-W44.md (7 пріоритетів на тиждень)
+- P4c: ConfirmDialog замість confirm() (відновлення версії, видалення схеми/позначки), історія версій (бейдж «Поточна», мініатюра замість JSON, дата за мовою, тост), підказки імпорту + тост після збереження — ЗАДЕПЛОЄНО 28aa938
+- P4b: редактор — sticky тулбар над сіткою, згортання панелей, «Вмістити»; виправлено lg:grid-cols-[a,b] (Tailwind v4 потребує `_`) у редакторі, на головній і в preview імпорту — ЗАДЕПЛОЄНО e903b27
+- Власні позначки до 20×20 клітинок (було 6×6) — ЗАДЕПЛОЄНО f621e76
+- P4 партія 1 (UX аудит #2): режим в'язання на мобільному (sticky панель, номери рядів, 44px), Ctrl+S + beforeunload, локалізовані коди помилок API, auth-форми (autocomplete, role=alert), меню гостя, 404 → каталог
+- P3 ЗАКРИТО: non-JSON → 400 скрізь, DELETE чужого → 404, CSRF на sign-out, відновлення версії тепер реально відновлює схему
