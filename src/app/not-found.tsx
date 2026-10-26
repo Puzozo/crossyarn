@@ -16,8 +16,8 @@ export default function NotFound() {
       <p className="mt-2 max-w-sm text-sm text-yarn-warm-gray">
         {t("notFound.description")}
       </p>
-      <Link href="/patterns" className="mt-6">
-        <Button>{t("notFound.back")}</Button>
+      <Link href="/explore" className="mt-6">
+        <Button>{t("notFound.toCatalog")}</Button>
       </Link>
     </div>
   );

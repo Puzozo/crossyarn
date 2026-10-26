@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useTranslation } from "@/lib/i18n/context";
+import { apiErrorMessage } from "@/lib/i18n/api-errors";
 
 export function ForgotPasswordContent() {
   const router = useRouter();
@@ -27,7 +28,7 @@ export function ForgotPasswordContent() {
       });
       if (!res.ok) {
         const data = await res.json().catch(() => null);
-        setError(data?.error ?? t("auth.genericError"));
+        setError(apiErrorMessage(t, data, "auth.genericError"));
         return;
       }
       setSent(true);
@@ -61,9 +62,11 @@ export function ForgotPasswordContent() {
             <h1 className="font-display text-2xl font-bold text-yarn-charcoal">
               {t("auth.forgotPasswordTitle")}
             </h1>
-            <p className="mt-2 text-sm text-yarn-warm-gray">
-              {t("auth.forgotPasswordDesc")}
-            </p>
+            {!sent ? (
+              <p className="mt-2 text-sm text-yarn-warm-gray">
+                {t("auth.forgotPasswordDesc")}
+              </p>
+            ) : null}
           </div>
         </div>
 
@@ -81,6 +84,9 @@ export function ForgotPasswordContent() {
             <p className="text-xs text-yarn-warm-gray">
               {t("auth.forgotPasswordNote")}
             </p>
+            <p className="mt-2 text-xs text-yarn-warm-gray">
+              {t("auth.forgotPasswordSpamHint")}
+            </p>
           </div>
         ) : (
           <form onSubmit={handleSubmit} className="rounded-2xl bg-white/80 backdrop-blur border border-yarn-sand/50 p-8 shadow-warm space-y-5">
@@ -90,6 +96,7 @@ export function ForgotPasswordContent() {
               </label>
               <Input
                 type="email"
+                autoComplete="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="your@email.com"
@@ -99,7 +106,7 @@ export function ForgotPasswordContent() {
             </div>
 
             {error && (
-              <div className="rounded-xl bg-red-50 border border-red-200 px-4 py-3 text-sm text-red-700">
+              <div role="alert" className="rounded-xl bg-red-50 border border-red-200 px-4 py-3 text-sm text-red-700">
                 {error}
               </div>
             )}

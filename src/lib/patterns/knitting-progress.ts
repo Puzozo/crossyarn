@@ -102,14 +102,10 @@ export function useKnittingProgress(
     save({ ...progress, row: stepRow(rowNumbers, progress.row, -1) });
   }, [progress, rowNumbers, save]);
 
+  // Back to the first row; stays in knitting mode (exiting is a separate action).
   const reset = useCallback(() => {
-    setProgress({ row: rowNumbers[0] ?? 1, active: false });
-    try {
-      localStorage.removeItem(storageKey);
-    } catch {
-      /* storage unavailable */
-    }
-  }, [rowNumbers, storageKey]);
+    save({ row: rowNumbers[0] ?? 1, active: progress.active });
+  }, [progress.active, rowNumbers, save]);
 
   return {
     active: progress.active,

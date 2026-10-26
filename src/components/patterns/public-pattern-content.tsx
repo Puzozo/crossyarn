@@ -53,6 +53,13 @@ export function PublicPatternContent({
       ?.scrollIntoView({ block: "nearest", inline: "nearest" });
   }, [knitting.active, knitting.row]);
 
+  // Row numbers sit at the chart's right edge (charts are read right to left);
+  // on narrow screens bring them into view when knitting mode starts.
+  useEffect(() => {
+    const container = gridContainerRef.current;
+    if (knitting.active && container) container.scrollLeft = container.scrollWidth;
+  }, [knitting.active]);
+
   return (
     <section className="space-y-6">
       <div className="rounded-3xl bg-white/70 border border-yarn-sand/50 p-6 sm:p-8 shadow-warm-sm">
@@ -95,11 +102,12 @@ export function PublicPatternContent({
         ) : null}
       </div>
 
+      <KnittingModeBar knitting={knitting} />
+
       <div
         ref={gridContainerRef}
         className="rounded-2xl bg-white/70 border border-yarn-sand/50 p-6 shadow-warm-sm overflow-x-auto"
       >
-        <KnittingModeBar knitting={knitting} />
         <PatternGrid
           document={document}
           highlightRow={knitting.active ? knitting.row : undefined}

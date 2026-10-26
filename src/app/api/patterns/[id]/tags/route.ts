@@ -19,7 +19,7 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
     const tag = typeof body.tag === "string" ? body.tag.trim().toLowerCase() : "";
 
     if (!tag || tag.length > MAX_TAG_LENGTH || !TAG_PATTERN.test(tag)) {
-      return NextResponse.json({ error: "Некоректний тег" }, { status: 400 });
+      return NextResponse.json({ error: "INVALID_TAG" }, { status: 400 });
     }
 
     const existing = await db.pattern.findFirst({
@@ -36,7 +36,7 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
     }
 
     if (currentTags.length >= MAX_TAGS_PER_PATTERN) {
-      return NextResponse.json({ error: "Забагато тегів (максимум 20)" }, { status: 400 });
+      return NextResponse.json({ error: "TOO_MANY_TAGS" }, { status: 400 });
     }
 
     const updatedTags = [...currentTags, tag];
@@ -47,7 +47,7 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
 
     return NextResponse.json({ tags: parseTags(pattern.tags) });
   } catch {
-    return NextResponse.json({ error: "Не вдалося додати тег" }, { status: 400 });
+    return NextResponse.json({ error: "REQUEST_FAILED" }, { status: 400 });
   }
 }
 
@@ -61,7 +61,7 @@ export async function DELETE(request: Request, { params }: { params: Promise<{ i
     const tag = typeof body.tag === "string" ? body.tag.trim() : "";
 
     if (!tag) {
-      return NextResponse.json({ error: "Некоректний тег" }, { status: 400 });
+      return NextResponse.json({ error: "INVALID_TAG" }, { status: 400 });
     }
 
     const existing = await db.pattern.findFirst({
@@ -82,6 +82,6 @@ export async function DELETE(request: Request, { params }: { params: Promise<{ i
 
     return NextResponse.json({ tags: parseTags(pattern.tags) });
   } catch {
-    return NextResponse.json({ error: "Не вдалося видалити тег" }, { status: 400 });
+    return NextResponse.json({ error: "REQUEST_FAILED" }, { status: 400 });
   }
 }

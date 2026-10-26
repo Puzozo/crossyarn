@@ -6,6 +6,7 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useTranslation } from "@/lib/i18n/context";
+import { apiErrorMessage } from "@/lib/i18n/api-errors";
 
 type Mode = "sign-in" | "sign-up";
 
@@ -38,7 +39,7 @@ export function AuthForm({ mode }: { mode: Mode }) {
     const data = await response.json().catch(() => null);
 
     if (!response.ok) {
-      setError(data?.error ?? t("auth.genericError"));
+      setError(apiErrorMessage(t, data, "auth.genericError"));
       setPending(false);
       return;
     }
@@ -62,21 +63,28 @@ export function AuthForm({ mode }: { mode: Mode }) {
         {mode === "sign-up" ? (
           <div className="space-y-1.5">
             <label className="block text-sm font-medium text-yarn-charcoal">{t("auth.name")}</label>
-            <Input name="name" placeholder={t("auth.namePlaceholder")} />
+            <Input name="name" autoComplete="name" placeholder={t("auth.namePlaceholder")} />
           </div>
         ) : null}
         <div className="space-y-1.5">
           <label className="block text-sm font-medium text-yarn-charcoal">{t("auth.email")}</label>
-          <Input type="email" name="email" placeholder={t("auth.emailPlaceholder")} required />
+          <Input type="email" name="email" autoComplete="email" placeholder={t("auth.emailPlaceholder")} required />
         </div>
         <div className="space-y-1.5">
           <label className="block text-sm font-medium text-yarn-charcoal">{t("auth.password")}</label>
-          <Input type="password" name="password" placeholder={t("auth.passwordPlaceholder")} minLength={8} required />
+          <Input
+            type="password"
+            name="password"
+            autoComplete={mode === "sign-up" ? "new-password" : "current-password"}
+            placeholder={t("auth.passwordPlaceholder")}
+            minLength={8}
+            required
+          />
         </div>
       </div>
 
       {error ? (
-        <div className="rounded-xl bg-red-50 border border-red-200 px-4 py-3 text-sm text-red-700">
+        <div role="alert" className="rounded-xl bg-red-50 border border-red-200 px-4 py-3 text-sm text-red-700">
           {error}
         </div>
       ) : null}

@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { PatternDocument } from "@/lib/patterns/model";
 import { usePatternEditorStore } from "@/lib/patterns/editor-state";
 import { useTranslation } from "@/lib/i18n/context";
+import { apiErrorMessage } from "@/lib/i18n/api-errors";
 import { TranslationKey } from "@/lib/i18n/translations";
 import { VersionHistory } from "./version-history";
 
@@ -85,6 +86,7 @@ export function PatternEditor({ patternId, initialPattern, title, description, i
   const [tags, setTags] = useState<string[]>(initialTags ?? []);
   const [tagInput, setTagInput] = useState("");
   const [tagLoading, setTagLoading] = useState(false);
+  const [tagError, setTagError] = useState<string | null>(null);
 
   const addTag = useCallback(async () => {
     const tag = tagInput.trim().toLowerCase();
@@ -92,6 +94,7 @@ export function PatternEditor({ patternId, initialPattern, title, description, i
       setTagInput("");
       return;
     }
+    setTagError(null);
     setTagLoading(true);
     try {
       const res = await fetch(`/api/patterns/${patternId}/tags`, {
@@ -102,11 +105,14 @@ export function PatternEditor({ patternId, initialPattern, title, description, i
       if (res.ok) {
         const data = await res.json();
         setTags(data.tags);
+        setTagInput("");
+      } else {
+        // Keep the typed tag so the user can fix it.
+        setTagError(apiErrorMessage(t, await res.json().catch(() => null), "auth.genericError"));
       }
     } catch { /* optimist */ }
     setTagLoading(false);
-    setTagInput("");
-  }, [tagInput, tagLoading, tags, patternId]);
+  }, [tagInput, tagLoading, tags, patternId, t]);
 
   const removeTag = useCallback(async (tag: string) => {
     setTagLoading(true);
@@ -179,6 +185,12 @@ export function PatternEditor({ patternId, initialPattern, title, description, i
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pattern, setSymbols]);
 
+  // dirtyRef: an edit is waiting for (or failed) autosave — guards tab close and
+  // lets Ctrl+S flush it immediately instead of waiting for the debounce.
+  const dirtyRef = useRef(false);
+  const saveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const flushSaveRef = useRef<() => void>(() => {});
+
   const handleSave = useCallback(
     async (documentToSave: PatternDocument) => {
       setSaveState("autosaving");
@@ -189,6 +201,7 @@ export function PatternEditor({ patternId, initialPattern, title, description, i
           body: JSON.stringify({ id: patternId, title, description: description ?? "", width: documentToSave.width, height: documentToSave.height, patternData: documentToSave })
         });
         setSaveState(response.ok ? "saved" : "error");
+        if (response.ok) dirtyRef.current = false;
       } catch {
         setSaveState("error");
       }
@@ -199,9 +212,25 @@ export function PatternEditor({ patternId, initialPattern, title, description, i
   useEffect(() => {
     if (!pattern) return;
     if (!initializedRef.current) { initializedRef.current = true; return; }
-    const timeout = setTimeout(() => { void handleSave(pattern); }, 1200);
-    return () => clearTimeout(timeout);
+    dirtyRef.current = true;
+    saveTimerRef.current = setTimeout(() => { saveTimerRef.current = null; void handleSave(pattern); }, 1200);
+    flushSaveRef.current = () => {
+      if (saveTimerRef.current) clearTimeout(saveTimerRef.current);
+      saveTimerRef.current = null;
+      void handleSave(pattern);
+    };
+    return () => { if (saveTimerRef.current) clearTimeout(saveTimerRef.current); };
   }, [handleSave, pattern]);
+
+  useEffect(() => {
+    const onBeforeUnload = (e: BeforeUnloadEvent) => {
+      if (!dirtyRef.current) return;
+      e.preventDefault();
+      e.returnValue = "";
+    };
+    window.addEventListener("beforeunload", onBeforeUnload);
+    return () => window.removeEventListener("beforeunload", onBeforeUnload);
+  }, []);
 
   const availableSymbolsRef = useRef(availableSymbols);
   useEffect(() => { availableSymbolsRef.current = availableSymbols; }, [availableSymbols]);
@@ -221,9 +250,15 @@ export function PatternEditor({ patternId, initialPattern, title, description, i
     return () => el.removeEventListener("wheel", onWheel);
   }, []);
 
-  // Keyboard shortcuts: Ctrl+Z/Y undo/redo, Esc cancel modes, 1-9 symbol pick, +/- zoom
+  // Keyboard shortcuts: Ctrl+S save, Ctrl+Z/Y undo/redo, Esc cancel modes, 1-9 symbol pick, +/- zoom
   useEffect(() => {
     const onKeyDown = (e: KeyboardEvent) => {
+      // Before the input guard: Ctrl+S should save (not open "Save page") anywhere.
+      if ((e.ctrlKey || e.metaKey) && !e.shiftKey && !e.altKey && e.key.toLowerCase() === "s") {
+        e.preventDefault();
+        flushSaveRef.current();
+        return;
+      }
       const target = e.target as HTMLElement | null;
       if (target && (target.tagName === "INPUT" || target.tagName === "TEXTAREA" || target.tagName === "SELECT" || target.isContentEditable)) {
         return;
@@ -399,7 +434,10 @@ export function PatternEditor({ patternId, initialPattern, title, description, i
               type="text"
               maxLength={40}
               value={tagInput}
-              onChange={(e) => setTagInput(e.target.value)}
+              onChange={(e) => {
+                setTagInput(e.target.value);
+                setTagError(null);
+              }}
               onKeyDown={(e) => {
                 if (e.key === "Enter") void addTag();
               }}
@@ -416,6 +454,7 @@ export function PatternEditor({ patternId, initialPattern, title, description, i
               {t("editor.tagAdd")}
             </button>
           </div>
+          {tagError ? <p className="mt-1 text-xs text-red-600" role="alert">{tagError}</p> : null}
         </div>
 
         {/* Symbols */}

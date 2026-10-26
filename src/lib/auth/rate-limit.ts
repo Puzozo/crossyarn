@@ -68,7 +68,7 @@ export function rateLimitResponse(
   const { allowed, retryAfterSeconds } = checkRateLimitWindow(key, maxAttempts, windowMs);
   if (allowed) return null;
   return NextResponse.json(
-    { error: `Забагато запитів. Спробуйте через ${retryAfterSeconds} сек.` },
+    { error: "RATE_LIMITED", retryAfterSeconds },
     { status: 429, headers: { "Retry-After": String(retryAfterSeconds) } }
   );
 }

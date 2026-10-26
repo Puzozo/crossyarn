@@ -6,6 +6,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useTranslation } from "@/lib/i18n/context";
+import { apiErrorMessage } from "@/lib/i18n/api-errors";
 
 export function ResetPasswordContent({ tokenValid }: { tokenValid: boolean }) {
   const router = useRouter();
@@ -41,8 +42,12 @@ export function ResetPasswordContent({ tokenValid }: { tokenValid: boolean }) {
         body: JSON.stringify({ token, password }),
       });
       if (!res.ok) {
-        // 400 = token used/expired meanwhile; the API message is English-only
-        setError(res.status === 400 ? t("auth.invalidToken") : t("auth.genericError"));
+        if (res.status === 429) {
+          setError(apiErrorMessage(t, await res.json().catch(() => null), "auth.genericError"));
+        } else {
+          // 400 = token used/expired meanwhile; the API message is English-only
+          setError(res.status === 400 ? t("auth.invalidToken") : t("auth.genericError"));
+        }
         return;
       }
       setSuccess(true);
@@ -76,11 +81,13 @@ export function ResetPasswordContent({ tokenValid }: { tokenValid: boolean }) {
 
           <div>
             <h1 className="font-display text-2xl font-bold text-yarn-charcoal">
-              {t("auth.resetPasswordTitle")}
+              {!token || !tokenValid ? t("auth.linkInvalidTitle") : t("auth.resetPasswordTitle")}
             </h1>
-            <p className="mt-2 text-sm text-yarn-warm-gray">
-              {t("auth.resetPasswordDesc")}
-            </p>
+            {!token || !tokenValid ? null : (
+              <p className="mt-2 text-sm text-yarn-warm-gray">
+                {t("auth.resetPasswordDesc")}
+              </p>
+            )}
           </div>
         </div>
 
@@ -124,6 +131,7 @@ export function ResetPasswordContent({ tokenValid }: { tokenValid: boolean }) {
                   </label>
                   <Input
                     type="password"
+                    autoComplete="new-password"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     placeholder={t("auth.passwordPlaceholder")}
@@ -139,6 +147,7 @@ export function ResetPasswordContent({ tokenValid }: { tokenValid: boolean }) {
                   </label>
                   <Input
                     type="password"
+                    autoComplete="new-password"
                     value={confirmPassword}
                     onChange={(e) => setConfirmPassword(e.target.value)}
                     placeholder={t("auth.confirmPasswordPlaceholder")}
@@ -148,7 +157,7 @@ export function ResetPasswordContent({ tokenValid }: { tokenValid: boolean }) {
                 </div>
 
                 {error && (
-                  <div className="rounded-xl bg-red-50 border border-red-200 px-4 py-3 text-sm text-red-700">
+                  <div role="alert" className="rounded-xl bg-red-50 border border-red-200 px-4 py-3 text-sm text-red-700">
                     {error}
                   </div>
                 )}

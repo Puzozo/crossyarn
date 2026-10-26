@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { useTranslation } from "@/lib/i18n/context";
 import { useKnittingProgress } from "@/lib/patterns/knitting-progress";
@@ -24,10 +24,11 @@ export function KnittingModeBar({ knitting }: { knitting: KnittingState }) {
       ) {
         return;
       }
-      if (e.key === "ArrowRight" || e.key === "ArrowUp") {
+      // Only left/right: up/down keep scrolling the page.
+      if (e.key === "ArrowRight") {
         e.preventDefault();
         next();
-      } else if (e.key === "ArrowLeft" || e.key === "ArrowDown") {
+      } else if (e.key === "ArrowLeft") {
         e.preventDefault();
         prev();
       }
@@ -38,7 +39,7 @@ export function KnittingModeBar({ knitting }: { knitting: KnittingState }) {
 
   if (!knitting.active) {
     return (
-      <div className="mb-4">
+      <div>
         <Button variant="secondary" size="sm" onClick={() => knitting.setActive(true)}>
           {t("knitting.start")}
         </Button>
@@ -48,13 +49,16 @@ export function KnittingModeBar({ knitting }: { knitting: KnittingState }) {
 
   const percent =
     knitting.total > 0 ? Math.round(((knitting.position - 1) / knitting.total) * 100) : 0;
+  const isLastRow = knitting.position >= knitting.total;
 
   return (
-    <div className="mb-4 rounded-2xl border border-yarn-terracotta/40 bg-yarn-terracotta-light/40 p-3 sm:p-4 space-y-2">
+    // Sticks to the top of the viewport (the site header scrolls away) so the arrows
+    // stay reachable on a tall chart. Rendered outside the grid's horizontal scroller.
+    <div className="sticky top-2 z-20 rounded-2xl border border-yarn-terracotta/40 bg-[#FBF1EE] p-3 shadow-warm-sm sm:p-4 space-y-2">
       <div className="flex flex-wrap items-center gap-2">
         <Button
           variant="secondary"
-          size="sm"
+          className="min-w-11"
           aria-label={t("knitting.prev")}
           onClick={knitting.prev}
           disabled={knitting.position <= 1}
@@ -72,7 +76,7 @@ export function KnittingModeBar({ knitting }: { knitting: KnittingState }) {
         </span>
         <Button
           variant="primary"
-          size="sm"
+          className="min-w-11"
           aria-label={t("knitting.next")}
           onClick={knitting.next}
           disabled={knitting.position >= knitting.total}
@@ -80,18 +84,47 @@ export function KnittingModeBar({ knitting }: { knitting: KnittingState }) {
           →
         </Button>
         <span className="text-xs text-yarn-warm-gray">
-          {t("knitting.progress", { percent })}
+          {isLastRow ? t("knitting.lastRow") : t("knitting.progress", { percent })}
         </span>
         <div className="ml-auto flex gap-2">
-          <Button variant="ghost" size="sm" onClick={knitting.reset}>
-            {t("knitting.reset")}
-          </Button>
+          <ResetButton onReset={knitting.reset} />
           <Button variant="ghost" size="sm" onClick={() => knitting.setActive(false)}>
             {t("knitting.stop")}
           </Button>
         </div>
       </div>
-      <p className="text-xs text-yarn-warm-gray">{t("knitting.hint")}</p>
+      <p className="text-xs text-yarn-warm-gray pointer-coarse:hidden">{t("knitting.hint")}</p>
+      <p className="hidden text-xs text-yarn-warm-gray pointer-coarse:block">{t("knitting.hintTouch")}</p>
     </div>
+  );
+}
+
+// Two-step reset: the first tap asks, the second (within 4s) resets.
+function ResetButton({ onReset }: { onReset: () => void }) {
+  const { t } = useTranslation();
+  const [confirming, setConfirming] = useState(false);
+
+  useEffect(() => {
+    if (!confirming) return;
+    const timer = setTimeout(() => setConfirming(false), 4000);
+    return () => clearTimeout(timer);
+  }, [confirming]);
+
+  return (
+    <Button
+      variant="ghost"
+      size="sm"
+      className={confirming ? "text-yarn-terracotta" : undefined}
+      onClick={() => {
+        if (confirming) {
+          setConfirming(false);
+          onReset();
+        } else {
+          setConfirming(true);
+        }
+      }}
+    >
+      {confirming ? t("knitting.resetConfirm") : t("knitting.reset")}
+    </Button>
   );
 }

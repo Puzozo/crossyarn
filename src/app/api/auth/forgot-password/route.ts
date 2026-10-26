@@ -16,9 +16,8 @@ export async function POST(req: Request) {
   const ip = getClientIp(req);
   const { allowed, retryAfterSeconds } = checkRateLimitWindow(`forgot-password:ip:${ip}`, 5, HOUR_MS);
   if (!allowed) {
-    const minutes = Math.ceil(retryAfterSeconds / 60);
     return NextResponse.json(
-      { error: `Забагато запитів. Спробуйте через ${minutes} хв.` },
+      { error: "RATE_LIMITED", retryAfterSeconds },
       { status: 429, headers: { "Retry-After": String(retryAfterSeconds) } }
     );
   }
@@ -26,7 +25,7 @@ export async function POST(req: Request) {
   try {
     const parsed = schema.safeParse(await req.json().catch(() => null));
     if (!parsed.success) {
-      return NextResponse.json({ error: "Email is required" }, { status: 400 });
+      return NextResponse.json({ error: "INVALID_INPUT" }, { status: 400 });
     }
     const normalizedEmail = parsed.data.email;
 
@@ -89,6 +88,6 @@ export async function POST(req: Request) {
     // Always return 202 to prevent email enumeration
     return NextResponse.json({ success: true }, { status: 202 });
   } catch {
-    return NextResponse.json({ error: "Something went wrong" }, { status: 500 });
+    return NextResponse.json({ error: "REQUEST_FAILED" }, { status: 500 });
   }
 }

@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { PatternSymbol } from "@/lib/patterns/model";
 import { useTranslation } from "@/lib/i18n/context";
+import { apiErrorMessage } from "@/lib/i18n/api-errors";
 
 type Props = {
   initialSymbols: PatternSymbol[];
@@ -49,7 +50,7 @@ export function SymbolLibraryManager({ initialSymbols }: Props) {
     });
     const data = await response.json().catch(() => null);
     if (!response.ok) {
-      setError(data?.error ?? t("symbols.addError"));
+      setError(apiErrorMessage(t, data, "symbols.addError"));
       return;
     }
     setSymbols((current) => [

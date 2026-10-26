@@ -26,11 +26,11 @@ export async function POST(request: Request) {
     return NextResponse.json({ id: user.id });
   } catch (error) {
     if (error instanceof z.ZodError || error instanceof SyntaxError) {
-      return NextResponse.json({ error: "Некоректні дані" }, { status: 400 });
+      return NextResponse.json({ error: "INVALID_INPUT" }, { status: 400 });
     }
     if (error instanceof Error && error.message === "EMAIL_IN_USE") {
-      return NextResponse.json({ error: "Цей email уже використовується" }, { status: 409 });
+      return NextResponse.json({ error: "EMAIL_IN_USE" }, { status: 409 });
     }
-    return NextResponse.json({ error: "Не вдалося створити акаунт" }, { status: 500 });
+    return NextResponse.json({ error: "SIGN_UP_FAILED" }, { status: 500 });
   }
 }
