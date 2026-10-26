@@ -10,6 +10,7 @@ type ExplorePattern = {
   title: string;
   width: number;
   height: number;
+  tags: string[];
   updatedAtMs: number;
   likeCount: number;
   likedByMe: boolean;
@@ -23,6 +24,8 @@ type Props = {
   totalPages: number;
   totalCount: number;
   isAuthenticated: boolean;
+  availableTags: string[];
+  activeTag: string | null;
 };
 
 function pageHref(query: string, page: number) {
@@ -33,8 +36,17 @@ function pageHref(query: string, page: number) {
   return qs ? `/explore?${qs}` : "/explore";
 }
 
-export function ExploreContent({ patterns, query, page, totalPages, totalCount, isAuthenticated }: Props) {
+export function ExploreContent({ patterns, query, page, totalPages, totalCount, isAuthenticated, availableTags, activeTag }: Props) {
   const { t } = useTranslation();
+
+  function tagHref(tag: string | null) {
+    const params = new URLSearchParams();
+    if (query) params.set("q", query);
+    if (tag) params.set("tag", tag);
+    if (page > 1) params.set("page", String(page));
+    const qs = params.toString();
+    return qs ? `/explore?${qs}` : "/explore";
+  }
 
   return (
     <section className="space-y-8">
@@ -73,6 +85,35 @@ export function ExploreContent({ patterns, query, page, totalPages, totalCount, 
         </p>
       ) : null}
 
+      {/* Tag filter bar */}
+      {availableTags.length > 0 && (
+        <div className="flex flex-wrap items-center gap-2">
+          <Link
+            href={tagHref(null)}
+            className={`px-3 py-1 rounded-full text-xs font-medium transition-colors ${
+              !activeTag
+                ? "bg-yarn-terracotta text-white"
+                : "bg-yarn-oatmeal/60 text-yarn-charcoal hover:bg-yarn-oatmeal"
+            }`}
+          >
+            {t("explore.allTags")}
+          </Link>
+          {availableTags.map((tag) => (
+            <Link
+              key={tag}
+              href={tagHref(tag)}
+              className={`px-3 py-1 rounded-full text-xs font-medium transition-colors ${
+                activeTag === tag
+                  ? "bg-yarn-terracotta text-white"
+                  : "bg-yarn-oatmeal/60 text-yarn-charcoal hover:bg-yarn-oatmeal"
+              }`}
+            >
+              {tag}
+            </Link>
+          ))}
+        </div>
+      )}
+
       {patterns.length === 0 ? (
         <div className="rounded-3xl border-2 border-dashed border-yarn-sand bg-white/50 p-12 text-center">
           <p className="text-sm text-yarn-warm-gray">
@@ -104,6 +145,18 @@ export function ExploreContent({ patterns, query, page, totalPages, totalCount, 
                   <p className="mt-0.5 text-xs text-yarn-warm-gray">
                     {pattern.width} × {pattern.height}
                   </p>
+                  {pattern.tags.length > 0 && (
+                    <div className="mt-1 flex flex-wrap gap-1">
+                      {pattern.tags.slice(0, 3).map((tag) => (
+                        <span key={tag} className="inline-block rounded-full bg-yarn-oatmeal/60 px-2 py-0.5 text-[10px] font-medium text-yarn-warm-gray">
+                          {tag}
+                        </span>
+                      ))}
+                      {pattern.tags.length > 3 && (
+                        <span className="text-[10px] text-yarn-warm-gray/60">+{pattern.tags.length - 3}</span>
+                      )}
+                    </div>
+                  )}
                 </div>
               </Link>
               <div className="flex items-center justify-between gap-2 px-4 pb-3 min-h-6">

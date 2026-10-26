@@ -1,11 +1,13 @@
 "use client";
 
 import Link from "next/link";
+import { useState } from "react";
 import { PatternGrid } from "@/components/patterns/pattern-grid";
 import { PatternLegend } from "@/components/patterns/pattern-legend";
 import { LikeButton } from "@/components/patterns/like-button";
 import { useTranslation } from "@/lib/i18n/context";
 import { PatternDocument, PatternSymbol } from "@/lib/patterns/model";
+import { Button } from "@/components/ui/button";
 
 type Author = { name: string | null; username: string } | null;
 
@@ -69,6 +71,8 @@ export function PublicPatternContent({
             </>
           ) : null}
         </div>
+        {/* Share button */}
+        <ShareButton patternId={pattern.id} />
         {pattern.description ? (
           <p className="mt-4 max-w-3xl text-sm text-yarn-warm-gray leading-relaxed border-t border-yarn-sand/40 pt-4">
             {pattern.description}
@@ -81,5 +85,49 @@ export function PublicPatternContent({
         <PatternLegend usedSymbols={usedSymbols} />
       </div>
     </section>
+  );
+}
+
+function ShareButton({ patternId }: { patternId: string }) {
+  const { t } = useTranslation();
+  const [copied, setCopied] = useState(false);
+
+  async function handleShare() {
+    const url = `https://crossyarn.online/p/${patternId}`;
+    try {
+      await navigator.clipboard.writeText(url);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch {
+      // Fallback: open URL in new tab
+      window.open(url, "_blank");
+    }
+  }
+
+  return (
+    <div className="mt-2">
+      <button
+        type="button"
+        onClick={handleShare}
+        className="inline-flex items-center gap-2 rounded-lg px-3 py-1.5 text-sm text-yarn-warm-gray hover:text-yarn-charcoal hover:bg-yarn-oatmeal/50 transition-colors"
+        title={t("publicPattern.share")}
+      >
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+          {copied ? (
+            <>
+              <path d="M3 8.5l3 3 7-7" />
+            </>
+          ) : (
+            <>
+              <circle cx="11" cy="4" r="2" />
+              <circle cx="5" cy="8" r="2" />
+              <circle cx="11" cy="12" r="2" />
+              <path d="M7 9.5l3 1.5M9 6.5l3-1.5" />
+            </>
+          )}
+        </svg>
+        <span>{copied ? t("publicPattern.linkCopied") : t("publicPattern.share")}</span>
+      </button>
+    </div>
   );
 }

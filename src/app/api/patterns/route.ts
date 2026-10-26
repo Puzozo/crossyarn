@@ -3,6 +3,7 @@ import { db } from "@/lib/db";
 import { requireSession } from "@/lib/auth/session";
 import { createEmptyPattern } from "@/lib/patterns/model";
 import { createPatternRequestSchema } from "@/lib/patterns/validation";
+import { translit } from "@/lib/translit";
 
 export async function GET() {
   try {
@@ -37,6 +38,7 @@ export async function POST(request: Request) {
       data: {
         userId: session.userId,
         title,
+        titleTranslit: translit(title),
         description: description ?? "",
         width,
         height,

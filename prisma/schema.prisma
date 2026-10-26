@@ -30,6 +30,9 @@ model User {
   // premiumUntil = null + plan="PREMIUM" means an open-ended manual grant (admin).
   plan         String             @default("FREE") // "FREE" | "PREMIUM"
   premiumUntil DateTime?
+  // Password reset — token is a random string, hashed before storing.
+  resetToken     String?  @unique
+  resetTokenExpiry DateTime?
   createdAt    DateTime           @default(now())
   updatedAt    DateTime           @updatedAt
   patterns     Pattern[]
@@ -42,6 +45,9 @@ model Pattern {
   id            String           @id @default(cuid())
   userId        String
   title         String
+  // ASCII transliteration of title for SQL LIKE search (Cyrillic titles are searchable).
+  titleTranslit String?          @default("")
+  tags          String           @default("[]") // JSON string of tags, e.g. '["scarf","winter","lace"]' (SQLite incompatible with String[])
   description   String?
   width         Int
   height        Int

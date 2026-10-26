@@ -28,7 +28,9 @@ export function AccountContent({ email, userId, symbols, profile }: Props) {
           <div className="border-t border-yarn-sand/40" />
           <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-4">
             <dt className="text-sm text-yarn-warm-gray min-w-32">{t("account.userId")}</dt>
-            <dd className="font-mono text-sm text-yarn-charcoal">{userId}</dd>
+            <dd className="font-mono text-sm text-yarn-charcoal/60">
+              {userId.slice(0, 8)}••••••••••••{userId.slice(-4)}
+            </dd>
           </div>
         </dl>
       </section>

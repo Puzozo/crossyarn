@@ -5,6 +5,7 @@ import { getSession } from "@/lib/auth/session";
 import { PatternDocument, PatternSymbol } from "@/lib/patterns/model";
 import { hydrateBuiltinSymbols } from "@/lib/patterns/normalize-symbols";
 import { PublicPatternContent } from "@/components/patterns/public-pattern-content";
+import { PrivatePatternContent } from "@/components/patterns/private-pattern-content";
 
 async function loadPattern(id: string) {
   const pattern = await db.pattern.findUnique({
@@ -18,9 +19,9 @@ async function loadPattern(id: string) {
   // PRIVATE patterns are viewable only by their owner; UNLISTED/PUBLIC by anyone.
   if (pattern.visibility === "PRIVATE") {
     const session = await getSession();
-    if (session?.userId !== pattern.userId) return null;
+    if (session?.userId !== pattern.userId) return { pattern, private: true };
   }
-  return pattern;
+  return { pattern, private: false };
 }
 
 export async function generateMetadata({
@@ -29,8 +30,10 @@ export async function generateMetadata({
   params: Promise<{ id: string }>;
 }): Promise<Metadata> {
   const { id } = await params;
-  const pattern = await loadPattern(id);
-  if (!pattern) return { title: "Crossyarn" };
+  const result = await loadPattern(id);
+  if (!result) return { title: "Crossyarn" };
+  if (result.private) return { title: "Crossyarn" };
+  const pattern = result.pattern;
   const description =
     pattern.description ?? `Схема в'язання ${pattern.width} × ${pattern.height} на Crossyarn.`;
   return {
@@ -53,8 +56,17 @@ export default async function PublicPatternPage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
-  const pattern = await loadPattern(id);
-  if (!pattern) notFound();
+  const result = await loadPattern(id);
+
+  // Pattern exists but is private (visible only to owner)
+  if (result && result.private) {
+    return <PrivatePatternContent />;
+  }
+
+  // Pattern doesn't exist
+  if (!result) notFound();
+
+  const pattern = result.pattern;
 
   const session = await getSession();
   const [likeCount, myLike] = await Promise.all([

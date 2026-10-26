@@ -10,6 +10,11 @@ export const translations = {
     "nav.signOut": "Вийти",
 
     // Footer
+    "footer.about": "Crossyarn — платформа для спільноти в'язарів. Діліться схемами, надихайтесь та створюйте разом.",
+    "footer.linksLabel": "Навігація",
+    "footer.explore": "Каталог",
+    "footer.follow": "Ми в соцмережах",
+    "footer.rights": "Усі права захищені.",
     "footer.terms": "Умови використання",
     "footer.privacy": "Політика конфіденційності",
 
@@ -119,6 +124,11 @@ export const translations = {
     "editor.removeColLeft": "Видалити стовпець ліворуч",
     "editor.addColRight": "Додати стовпець праворуч",
     "editor.removeColRight": "Видалити стовпець праворуч",
+    "editor.tags": "Теги",
+    "editor.tagPlaceholder": "Додати тег…",
+    "editor.tagAdd": "Додати",
+    "editor.tagRemove": "Видалити тег",
+
     "patterns.noResults": "Нічого не знайдено за «{query}»",
     "notFound.title": "Сторінку не знайдено",
     "notFound.description": "Можливо, її було видалено або адреса введена неправильно.",
@@ -145,6 +155,7 @@ export const translations = {
     "auth.name": "Ім\u2019я",
     "auth.namePlaceholder": "Ваше ім\u2019я",
     "auth.email": "Email",
+    "auth.emailPlaceholder": "ваш@email.com",
     "auth.password": "Пароль",
     "auth.passwordPlaceholder": "Мінімум 8 символів",
     "auth.submitSignIn": "Увійти",
@@ -155,6 +166,24 @@ export const translations = {
     "auth.register": "Зареєструватися",
     "auth.login": "Увійти",
     "auth.genericError": "Щось пішло не так",
+    "auth.forgotPassword": "Забули пароль?",
+    "auth.forgotPasswordTitle": "Відновлення пароля",
+    "auth.forgotPasswordDesc": "Введіть email, пов'язаний з вашим обліковим записом, і ми надішлемо інструкції для відновлення пароля.",
+    "auth.forgotPasswordSubmit": "Надіслати інструкції",
+    "auth.forgotPasswordSent": "Ми надіслали інструкції на вашу email-адресу. Перевірте вашу поштову скриньку.",
+    "auth.forgotPasswordBack": "Повернутись до входу",
+    "auth.forgotPasswordNote": "Якщо ви не отримали лист протягом кількох хвилин, переконайтесь, що ви ввели правильну адресу.",
+    "auth.resetPasswordTitle": "Новий пароль",
+    "auth.resetPasswordDesc": "Введіть новий пароль для вашого облікового запису.",
+    "auth.resetPasswordSubmit": "Зберегти пароль",
+    "auth.resetPasswordSuccess": "Пароль успішно змінено! Тепер ви можете увійти.",
+    "auth.passwordsNoMatch": "Паролі не збігаються.",
+    "auth.passwordTooShort": "Пароль має містити щонайменше 8 символів.",
+    "auth.confirmPassword": "Підтвердіть пароль",
+    "auth.confirmPasswordPlaceholder": "повторіть новий пароль",
+    "auth.invalidToken": "Недійсне або прострочене посилання для відновлення. Запитайте нове на сторінці входу.",
+    "auth.newPassword": "Новий пароль",
+    "auth.backToSignIn": "Повернутись до входу",
 
     // Create pattern
     "create.title": "Назва",
@@ -216,6 +245,8 @@ export const translations = {
     "explore.resultsFor": "Знайдено {count} за запитом «{query}».",
     "explore.clearSearch": "Скинути пошук",
     "explore.empty": "У каталозі поки що немає публічних схем. Станьте першим автором — зробіть свою схему публічною!",
+    "explore.allTags": "Усі",
+    "explore.tagLabel": "Тег",
     "explore.noResults": "Нічого не знайдено. Спробуйте інший запит.",
     "explore.prevPage": "Попередня",
     "explore.nextPage": "Наступна",
@@ -238,6 +269,8 @@ export const translations = {
     "publicPattern.byAuthor": "Автор:",
     "publicPattern.viewProfile": "Профіль автора",
     "publicPattern.notPublic": "Ця схема недоступна",
+    "publicPattern.share": "Поділитися",
+    "publicPattern.linkCopied": "Посилання скопійовано!",
 
     // Symbol library
     "symbols.title": "Бібліотека позначок",
@@ -335,6 +368,11 @@ export const translations = {
     "saved.subtitle": "Схеми, які ви вподобали. Вони завжди під рукою.",
     "saved.empty": "Тут поки що порожньо. Вподобайте схему в каталозі — і вона з'явиться тут.",
     "saved.goExplore": "До каталогу",
+    "saved.sort": "Сортування",
+    "saved.sortNewest": "Найновіші",
+    "saved.sortOldest": "Найстаріші",
+    "saved.sortAz": "А — Я",
+    "saved.sortZA": "Я — А",
 
     // Editor — fill tool
     "editor.fillMode": "Заливка",
@@ -352,7 +390,13 @@ export const translations = {
 
     // Mobile nav
     "mobileNav.openMenu": "Відкрити меню",
-    "mobileNav.closeMenu": "Закрити меню"
+    "mobileNav.closeMenu": "Закрити меню",
+
+    // Private pattern
+    "privatePattern.lockedIcon": "🔒",
+    "privatePattern.title": "Ця схема приватна",
+    "privatePattern.description": "Ця схема доступна лише її автору. Якщо ви її автор, увійдіть у свій обліковий запис.",
+    "privatePattern.back": "До моїх схем",
   },
   en: {
     // Nav / Header
@@ -363,6 +407,11 @@ export const translations = {
     "nav.signOut": "Sign Out",
 
     // Footer
+    "footer.about": "Crossyarn — a knitting community platform. Share patterns, get inspired, and create together.",
+    "footer.linksLabel": "Navigation",
+    "footer.explore": "Explore",
+    "footer.follow": "Follow us",
+    "footer.rights": "All rights reserved.",
     "footer.terms": "Terms of Use",
     "footer.privacy": "Privacy Policy",
 
@@ -472,6 +521,11 @@ export const translations = {
     "editor.removeColLeft": "Remove left column",
     "editor.addColRight": "Add column on the right",
     "editor.removeColRight": "Remove right column",
+    "editor.tags": "Tags",
+    "editor.tagPlaceholder": "Add tag…",
+    "editor.tagAdd": "Add",
+    "editor.tagRemove": "Remove tag",
+
     "patterns.noResults": "No results for \"{query}\"",
     "notFound.title": "Page not found",
     "notFound.description": "It may have been deleted, or the address was typed incorrectly.",
@@ -498,6 +552,7 @@ export const translations = {
     "auth.name": "Name",
     "auth.namePlaceholder": "Your name",
     "auth.email": "Email",
+    "auth.emailPlaceholder": "your@email.com",
     "auth.password": "Password",
     "auth.passwordPlaceholder": "Minimum 8 characters",
     "auth.submitSignIn": "Sign In",
@@ -508,6 +563,24 @@ export const translations = {
     "auth.register": "Register",
     "auth.login": "Sign In",
     "auth.genericError": "Something went wrong",
+    "auth.forgotPassword": "Forgot password?",
+    "auth.forgotPasswordTitle": "Reset your password",
+    "auth.forgotPasswordDesc": "Enter the email associated with your account and we'll send instructions to reset your password.",
+    "auth.forgotPasswordSubmit": "Send instructions",
+    "auth.forgotPasswordSent": "We've sent instructions to your email. Please check your inbox.",
+    "auth.forgotPasswordBack": "Back to sign in",
+    "auth.forgotPasswordNote": "If you don't receive the email within a few minutes, make sure you entered the correct address.",
+    "auth.resetPasswordTitle": "New password",
+    "auth.resetPasswordDesc": "Enter a new password for your account.",
+    "auth.resetPasswordSubmit": "Save password",
+    "auth.resetPasswordSuccess": "Password changed successfully! You can sign in now.",
+    "auth.passwordsNoMatch": "Passwords do not match.",
+    "auth.passwordTooShort": "Password must be at least 8 characters.",
+    "auth.confirmPassword": "Confirm password",
+    "auth.confirmPasswordPlaceholder": "repeat new password",
+    "auth.invalidToken": "Invalid or expired reset link. Request a new one from the sign-in page.",
+    "auth.newPassword": "New password",
+    "auth.backToSignIn": "Back to sign in",
 
     // Create pattern
     "create.title": "Title",
@@ -569,6 +642,8 @@ export const translations = {
     "explore.resultsFor": "Found {count} for “{query}”.",
     "explore.clearSearch": "Clear search",
     "explore.empty": "No public patterns in the catalog yet. Be the first author — make your pattern public!",
+    "explore.allTags": "All",
+    "explore.tagLabel": "Tag",
     "explore.noResults": "Nothing found. Try another query.",
     "explore.prevPage": "Previous",
     "explore.nextPage": "Next",
@@ -591,6 +666,8 @@ export const translations = {
     "publicPattern.byAuthor": "By:",
     "publicPattern.viewProfile": "Author profile",
     "publicPattern.notPublic": "This pattern is unavailable",
+    "publicPattern.share": "Share",
+    "publicPattern.linkCopied": "Link copied!",
 
     // Symbol library
     "symbols.title": "Symbol Library",
@@ -688,6 +765,11 @@ export const translations = {
     "saved.subtitle": "Patterns you liked. Always at hand.",
     "saved.empty": "Nothing here yet. Like a pattern in the catalog and it will appear here.",
     "saved.goExplore": "Go to catalog",
+    "saved.sort": "Sort",
+    "saved.sortNewest": "Newest first",
+    "saved.sortOldest": "Oldest first",
+    "saved.sortAz": "A \u2014 Z",
+    "saved.sortZA": "Z \u2014 A",
 
     // Editor \u2014 fill tool
     "editor.fillMode": "Fill",
@@ -705,7 +787,13 @@ export const translations = {
 
     // Mobile nav
     "mobileNav.openMenu": "Open menu",
-    "mobileNav.closeMenu": "Close menu"
+    "mobileNav.closeMenu": "Close menu",
+
+    // Private pattern
+    "privatePattern.lockedIcon": "🔒",
+    "privatePattern.title": "This pattern is private",
+    "privatePattern.description": "This pattern is only visible to its author. If you are the author, sign in to your account.",
+    "privatePattern.back": "Back to my patterns",
   }
 } as const;
 

@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useTranslation } from "@/lib/i18n/context";
 
 type SavedPattern = {
@@ -18,13 +19,23 @@ type Props = {
   patterns: SavedPattern[];
   page: number;
   totalPages: number;
+  sort: string;
 };
 
-export function SavedContent({ patterns, page, totalPages }: Props) {
+const SORT_OPTIONS = [
+  { value: "newest", labelKey: "saved.sortNewest" },
+  { value: "oldest", labelKey: "saved.sortOldest" },
+] as const;
+
+export function SavedContent({ patterns, page, totalPages, sort }: Props) {
   const { t } = useTranslation();
-  // Unliking removes the card immediately; a reload rebuilds the list from the DB.
+  const router = useRouter();
   const [hiddenIds, setHiddenIds] = useState<Set<string>>(new Set());
   const visible = patterns.filter((p) => !hiddenIds.has(p.id));
+
+  function handleSort(value: string) {
+    router.push(value === "newest" ? "/saved" : `/saved?sort=${value}`);
+  }
 
   return (
     <section className="space-y-8">
@@ -34,6 +45,22 @@ export function SavedContent({ patterns, page, totalPages }: Props) {
         </h1>
         <p className="max-w-2xl text-sm sm:text-base text-yarn-warm-gray">{t("saved.subtitle")}</p>
       </header>
+
+      {/* Sort dropdown */}
+      <div className="flex items-center gap-2">
+        <label className="text-sm text-yarn-warm-gray">{t("saved.sort")}:</label>
+        <select
+          value={sort}
+          onChange={(e) => handleSort(e.target.value)}
+          className="rounded-lg border border-yarn-sand bg-white/70 px-3 py-1.5 text-sm text-yarn-charcoal focus:border-yarn-terracotta/40 focus:outline-none focus:ring-2 focus:ring-yarn-terracotta/20"
+        >
+          {SORT_OPTIONS.map((opt) => (
+            <option key={opt.value} value={opt.value}>
+              {t(opt.labelKey)}
+            </option>
+          ))}
+        </select>
+      </div>
 
       {visible.length === 0 ? (
         <div className="rounded-3xl border-2 border-dashed border-yarn-sand bg-white/50 p-12 text-center">

@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { db } from "@/lib/db";
 import { getSession } from "@/lib/auth/session";
 import { ExploreContent } from "@/components/explore/explore-content";
+import { parseTags } from "@/lib/utils";
 
 export const metadata: Metadata = {
   title: "Каталог схем — Crossyarn",
@@ -15,48 +16,67 @@ export const metadata: Metadata = {
 };
 
 const PAGE_SIZE = 24;
-/**
- * The catalog is filtered in JS so that search is case-insensitive for
- * Cyrillic too (SQLite LIKE only folds ASCII). The recency cap bounds the
- * scan; once the catalog outgrows it, move filtering into SQL with a
- * normalized title column.
- */
 const RECENT_CAP = 500;
 
 export default async function ExplorePage({
   searchParams
 }: {
-  searchParams: Promise<{ q?: string; page?: string }>;
+  searchParams: Promise<{ q?: string; tag?: string; page?: string }>;
 }) {
-  const { q, page } = await searchParams;
+  const { q, tag, page } = await searchParams;
   const query = (q ?? "").trim();
   const requestedPage = Math.max(1, Number.parseInt(page ?? "1", 10) || 1);
 
-  const recent = await db.pattern.findMany({
+  // Collect all tags across the full PUBLIC set for the filter bar.
+  // Bounded by RECENT_CAP to keep the query fast.
+  const allTags = new Set<string>();
+  const allPatterns = await db.pattern.findMany({
     where: { visibility: "PUBLIC" },
     orderBy: { updatedAt: "desc" },
     take: RECENT_CAP,
-    select: {
-      id: true,
-      title: true,
-      width: true,
-      height: true,
-      updatedAt: true,
-      user: {
-        select: { name: true, username: true, profilePublic: true, avatarData: true, updatedAt: true }
-      }
-    }
+    select: { tags: true }
   });
+  for (const t of allPatterns.flatMap((p) => parseTags(p.tags))) allTags.add(t);
+  const sortedTags = [...allTags].sort();
 
-  const lowered = query.toLowerCase();
-  const filtered = lowered
-    ? recent.filter((p) => p.title.toLowerCase().includes(lowered))
-    : recent;
+  // Build the SQL-like Prisma filter: combine titleTranslit search + tag filter.
+  const where: any = { visibility: "PUBLIC" };
+  if (query) {
+    where.OR = [
+      { titleTranslit: { contains: query, mode: "insensitive" } },
+      { title: { contains: query, mode: "insensitive" } },
+      { tags: { contains: query } },
+    ];
+  }
+  if (tag) {
+    where.tags = { contains: tag };
+  }
 
-  const totalCount = filtered.length;
+  const [total, pageItems] = await Promise.all([
+    db.pattern.count({ where }),
+    db.pattern.findMany({
+      where,
+      orderBy: { updatedAt: "desc" },
+      take: PAGE_SIZE,
+      skip: (requestedPage - 1) * PAGE_SIZE,
+      select: {
+        id: true,
+        title: true,
+        titleTranslit: true,
+        tags: true,
+        width: true,
+        height: true,
+        updatedAt: true,
+        user: {
+          select: { name: true, username: true, profilePublic: true, avatarData: true, updatedAt: true }
+        }
+      },
+    }),
+  ]);
+
+  const totalCount = total;
   const totalPages = Math.max(1, Math.ceil(totalCount / PAGE_SIZE));
   const currentPage = Math.min(requestedPage, totalPages);
-  const pageItems = filtered.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE);
 
   // Like data only for the visible page (≤24 patterns): counts in one groupBy,
   // the signed-in user's own likes in one findMany.
@@ -88,6 +108,7 @@ export default async function ExplorePage({
         title: p.title,
         width: p.width,
         height: p.height,
+        tags: parseTags(p.tags),
         updatedAtMs: p.updatedAt.getTime(),
         likeCount: likeCountById.get(p.id) ?? 0,
         likedByMe: likedIds.has(p.id),
@@ -107,6 +128,8 @@ export default async function ExplorePage({
       page={currentPage}
       totalPages={totalPages}
       totalCount={totalCount}
+      availableTags={sortedTags}
+      activeTag={tag ?? null}
     />
   );
 }

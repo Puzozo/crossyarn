@@ -4,6 +4,7 @@ import { requireUserPage } from "@/lib/auth/guards";
 import { PatternDocument } from "@/lib/patterns/model";
 import { hydrateBuiltinSymbols } from "@/lib/patterns/normalize-symbols";
 import { EditorPageContent } from "@/components/editor/editor-page-content";
+import { parseTags } from "@/lib/utils";
 
 export const dynamic = "force-dynamic";
 
@@ -34,6 +35,7 @@ export default async function EditorPage({
       title={pattern.title}
       description={pattern.description}
       initialPattern={document}
+      initialTags={parseTags(pattern.tags) ?? []}
     />
   );
 }

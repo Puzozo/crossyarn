@@ -13,9 +13,10 @@ type Props = {
   title: string;
   description: string | null;
   initialPattern: PatternDocument;
+  initialTags: string[];
 };
 
-export function EditorPageContent({ patternId, title: initialTitle, description: initialDescription, initialPattern }: Props) {
+export function EditorPageContent({ patternId, title: initialTitle, description: initialDescription, initialPattern, initialTags }: Props) {
   const { t } = useTranslation();
   const [title, setTitle] = useState(initialTitle);
   const [description, setDescription] = useState(initialDescription ?? "");
@@ -134,6 +135,7 @@ export function EditorPageContent({ patternId, title: initialTitle, description:
         title={title}
         description={description}
         initialPattern={initialPattern}
+        initialTags={initialTags}
       />
     </section>
   );

@@ -14,6 +14,7 @@ type Props = {
   initialPattern: PatternDocument;
   title: string;
   description: string | null;
+  initialTags: string[];
 };
 
 function inSelectionRect(
@@ -30,7 +31,7 @@ function inSelectionRect(
   return r >= r1 && r <= r2 && c >= c1 && c <= c2;
 }
 
-export function PatternEditor({ patternId, initialPattern, title, description }: Props) {
+export function PatternEditor({ patternId, initialPattern, title, description, initialTags }: Props) {
   const {
     pattern,
     setPattern,
@@ -79,6 +80,49 @@ export function PatternEditor({ patternId, initialPattern, title, description }:
   const [availableSymbols, setAvailableSymbols] = useState(initialPattern.symbols);
   const [rapportNameInput, setRapportNameInput] = useState("");
   const [editingSymbolId, setEditingSymbolId] = useState<string | null>(null);
+
+  // Tag management
+  const [tags, setTags] = useState<string[]>(initialTags ?? []);
+  const [tagInput, setTagInput] = useState("");
+  const [tagLoading, setTagLoading] = useState(false);
+
+  const addTag = useCallback(async () => {
+    const tag = tagInput.trim().toLowerCase();
+    if (!tag || tagLoading || tags.includes(tag)) {
+      setTagInput("");
+      return;
+    }
+    setTagLoading(true);
+    try {
+      const res = await fetch(`/api/patterns/${patternId}/tags`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ tag })
+      });
+      if (res.ok) {
+        const data = await res.json();
+        setTags(data.tags);
+      }
+    } catch { /* optimist */ }
+    setTagLoading(false);
+    setTagInput("");
+  }, [tagInput, tagLoading, tags, patternId]);
+
+  const removeTag = useCallback(async (tag: string) => {
+    setTagLoading(true);
+    try {
+      const res = await fetch(`/api/patterns/${patternId}/tags`, {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ tag })
+      });
+      if (res.ok) {
+        const data = await res.json();
+        setTags(data.tags);
+      }
+    } catch { /* optimist */ }
+    setTagLoading(false);
+  }, [patternId]);
 
   const handleRenameSymbol = useCallback(
     async (id: string, rawName: string) => {
@@ -327,6 +371,51 @@ export function PatternEditor({ patternId, initialPattern, title, description }:
 
         {/* Version history */}
         <VersionHistory patternId={patternId} />
+
+        {/* Tags */}
+        <div className="space-y-2">
+          <p className="text-xs font-semibold uppercase tracking-wider text-yarn-warm-gray">{t("editor.tags")}</p>
+          <div className="flex flex-wrap gap-1.5">
+            {tags.map((tag) => (
+              <span
+                key={tag}
+                className="inline-flex items-center gap-1 rounded-full bg-yarn-oatmeal/80 px-2 py-0.5 text-[11px] font-medium text-yarn-charcoal"
+              >
+                {tag}
+                <button
+                  type="button"
+                  onClick={() => removeTag(tag)}
+                  disabled={tagLoading}
+                  title={t("editor.tagRemove")}
+                  className="text-yarn-warm-gray/50 hover:text-red-400 transition-colors leading-none disabled:opacity-40"
+                >
+                  ×
+                </button>
+              </span>
+            ))}
+          </div>
+          <div className="flex gap-1.5">
+            <input
+              type="text"
+              value={tagInput}
+              onChange={(e) => setTagInput(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") void addTag();
+              }}
+              placeholder={t("editor.tagPlaceholder")}
+              disabled={tagLoading}
+              className="flex-1 rounded-lg border border-yarn-sand bg-white px-2.5 py-1.5 text-xs text-yarn-charcoal placeholder:text-yarn-warm-gray/60 focus:outline-none focus:border-yarn-terracotta disabled:opacity-50"
+            />
+            <button
+              type="button"
+              onClick={() => void addTag()}
+              disabled={tagLoading || !tagInput.trim()}
+              className="rounded-lg bg-yarn-terracotta px-3 py-1.5 text-xs font-medium text-white disabled:opacity-40 hover:bg-yarn-terracotta-hover transition-colors"
+            >
+              {t("editor.tagAdd")}
+            </button>
+          </div>
+        </div>
 
         {/* Symbols */}
         <div className="space-y-2">

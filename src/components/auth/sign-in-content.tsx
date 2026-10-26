@@ -20,12 +20,22 @@ export function SignInContent() {
           </svg>
         </div>
         <AuthForm mode="sign-in" />
-        <p className="text-center text-sm text-yarn-warm-gray">
-          {t("auth.noAccount")}{" "}
-          <Link href="/sign-up" className="font-semibold text-yarn-terracotta hover:text-yarn-terracotta-hover transition-colors">
-            {t("auth.register")}
-          </Link>
-        </p>
+        <div className="space-y-3">
+          <p className="text-center">
+            <Link
+              href="/forgot-password"
+              className="text-sm text-yarn-terracotta hover:text-yarn-terracotta-hover underline underline-offset-2 transition-colors"
+            >
+              {t("auth.forgotPassword")}
+            </Link>
+          </p>
+          <p className="text-center text-sm text-yarn-warm-gray">
+            {t("auth.noAccount")}{" "}
+            <Link href="/sign-up" className="font-semibold text-yarn-terracotta hover:text-yarn-terracotta-hover transition-colors">
+              {t("auth.register")}
+            </Link>
+          </p>
+        </div>
       </div>
     </div>
   );

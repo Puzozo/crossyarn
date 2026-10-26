@@ -67,7 +67,7 @@ export function AuthForm({ mode }: { mode: Mode }) {
         ) : null}
         <div className="space-y-1.5">
           <label className="block text-sm font-medium text-yarn-charcoal">{t("auth.email")}</label>
-          <Input type="email" name="email" placeholder="your@email.com" required />
+          <Input type="email" name="email" placeholder={t("auth.emailPlaceholder")} required />
         </div>
         <div className="space-y-1.5">
           <label className="block text-sm font-medium text-yarn-charcoal">{t("auth.password")}</label>

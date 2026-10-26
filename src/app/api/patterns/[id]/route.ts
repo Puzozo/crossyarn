@@ -3,6 +3,7 @@ import { db } from "@/lib/db";
 import { requireSession } from "@/lib/auth/session";
 import { updatePatternSchema } from "@/lib/patterns/validation";
 import { hydrateBuiltinSymbols } from "@/lib/patterns/normalize-symbols";
+import { translit } from "@/lib/translit";
 
 export async function GET(_: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
@@ -44,6 +45,7 @@ export async function PUT(request: Request, { params }: { params: Promise<{ id: 
       where: { id },
       data: {
         title: body.title,
+        titleTranslit: translit(body.title),
         description: body.description,
         width: body.width,
         height: body.height,
@@ -90,7 +92,7 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
 
     const pattern = await db.pattern.update({
       where: { id },
-      data: { title, description }
+      data: { title, titleTranslit: translit(title), description }
     });
 
     return NextResponse.json({ id: pattern.id, title: pattern.title, description: pattern.description });

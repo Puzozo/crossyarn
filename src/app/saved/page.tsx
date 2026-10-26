@@ -13,11 +13,16 @@ const PAGE_SIZE = 24;
 export default async function SavedPage({
   searchParams
 }: {
-  searchParams: Promise<{ page?: string }>;
+  searchParams: Promise<{ page?: string; sort?: string }>;
 }) {
   const session = await requireUserPage();
-  const { page } = await searchParams;
+  const { page, sort } = await searchParams;
   const requestedPage = Math.max(1, Number.parseInt(page ?? "1", 10) || 1);
+
+  // Default sort: newest first.
+  const orderBy = sort === "oldest"
+    ? { createdAt: "asc" as const }
+    : { createdAt: "desc" as const };
 
   // A liked pattern stays in the list only while it is still viewable:
   // PUBLIC/UNLISTED by anyone, PRIVATE only when it is the user's own.
@@ -34,7 +39,7 @@ export default async function SavedPage({
 
   const likes = await db.patternLike.findMany({
     where: viewableWhere,
-    orderBy: { createdAt: "desc" },
+    orderBy,
     skip: (currentPage - 1) * PAGE_SIZE,
     take: PAGE_SIZE,
     select: {
@@ -75,6 +80,7 @@ export default async function SavedPage({
       }))}
       page={currentPage}
       totalPages={totalPages}
+      sort={sort ?? "newest"}
     />
   );
 }
