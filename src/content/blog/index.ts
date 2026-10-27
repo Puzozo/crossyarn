@@ -1,7 +1,8 @@
 import type { BlogPost } from "./types";
 import { howToReadChartPost } from "./posts/how-to-read-knitting-chart";
+import { fairIsleJacquardPost } from "./posts/fair-isle-jacquard-charts";
 
-const posts: BlogPost[] = [howToReadChartPost];
+const posts: BlogPost[] = [howToReadChartPost, fairIsleJacquardPost];
 
 /** Усі статті, найновіші першими (сортування за полем date, ISO-рядок). */
 export function getAllPosts(): BlogPost[] {
