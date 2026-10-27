@@ -122,6 +122,7 @@ export function EditorPageContent({ patternId, title: initialTitle, description:
             onClick={handleStartEdit}
             className="mt-1.5 rounded-lg p-1.5 text-yarn-warm-gray hover:text-yarn-charcoal hover:bg-yarn-oatmeal transition-colors"
             title={t("editor.editTitle")}
+            aria-label={t("editor.editTitle")}
           >
             <svg width="15" height="15" viewBox="0 0 15 15" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
               <path d="M10.5 1.5l3 3L5 13H2v-3L10.5 1.5z" />

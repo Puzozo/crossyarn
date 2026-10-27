@@ -461,7 +461,8 @@ export function PatternEditor({ patternId, initialPattern, title, description, i
                     <button type="button"
                       onClick={(e) => { e.stopPropagation(); setEditingSymbolId(symbol.id); }}
                       title={t("editor.renameSymbol")}
-                      className="absolute -right-1 -top-1 hidden h-4 w-4 items-center justify-center rounded-full border border-yarn-sand bg-white text-[9px] text-yarn-warm-gray shadow-sm hover:text-yarn-terracotta group-hover:flex">
+                      aria-label={t("editor.renameSymbol")}
+                      className="absolute -right-1 -top-1 hidden h-4 w-4 items-center justify-center rounded-full border border-yarn-sand bg-white text-[9px] text-yarn-warm-gray shadow-sm hover:text-yarn-terracotta group-hover:flex before:absolute before:-inset-1.5 before:content-['']">
                       ✎
                     </button>
                   )}
@@ -502,7 +503,8 @@ export function PatternEditor({ patternId, initialPattern, title, description, i
                   onClick={() => removeTag(tag)}
                   disabled={tagLoading}
                   title={t("editor.tagRemove")}
-                  className="text-yarn-warm-gray/50 hover:text-red-400 transition-colors leading-none disabled:opacity-40"
+                  aria-label={t("editor.tagRemove")}
+                  className="relative text-yarn-warm-gray/50 hover:text-red-400 transition-colors leading-none disabled:opacity-40 before:absolute before:-inset-2.5 before:content-['']"
                 >
                   ×
                 </button>
@@ -599,7 +601,9 @@ export function PatternEditor({ patternId, initialPattern, title, description, i
                   <span className="text-[10px] text-amber-600 ml-1.5">{activeRapport.width}×{activeRapport.height}</span>
                 </div>
                 <button type="button" onClick={cancelRapportInsert}
-                  className="text-[10px] text-amber-600 hover:text-amber-800 transition-colors">✕</button>
+                  title={t("editor.rapportCancelInsert")}
+                  aria-label={t("editor.rapportCancelInsert")}
+                  className="relative text-[10px] text-amber-600 hover:text-amber-800 transition-colors before:absolute before:-inset-2.5 before:content-['']">✕</button>
               </div>
               <div className="flex gap-1">
                 {([
@@ -646,7 +650,9 @@ export function PatternEditor({ patternId, initialPattern, title, description, i
                     {rapportInsertId === rapport.id ? t("editor.rapportCancelInsert") : t("editor.rapportInsert")}
                   </button>
                   <button type="button" onClick={() => deleteRapport(rapport.id)}
-                    className="text-yarn-warm-gray/40 hover:text-red-400 transition-colors text-sm leading-none shrink-0">
+                    title={t("editor.rapportDelete")}
+                    aria-label={t("editor.rapportDelete")}
+                    className="relative text-yarn-warm-gray/40 hover:text-red-400 transition-colors text-sm leading-none shrink-0 before:absolute before:-inset-2 before:content-['']">
                     ×
                   </button>
                 </div>
@@ -694,12 +700,12 @@ export function PatternEditor({ patternId, initialPattern, title, description, i
 
         {/* Add/remove row top */}
         <div className="flex justify-center gap-1 mb-1">
-          <button type="button" onClick={() => addEdge("top")} title={t("editor.addRowTop")}
-            className="flex items-center gap-1 rounded-full border border-dashed border-yarn-sand/70 bg-yarn-oatmeal/40 px-4 py-0.5 text-xs font-bold text-yarn-warm-gray hover:border-yarn-terracotta/50 hover:bg-yarn-terracotta-light/40 hover:text-yarn-terracotta transition-colors">
+          <button type="button" onClick={() => addEdge("top")} title={t("editor.addRowTop")} aria-label={t("editor.addRowTop")}
+            className="relative flex items-center gap-1 rounded-full border border-dashed border-yarn-sand/70 bg-yarn-oatmeal/40 px-4 py-0.5 text-xs font-bold text-yarn-warm-gray hover:border-yarn-terracotta/50 hover:bg-yarn-terracotta-light/40 hover:text-yarn-terracotta transition-colors before:absolute before:-inset-y-1.5 before:inset-x-0 before:content-['']">
             +
           </button>
-          <button type="button" onClick={() => removeEdge("top")} title={t("editor.removeRowTop")}
-            className="flex items-center gap-1 rounded-full border border-dashed border-yarn-sand/70 bg-yarn-oatmeal/40 px-4 py-0.5 text-xs font-bold text-yarn-warm-gray hover:border-red-400/50 hover:bg-red-50 hover:text-red-500 transition-colors">
+          <button type="button" onClick={() => removeEdge("top")} title={t("editor.removeRowTop")} aria-label={t("editor.removeRowTop")}
+            className="relative flex items-center gap-1 rounded-full border border-dashed border-yarn-sand/70 bg-yarn-oatmeal/40 px-4 py-0.5 text-xs font-bold text-yarn-warm-gray hover:border-red-400/50 hover:bg-red-50 hover:text-red-500 transition-colors before:absolute before:-inset-y-1.5 before:inset-x-0 before:content-['']">
             −
           </button>
         </div>
@@ -707,12 +713,12 @@ export function PatternEditor({ patternId, initialPattern, title, description, i
         <div className="flex gap-1 items-stretch">
           {/* Add/remove col left */}
           <div className="flex flex-col gap-1 shrink-0">
-            <button type="button" onClick={() => addEdge("left")} title={t("editor.addColLeft")}
-              className="flex flex-1 items-center justify-center rounded-full border border-dashed border-yarn-sand/70 bg-yarn-oatmeal/40 w-6 text-xs font-bold text-yarn-warm-gray hover:border-yarn-terracotta/50 hover:bg-yarn-terracotta-light/40 hover:text-yarn-terracotta transition-colors">
+            <button type="button" onClick={() => addEdge("left")} title={t("editor.addColLeft")} aria-label={t("editor.addColLeft")}
+              className="relative flex flex-1 items-center justify-center rounded-full border border-dashed border-yarn-sand/70 bg-yarn-oatmeal/40 w-6 text-xs font-bold text-yarn-warm-gray hover:border-yarn-terracotta/50 hover:bg-yarn-terracotta-light/40 hover:text-yarn-terracotta transition-colors before:absolute before:-inset-x-1.5 before:inset-y-0 before:content-['']">
               +
             </button>
-            <button type="button" onClick={() => removeEdge("left")} title={t("editor.removeColLeft")}
-              className="flex flex-1 items-center justify-center rounded-full border border-dashed border-yarn-sand/70 bg-yarn-oatmeal/40 w-6 text-xs font-bold text-yarn-warm-gray hover:border-red-400/50 hover:bg-red-50 hover:text-red-500 transition-colors">
+            <button type="button" onClick={() => removeEdge("left")} title={t("editor.removeColLeft")} aria-label={t("editor.removeColLeft")}
+              className="relative flex flex-1 items-center justify-center rounded-full border border-dashed border-yarn-sand/70 bg-yarn-oatmeal/40 w-6 text-xs font-bold text-yarn-warm-gray hover:border-red-400/50 hover:bg-red-50 hover:text-red-500 transition-colors before:absolute before:-inset-x-1.5 before:inset-y-0 before:content-['']">
               −
             </button>
           </div>
@@ -820,12 +826,12 @@ export function PatternEditor({ patternId, initialPattern, title, description, i
 
           {/* Add/remove col right */}
           <div className="flex flex-col gap-1 shrink-0">
-            <button type="button" onClick={() => addEdge("right")} title={t("editor.addColRight")}
-              className="flex flex-1 items-center justify-center rounded-full border border-dashed border-yarn-sand/70 bg-yarn-oatmeal/40 w-6 text-xs font-bold text-yarn-warm-gray hover:border-yarn-terracotta/50 hover:bg-yarn-terracotta-light/40 hover:text-yarn-terracotta transition-colors">
+            <button type="button" onClick={() => addEdge("right")} title={t("editor.addColRight")} aria-label={t("editor.addColRight")}
+              className="relative flex flex-1 items-center justify-center rounded-full border border-dashed border-yarn-sand/70 bg-yarn-oatmeal/40 w-6 text-xs font-bold text-yarn-warm-gray hover:border-yarn-terracotta/50 hover:bg-yarn-terracotta-light/40 hover:text-yarn-terracotta transition-colors before:absolute before:-inset-x-1.5 before:inset-y-0 before:content-['']">
               +
             </button>
-            <button type="button" onClick={() => removeEdge("right")} title={t("editor.removeColRight")}
-              className="flex flex-1 items-center justify-center rounded-full border border-dashed border-yarn-sand/70 bg-yarn-oatmeal/40 w-6 text-xs font-bold text-yarn-warm-gray hover:border-red-400/50 hover:bg-red-50 hover:text-red-500 transition-colors">
+            <button type="button" onClick={() => removeEdge("right")} title={t("editor.removeColRight")} aria-label={t("editor.removeColRight")}
+              className="relative flex flex-1 items-center justify-center rounded-full border border-dashed border-yarn-sand/70 bg-yarn-oatmeal/40 w-6 text-xs font-bold text-yarn-warm-gray hover:border-red-400/50 hover:bg-red-50 hover:text-red-500 transition-colors before:absolute before:-inset-x-1.5 before:inset-y-0 before:content-['']">
               −
             </button>
           </div>
@@ -833,12 +839,12 @@ export function PatternEditor({ patternId, initialPattern, title, description, i
 
         {/* Add/remove row bottom */}
         <div className="flex justify-center gap-1 mt-1">
-          <button type="button" onClick={() => addEdge("bottom")} title={t("editor.addRowBottom")}
-            className="flex items-center gap-1 rounded-full border border-dashed border-yarn-sand/70 bg-yarn-oatmeal/40 px-4 py-0.5 text-xs font-bold text-yarn-warm-gray hover:border-yarn-terracotta/50 hover:bg-yarn-terracotta-light/40 hover:text-yarn-terracotta transition-colors">
+          <button type="button" onClick={() => addEdge("bottom")} title={t("editor.addRowBottom")} aria-label={t("editor.addRowBottom")}
+            className="relative flex items-center gap-1 rounded-full border border-dashed border-yarn-sand/70 bg-yarn-oatmeal/40 px-4 py-0.5 text-xs font-bold text-yarn-warm-gray hover:border-yarn-terracotta/50 hover:bg-yarn-terracotta-light/40 hover:text-yarn-terracotta transition-colors before:absolute before:-inset-y-1.5 before:inset-x-0 before:content-['']">
             +
           </button>
-          <button type="button" onClick={() => removeEdge("bottom")} title={t("editor.removeRowBottom")}
-            className="flex items-center gap-1 rounded-full border border-dashed border-yarn-sand/70 bg-yarn-oatmeal/40 px-4 py-0.5 text-xs font-bold text-yarn-warm-gray hover:border-red-400/50 hover:bg-red-50 hover:text-red-500 transition-colors">
+          <button type="button" onClick={() => removeEdge("bottom")} title={t("editor.removeRowBottom")} aria-label={t("editor.removeRowBottom")}
+            className="relative flex items-center gap-1 rounded-full border border-dashed border-yarn-sand/70 bg-yarn-oatmeal/40 px-4 py-0.5 text-xs font-bold text-yarn-warm-gray hover:border-red-400/50 hover:bg-red-50 hover:text-red-500 transition-colors before:absolute before:-inset-y-1.5 before:inset-x-0 before:content-['']">
             −
           </button>
         </div>
