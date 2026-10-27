@@ -1,7 +1,13 @@
+import type { Metadata } from "next";
 import { db } from "@/lib/db";
 import { requireUserPage } from "@/lib/auth/guards";
 import { getIsPremium } from "@/lib/billing/premium";
 import { PatternsContent } from "@/components/patterns/patterns-content";
+
+export const metadata: Metadata = {
+  title: "Мої схеми — Crossyarn",
+  robots: { index: false, follow: false }
+};
 
 export default async function PatternsPage() {
   const session = await requireUserPage();

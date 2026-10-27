@@ -1,7 +1,13 @@
+import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { db } from "@/lib/db";
 import { requireUserPage } from "@/lib/auth/guards";
 import { ImportPreviewContent } from "@/components/import/import-preview-content";
+
+export const metadata: Metadata = {
+  title: "Попередній перегляд імпорту — Crossyarn",
+  robots: { index: false, follow: false }
+};
 
 export default async function ImportPreviewPage({ params }: { params: Promise<{ id: string }> }) {
   const session = await requireUserPage();

@@ -1,7 +1,13 @@
+import type { Metadata } from "next";
 import { requireUserPage } from "@/lib/auth/guards";
 import { db } from "@/lib/db";
 import { getAvailableSymbols } from "@/lib/patterns/user-symbols";
 import { AccountContent } from "@/components/account/account-content";
+
+export const metadata: Metadata = {
+  title: "Мій профіль — Crossyarn",
+  robots: { index: false, follow: false }
+};
 
 export default async function AccountPage() {
   const session = await requireUserPage();
