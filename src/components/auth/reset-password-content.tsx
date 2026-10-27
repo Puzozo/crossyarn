@@ -2,14 +2,13 @@
 
 import Link from "next/link";
 import { useState } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useTranslation } from "@/lib/i18n/context";
 import { apiErrorMessage } from "@/lib/i18n/api-errors";
 
 export function ResetPasswordContent({ tokenValid }: { tokenValid: boolean }) {
-  const router = useRouter();
   const searchParams = useSearchParams();
   const { t } = useTranslation();
   const [password, setPassword] = useState("");

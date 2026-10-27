@@ -202,7 +202,6 @@ export function PatternEditor({ patternId, initialPattern, title, description, i
         }
       })
       .catch(() => undefined);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pattern, setSymbols]);
 
   // dirtyRef: an edit is waiting for (or failed) autosave — guards tab close and

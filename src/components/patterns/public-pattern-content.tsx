@@ -7,7 +7,6 @@ import { PatternLegend } from "@/components/patterns/pattern-legend";
 import { LikeButton } from "@/components/patterns/like-button";
 import { useTranslation } from "@/lib/i18n/context";
 import { PatternDocument, PatternSymbol } from "@/lib/patterns/model";
-import { Button } from "@/components/ui/button";
 import { KnittingModeBar } from "@/components/patterns/knitting-mode-bar";
 import { useKnittingProgress } from "@/lib/patterns/knitting-progress";
 

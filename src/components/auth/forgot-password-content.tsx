@@ -2,14 +2,12 @@
 
 import Link from "next/link";
 import { useState } from "react";
-import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useTranslation } from "@/lib/i18n/context";
 import { apiErrorMessage } from "@/lib/i18n/api-errors";
 
 export function ForgotPasswordContent() {
-  const router = useRouter();
   const { t } = useTranslation();
   const [email, setEmail] = useState("");
   const [sent, setSent] = useState(false);
