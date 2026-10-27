@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
-import type { Prisma } from "@prisma/client";
+import { Prisma } from "@prisma/client";
 import { db } from "@/lib/db";
 import { getSession } from "@/lib/auth/session";
 import { ExploreContent } from "@/components/explore/explore-content";
-import { parseTags } from "@/lib/utils";
+import { parseTags, escapeSqlLike } from "@/lib/utils";
 import { translit } from "@/lib/translit";
 
 export const metadata: Metadata = {
@@ -50,21 +50,29 @@ export default async function ExplorePage({
     .map(([t]) => t)
     .sort((a, b) => a.localeCompare(b));
 
-  // Build the SQL-like Prisma filter: combine titleTranslit search + tag filter.
-  const where: Prisma.PatternWhereInput = { visibility: "PUBLIC" };
+  // Prisma's `contains` filter has no way to pass a LIKE `ESCAPE` clause, so a
+  // query/tag containing % or _ would be matched as a SQL wildcard instead of a
+  // literal character. Resolve matching ids via a raw, escaped LIKE query first,
+  // then let Prisma do the actual (ordered, paginated) fetch over `id IN (...)`.
+  const conditions: Prisma.Sql[] = [Prisma.sql`"visibility" = 'PUBLIC'`];
   if (query) {
-    // SQLite has no `mode: "insensitive"` (Prisma throws → 500) and its LIKE folds
-    // case only for ASCII. Matching the transliterated query against titleTranslit
-    // makes Cyrillic searches case-insensitive too.
-    where.OR = [
-      { titleTranslit: { contains: translit(query) } },
-      { title: { contains: query } },
-      { tags: { contains: query } },
-    ];
+    // SQLite has no `mode: "insensitive"` and its LIKE folds case only for ASCII.
+    // Matching the transliterated query against titleTranslit makes Cyrillic
+    // searches case-insensitive too.
+    const escapedQuery = `%${escapeSqlLike(query)}%`;
+    const escapedTranslit = `%${escapeSqlLike(translit(query))}%`;
+    conditions.push(
+      Prisma.sql`("title" LIKE ${escapedQuery} ESCAPE '\\' OR "titleTranslit" LIKE ${escapedTranslit} ESCAPE '\\' OR "tags" LIKE ${escapedQuery} ESCAPE '\\')`
+    );
   }
   if (tag) {
-    where.tags = { contains: tag };
+    const escapedTag = `%${escapeSqlLike(tag)}%`;
+    conditions.push(Prisma.sql`"tags" LIKE ${escapedTag} ESCAPE '\\'`);
   }
+  const matched = await db.$queryRaw<{ id: string }[]>(
+    Prisma.sql`SELECT "id" FROM "Pattern" WHERE ${Prisma.join(conditions, " AND ")}`
+  );
+  const where: Prisma.PatternWhereInput = { id: { in: matched.map((p) => p.id) } };
 
   const [total, pageItems] = await Promise.all([
     db.pattern.count({ where }),

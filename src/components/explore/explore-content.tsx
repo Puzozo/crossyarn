@@ -117,8 +117,16 @@ export function ExploreContent({ patterns, query, page, totalPages, totalCount, 
       {patterns.length === 0 ? (
         <div className="rounded-3xl border-2 border-dashed border-yarn-sand bg-white/50 p-12 text-center">
           <p className="text-sm text-yarn-warm-gray">
-            {query ? t("explore.noResults") : t("explore.empty")}
+            {query || activeTag ? t("explore.noResults") : t("explore.empty")}
           </p>
+          {(query || activeTag) && (
+            <Link
+              href="/explore"
+              className="mt-4 inline-block rounded-xl bg-yarn-terracotta px-5 py-2.5 text-sm font-semibold text-white shadow-warm-sm transition-colors hover:bg-yarn-terracotta-hover"
+            >
+              {t("explore.resetFilters")}
+            </Link>
+          )}
         </div>
       ) : (
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">

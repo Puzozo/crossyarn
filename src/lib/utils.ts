@@ -15,3 +15,11 @@ export function parseTags(raw: unknown): string[] {
 export function serializeTags(tags: string[]): string {
   return JSON.stringify(tags);
 }
+
+// ── SQL LIKE escaping ────────────────────────────────────────────────────────
+
+// Escapes \, % and _ so a LIKE pattern built from user input matches those
+// characters literally. Pair with `ESCAPE '\\'` in the raw query.
+export function escapeSqlLike(value: string): string {
+  return value.replace(/[\\%_]/g, (ch) => `\\${ch}`);
+}
