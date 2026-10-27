@@ -724,7 +724,7 @@ export function PatternEditor({ patternId, initialPattern, title, description, i
           </div>
 
           <div
-            className="grid gap-px bg-yarn-sand/60 flex-1"
+            className="grid flex-1"
             style={{
               gridTemplateColumns: zoomLevel === 1
                 ? `repeat(${pattern.width}, minmax(40px, 1fr)) 40px`
@@ -785,6 +785,10 @@ export function PatternEditor({ patternId, initialPattern, title, description, i
                     }}
                     className={[
                       "flex items-center justify-center text-xs font-semibold text-yarn-charcoal transition-shadow relative",
+                      // Grid lines via top/left borders (crisp 1px), not gap-bleed —
+                      // avoids subpixel "white stripes" on fractional 1fr tracks.
+                      columnIndex > 0 ? "border-l border-yarn-sand/60" : "",
+                      displayIdx > 0 ? "border-t border-yarn-sand/60" : "",
                       isSelectionMode ? "cursor-crosshair" : rapportInsertId ? "cursor-crosshair hover:ring-2 hover:ring-amber-400/70" : isFillMode ? "cursor-cell hover:ring-2 hover:ring-yarn-terracotta/60" : "hover:ring-1 hover:ring-yarn-terracotta/40",
                       selected ? "ring-2 ring-inset ring-blue-500" : ""
                     ].join(" ")}
@@ -809,19 +813,19 @@ export function PatternEditor({ patternId, initialPattern, title, description, i
                 );
               }).filter(Boolean),
               <div key={`row-${rowIndex}`}
-                className="flex items-center justify-center bg-yarn-oatmeal text-[10px] font-mono font-semibold text-yarn-warm-gray"
+                className={`flex items-center justify-center bg-yarn-oatmeal text-[10px] font-mono font-semibold text-yarn-warm-gray border-l border-yarn-sand/60${displayIdx > 0 ? " border-t border-yarn-sand/60" : ""}`}
                 style={{ gridRow: displayIdx + 1, gridColumn: pattern.width + 1, minHeight: `${cellPx}px` }}>
                 {pattern.height - rowIndex}
               </div>
             ])}
             {Array.from({ length: pattern.width }, (_, columnIndex) => (
               <div key={`column-${columnIndex}`}
-                className="flex items-center justify-center bg-yarn-oatmeal text-[10px] font-mono font-semibold text-yarn-warm-gray"
+                className={`flex items-center justify-center bg-yarn-oatmeal text-[10px] font-mono font-semibold text-yarn-warm-gray border-t border-yarn-sand/60${columnIndex > 0 ? " border-l border-yarn-sand/60" : ""}`}
                 style={{ gridRow: visibleRowIndexes.length + 1, gridColumn: columnIndex + 1, minHeight: `${cellPx}px` }}>
                 {pattern.width - columnIndex}
               </div>
             ))}
-            <div className="bg-yarn-oatmeal rounded-br" style={{ gridRow: visibleRowIndexes.length + 1, gridColumn: pattern.width + 1 }} />
+            <div className="bg-yarn-oatmeal rounded-br border-l border-t border-yarn-sand/60" style={{ gridRow: visibleRowIndexes.length + 1, gridColumn: pattern.width + 1 }} />
           </div>
 
           {/* Add/remove col right */}

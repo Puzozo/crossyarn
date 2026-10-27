@@ -23,6 +23,14 @@ export function PatternGrid({
 }) {
   const skipPurl = document.view.skipPurlRows ?? false;
 
+  // Grid lines are drawn as per-cell top/left borders (a border always rounds
+  // to exactly one device pixel) instead of a gap-bleed background. With
+  // fractional 1fr track widths on narrow screens the old 1px gap rounded to
+  // 1–2 device pixels unevenly, which showed up as pale "white stripes".
+  // Only top/left borders (and only when not on the first row/column) so lines
+  // never double up and no outer frame is added — matching the gap look.
+  const line = "border-yarn-sand/60 print:border-gray-300";
+
   // Each symbol image goes into one CSS rule and cells reference it by class.
   // Inlining the data URI per cell made a 300KB image × 40k cells ≈ GBs of HTML
   // (anonymous DoS via /p/[id]). Only validated base64 data URIs are emitted,
@@ -42,7 +50,7 @@ export function PatternGrid({
 
   return (
     <div
-      className="grid gap-px bg-yarn-sand/60 print:bg-gray-300"
+      className="grid"
       style={{
         // Symbols and cell colours are backgrounds; keep them when printing.
         printColorAdjust: "exact",
@@ -82,7 +90,7 @@ export function PatternGrid({
               key={`${rowIndex}-${columnIndex}`}
               className={`flex items-center justify-center bg-white text-[10px] font-semibold text-yarn-charcoal print:text-black${
                 imageClass ? ` bg-contain bg-center bg-no-repeat ${imageClass}` : ""
-              }`}
+              }${columnIndex > 0 ? ` border-l ${line}` : ""}${displayIdx > 0 ? ` border-t ${line}` : ""}`}
               role={imageClass ? "img" : undefined}
               aria-label={imageClass ? symbol?.label : undefined}
               style={{
@@ -114,7 +122,7 @@ export function PatternGrid({
         (() => {
           const rowNumber = document.height - rowIndex;
           const isCurrent = rowNumber === highlightRow;
-          const className = `flex min-h-4 items-center justify-center print:bg-gray-100 text-[10px] font-mono font-semibold print:text-gray-600 ${
+          const className = `flex min-h-4 items-center justify-center print:bg-gray-100 text-[10px] font-mono font-semibold print:text-gray-600 border-l ${line}${displayIdx > 0 ? ` border-t ${line}` : ""} ${
             isCurrent ? "bg-yarn-terracotta text-white" : "bg-yarn-oatmeal text-yarn-warm-gray"
           }`;
           const style = { gridColumn: document.width + 1, gridRow: displayIdx + 1 };
@@ -138,14 +146,14 @@ export function PatternGrid({
       {Array.from({ length: document.width }, (_, columnIndex) => (
         <div
           key={`col-num-${columnIndex}`}
-          className="flex min-h-4 items-center justify-center bg-yarn-oatmeal print:bg-gray-100 text-[10px] font-mono font-semibold text-yarn-warm-gray print:text-gray-600"
+          className={`flex min-h-4 items-center justify-center bg-yarn-oatmeal print:bg-gray-100 text-[10px] font-mono font-semibold text-yarn-warm-gray print:text-gray-600 border-t ${line}${columnIndex > 0 ? ` border-l ${line}` : ""}`}
           style={{ gridColumn: columnIndex + 1, gridRow: visibleRowIndexes.length + 1 }}
         >
           {document.width - columnIndex}
         </div>
       ))}
       <div
-        className="bg-yarn-oatmeal print:bg-gray-100"
+        className={`bg-yarn-oatmeal print:bg-gray-100 border-l border-t ${line}`}
         style={{ gridColumn: document.width + 1, gridRow: visibleRowIndexes.length + 1 }}
       />
     </div>
