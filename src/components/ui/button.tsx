@@ -6,7 +6,7 @@ type Props = ButtonHTMLAttributes<HTMLButtonElement> & {
 };
 
 const base =
-  "inline-flex items-center justify-center font-semibold transition-all duration-200 ease-out focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-yarn-cream disabled:cursor-not-allowed disabled:opacity-50 cursor-pointer";
+  "inline-flex items-center justify-center whitespace-nowrap font-semibold transition-all duration-200 ease-out focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-yarn-cream disabled:cursor-not-allowed disabled:opacity-50 cursor-pointer";
 
 const variants: Record<NonNullable<Props["variant"]>, string> = {
   primary:
