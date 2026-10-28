@@ -8,6 +8,7 @@ import { howToReadChartEnPost } from "./posts/how-to-read-a-knitting-chart";
 import { fairIsleColorworkEnPost } from "./posts/fair-isle-colorwork-charts";
 import { chartMakerOnlineEnPost } from "./posts/knitting-chart-maker-online";
 import { knittingChartSymbolsPost } from "./posts/knitting-chart-symbols";
+import { knittingChartSymbolsExplainedPost } from "./posts/knitting-chart-symbols-explained";
 
 const posts: BlogPost[] = [
   howToReadChartPost,
@@ -16,7 +17,8 @@ const posts: BlogPost[] = [
   knittingChartSymbolsPost,
   howToReadChartEnPost,
   fairIsleColorworkEnPost,
-  chartMakerOnlineEnPost
+  chartMakerOnlineEnPost,
+  knittingChartSymbolsExplainedPost
 ];
 
 /** Усі статті, найновіші першими (сортування за полем date, ISO-рядок). */

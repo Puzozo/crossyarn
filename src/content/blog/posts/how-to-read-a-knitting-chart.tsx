@@ -85,6 +85,12 @@ export const howToReadChartEnPost: BlogPost = {
         source. Learn the common set once and you will recognise them everywhere. Here are the ones
         you will meet most often.
       </p>
+      <p>
+        A full list of every symbol used in Crossyarn&apos;s editor, with an explanation of each, is
+        collected in a separate reference —{" "}
+        <Link href="/blog/knitting-chart-symbols-explained">the knitting chart symbols glossary</Link>.
+        Keep it handy while you get used to reading charts.
+      </p>
 
       <h3>Knit, purl, yarn overs</h3>
       <table>
