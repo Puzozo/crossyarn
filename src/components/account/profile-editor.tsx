@@ -228,7 +228,7 @@ export function ProfileEditor({ initial }: { initial: ProfileValues }) {
             />
           </div>
           <p className="mt-1.5 text-xs text-yarn-warm-gray">
-            {t("profile.usernameHint", { username: values.username.trim().toLowerCase() || "нікнейм" })}
+            {t("profile.usernameHint", { username: values.username.trim().toLowerCase() || t("profile.usernameFallback") })}
           </p>
         </div>
 

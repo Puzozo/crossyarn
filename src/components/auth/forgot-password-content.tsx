@@ -97,7 +97,7 @@ export function ForgotPasswordContent() {
                 autoComplete="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                placeholder="your@email.com"
+                placeholder={t("auth.emailPlaceholder")}
                 required
                 autoFocus
               />
@@ -110,7 +110,7 @@ export function ForgotPasswordContent() {
             )}
 
             <Button type="submit" className="w-full" disabled={pending}>
-              {pending ? "..." : t("auth.forgotPasswordSubmit")}
+              {pending ? t("auth.pending") : t("auth.forgotPasswordSubmit")}
             </Button>
           </form>
         )}

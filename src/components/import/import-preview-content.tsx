@@ -265,7 +265,7 @@ export function ImportPreviewContent({ importId, initialStatus }: Props) {
       // Use the detected jacquard palette when present; else the default swatches.
       // (Cells carry explicit hex regardless, so colours render either way.)
       const patternPalette = palette.length
-        ? palette.map((hex, i) => ({ id: `c${i}`, name: `Колір ${i + 1}`, hex }))
+        ? palette.map((hex, i) => ({ id: `c${i}`, name: t("import.colorName", { n: i + 1 }), hex }))
         : DEFAULT_PALETTE;
       const patternData: PatternDocument = {
         version: 1,

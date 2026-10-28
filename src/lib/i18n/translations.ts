@@ -228,6 +228,7 @@ export const translations = {
     "profile.username": "Нікнейм",
     "profile.usernameHint": "3–30 символів: латинські літери, цифри, «_». Ваша адреса: /u/{username}",
     "profile.usernamePlaceholder": "напр. oksana_knits",
+    "profile.usernameFallback": "нікнейм",
     "profile.bio": "Про себе",
     "profile.bioPlaceholder": "Кілька слів про себе та ваше в'язання",
     "profile.location": "Локація",
@@ -370,6 +371,7 @@ export const translations = {
     "import.deskewWarning": "Знайдено спотворення перспективи",
     // Import — confidence
     "import.lowConfidenceWarning": "{n} клітинок потребують перевірки",
+    "import.colorName": "Колір {n}",
     "import.allChecked": "Усі клітинки розпізнані впевнено",
     // Import — legend / unknown
     "import.legendTitle": "Розпізнані символи",
@@ -666,6 +668,7 @@ export const translations = {
     "profile.username": "Username",
     "profile.usernameHint": "3–30 characters: letters, digits, “_”. Your URL: /u/{username}",
     "profile.usernamePlaceholder": "e.g. oksana_knits",
+    "profile.usernameFallback": "username",
     "profile.bio": "About",
     "profile.bioPlaceholder": "A few words about you and your knitting",
     "profile.location": "Location",
@@ -808,6 +811,7 @@ export const translations = {
     "import.deskewWarning": "Perspective distortion detected",
     // Import — confidence
     "import.lowConfidenceWarning": "{n} cells need review",
+    "import.colorName": "Colour {n}",
     "import.allChecked": "All cells recognized confidently",
     // Import — legend / unknown
     "import.legendTitle": "Recognized symbols",
