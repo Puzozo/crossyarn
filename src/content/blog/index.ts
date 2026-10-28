@@ -13,6 +13,7 @@ import { laceKnittingChartsPost } from "./posts/lace-knitting-charts";
 import { knittingChartSymbolsExplainedPost } from "./posts/knitting-chart-symbols-explained";
 import { cableKnittingChartsExplainedPost } from "./posts/cable-knitting-charts-explained";
 import { laceKnittingChartsExplainedPost } from "./posts/lace-knitting-charts-explained";
+import { jacquardKnittingForBeginnersPost } from "./posts/jacquard-knitting-for-beginners";
 
 const posts: BlogPost[] = [
   howToReadChartPost,
@@ -26,7 +27,8 @@ const posts: BlogPost[] = [
   chartMakerOnlineEnPost,
   knittingChartSymbolsExplainedPost,
   cableKnittingChartsExplainedPost,
-  laceKnittingChartsExplainedPost
+  laceKnittingChartsExplainedPost,
+  jacquardKnittingForBeginnersPost
 ];
 
 /** Усі статті, найновіші першими (сортування за полем date, ISO-рядок). */
