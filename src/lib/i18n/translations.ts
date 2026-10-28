@@ -440,6 +440,17 @@ export const translations = {
     "privatePattern.title": "Ця схема приватна",
     "privatePattern.description": "Ця схема доступна лише її автору. Якщо ви її автор, увійдіть у свій обліковий запис.",
     "privatePattern.back": "До моїх схем",
+
+    // Premium page
+    "premium.heading": "Crossyarn Premium",
+    "premium.subtitle": "Зараз Premium доступний для всіх користувачів безкоштовно!",
+    "premium.note": "Ми працюємо над підпискою — до 15 листопада 2026 всі функції відкриті.",
+    "premium.feature1": "AI-розпізнавання схем із зображень",
+    "premium.feature2": "Без реклами",
+    "premium.feature3": "Безліміт схем і кастомних позначок",
+    "premium.thanks": "Дякуємо за тестування! 🧶",
+    "premium.backToPatterns": "← До моїх схем",
+    "premium.explore": "Досліджуйте схеми",
   },
   en: {
     // Nav / Header
@@ -880,6 +891,17 @@ export const translations = {
     "privatePattern.title": "This pattern is private",
     "privatePattern.description": "This pattern is only visible to its author. If you are the author, sign in to your account.",
     "privatePattern.back": "Back to my patterns",
+
+    // Premium page
+    "premium.heading": "Crossyarn Premium",
+    "premium.subtitle": "Premium is currently available to all users for free!",
+    "premium.note": "We're working on subscriptions — all features are open until November 15, 2026.",
+    "premium.feature1": "AI chart recognition from images",
+    "premium.feature2": "No ads",
+    "premium.feature3": "Unlimited patterns and custom symbols",
+    "premium.thanks": "Thanks for testing! 🧶",
+    "premium.backToPatterns": "← Back to my patterns",
+    "premium.explore": "Explore patterns",
   }
 } as const;
 
