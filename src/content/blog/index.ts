@@ -4,8 +4,18 @@ export type { BlogPostSummary } from "./types";
 import { howToReadChartPost } from "./posts/how-to-read-knitting-chart";
 import { fairIsleJacquardPost } from "./posts/fair-isle-jacquard-charts";
 import { createChartOnlinePost } from "./posts/create-knitting-chart-online";
+import { howToReadChartEnPost } from "./posts/how-to-read-a-knitting-chart";
+import { fairIsleColorworkEnPost } from "./posts/fair-isle-colorwork-charts";
+import { chartMakerOnlineEnPost } from "./posts/knitting-chart-maker-online";
 
-const posts: BlogPost[] = [howToReadChartPost, fairIsleJacquardPost, createChartOnlinePost];
+const posts: BlogPost[] = [
+  howToReadChartPost,
+  fairIsleJacquardPost,
+  createChartOnlinePost,
+  howToReadChartEnPost,
+  fairIsleColorworkEnPost,
+  chartMakerOnlineEnPost
+];
 
 /** Усі статті, найновіші першими (сортування за полем date, ISO-рядок). */
 export function getAllPosts(): BlogPost[] {
@@ -33,6 +43,10 @@ export function getPostTranslations(post: BlogPost): { uk?: string; en?: string 
     if (other) {
       result[other.lang] = other.slug;
     }
+  }
+  const back = posts.find((p) => p.translationOf === post.slug);
+  if (back) {
+    result[back.lang] = back.slug;
   }
   return result;
 }
