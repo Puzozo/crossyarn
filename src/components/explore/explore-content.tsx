@@ -210,7 +210,7 @@ export function ExploreContent({ patterns, query, page, totalPages, totalCount, 
       )}
 
       {totalPages > 1 ? (
-        <nav className="flex items-center justify-center gap-4 pt-2" aria-label="Pagination">
+        <nav className="flex items-center justify-center gap-4 pt-2" aria-label={t("common.pagination")}>
           {page > 1 ? (
             <Link
               href={pageHref(query, page - 1)}

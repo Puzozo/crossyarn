@@ -435,6 +435,7 @@ export const translations = {
     "versions.restoredToast": "Версію №{n} відновлено",
     "common.cancel": "Скасувати",
     "common.delete": "Видалити",
+    "common.pagination": "Пагінація",
 
     // Mobile nav
     "mobileNav.openMenu": "Відкрити меню",
@@ -891,6 +892,7 @@ export const translations = {
     "versions.restoredToast": "Version #{n} restored",
     "common.cancel": "Cancel",
     "common.delete": "Delete",
+    "common.pagination": "Pagination",
 
     // Mobile nav
     "mobileNav.openMenu": "Open menu",
