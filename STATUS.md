@@ -3,7 +3,7 @@
 ## Next (що робити далі, див. ROADMAP-week-2026-W44.md v2)
 - [ ] P1b: точність розпізнавання — зібрати 10-20 реальних фото/сканів зі «правильною» схемою, заміряти, донавчити класифікатор; ручне підлаштування 4 кутів у preview для фото
 - [ ] P4d (low): перевірити малювання свайпом на телефоні
-- [ ] P5 (SEO): EN-версії статей блогу 1–3 через hreflang (блог наразі лише UA)
+- [ ] P5 (SEO): написати EN-версії статей блогу 1–3 (інфра hreflang готова — виставити lang:'en' + translationOf на пару)
 - [ ] Дрібне: рядок у CLAUDE.md про режим в'язання не закомічено
 
 ## Blocked
@@ -11,6 +11,7 @@
 - Billing: мерчант-ключі WayForPay/LiqPay (ФОП) — dry-run mock покриває
 
 ## Done recently
+- P5: інфра EN-статей блогу + hreflang (Qwen×3 + рецензія) — тип BlogPost отримав lang:'uk'|'en' і translationOf?; наявні 3 статті позначено lang:'uk'. Хелпери в index.ts: getPostSummaries() (статті без body для серіалізації в клієнт), getPostTranslations(post) (мапа мова→slug: власна + пара за translationOf, якщо існує). /blog/[slug]: generateMetadata додає alternates.languages (uk/en + x-default→uk) ЛИШЕ коли існує пара; <article lang={post.lang}>. /blog тепер клієнтський BlogList (src/components/blog/), фільтрує за мовою інтерфейсу з fallback на всі статті, ключі blog.title/intro/empty в обох блоках uk/en. Перевірено браузером на :3000: UA лістить 3 UA-статті; EN-перемикач → fallback показує всі 3 (бо EN-статей ще немає), дати en-US; стаття віддає lang="uk", абсолютний канонікал, hreflang порожній (пар немає — очікувано). Шлях hreflang-з-парою звірено кодом/tsc. Диф чистий (tsbuildinfo відкочено, _body-warning прибрано); tsc + eslint чисті
 - P2: сторінка /premium через i18n (Qwen + рецензія) — усі тексти (банер безкоштовного Premium, 3 переваги, подяка, 2 CTA) винесено в ключі premium.* в обох блоках uk/en; розмітку перенесено в клієнтський компонент src/components/premium/premium-content.tsx (useTranslation), page.tsx лишився серверним із метаданими (title UA як є — жодна сторінка сайту не робить bilingual-метаданих). Зміст і банер Universal Premium (до 15.11.2026) не змінювались. Перевірено браузером на :3000: перемикач UA↔EN міняє всі тексти, єдина консольна помилка — favicon.ico 404 (середовищна); tsc + eslint чисті
 - P4d: прибрано 4 захардкоджені рядки в обхід t() (Qwen + рецензія) — forgot-password placeholder→t("auth.emailPlaceholder") і «...»→t("auth.pending") (ключі вже існували); import-preview «Колір N»→t("import.colorName", {n}) (новий ключ uk «Колір {n}» / en «Colour {n}»); profile-editor fallback «нікнейм»→t("profile.usernameFallback") (новий окремий ключ, НЕ usernamePlaceholder — той зайнятий). Усі нові ключі в обох блоках uk/en. Диф чистий (без tsbuildinfo/сміття); tsc + eslint чисті (verify=static)
 - P4d: справжній 404 на /patterns/[bad] (Qwen + рецензія) — soft-404 спричиняла loading.tsx, що огортала Suspense-межею і [id]/, тож статус 200 стрімився до notFound(). Qwen переніс page.tsx + loading.tsx у route-групу src/app/patterns/(list)/ (URL не змінився, [id]/ лишився як є); файли дослівно збігаються з оригіналом, старі видалено, tsconfig.tsbuildinfo у дифі немає. Перевірено живим curl на :3000 з сесією тестового юзера: /patterns/<fake> → 404 (рендериться not-found.tsx), наявна схема → 200, список → 200; без логіну /patterns/<fake> → 307 /sign-in, /p/<fake> і /u/<fake> → 404 (не ламалось). tsc + eslint чисті

@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { getAllPosts, getPostBySlug } from "@/content/blog";
+import { getAllPosts, getPostBySlug, getPostTranslations } from "@/content/blog";
 import { SITE_URL } from "@/lib/site";
 
 export function generateStaticParams() {
@@ -15,10 +15,22 @@ export async function generateMetadata({
   const { slug } = await params;
   const post = getPostBySlug(slug);
   if (!post) return { title: "Crossyarn" };
+  const langs = getPostTranslations(post);
   return {
     title: `${post.title} — Crossyarn`,
     description: post.description,
-    alternates: { canonical: `/blog/${post.slug}` },
+    alternates: {
+      canonical: `/blog/${post.slug}`,
+      ...(langs.uk && langs.en
+        ? {
+            languages: {
+              uk: `/blog/${langs.uk}`,
+              en: `/blog/${langs.en}`,
+              "x-default": `/blog/${langs.uk}`
+            }
+          }
+        : {})
+    },
     openGraph: {
       type: "article",
       title: post.title,
@@ -51,7 +63,7 @@ export default async function BlogArticlePage({
   };
 
   return (
-    <article className="mx-auto max-w-3xl">
+    <article lang={post.lang} className="mx-auto max-w-3xl">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}

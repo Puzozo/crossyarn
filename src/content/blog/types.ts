@@ -11,8 +11,14 @@ export type BlogPost = {
   description: string;
   /** Дата у форматі ISO "РРРР-ММ-ДД" — дата публікації/оновлення. */
   date: string;
+  /** Мова статті. */
+  lang: "uk" | "en";
+  /** Slug парної статті іншою мовою (двосторонній зв'язок), якщо є переклад. */
+  translationOf?: string;
   /** Теги / мітки кластера. */
   tags: string[];
   /** Тіло статті як JSX (рендериться всередині .blog-prose). */
   body: ReactNode;
 };
+
+export type BlogPostSummary = Omit<BlogPost, "body">;

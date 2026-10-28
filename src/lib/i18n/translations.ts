@@ -14,6 +14,11 @@ export const translations = {
     "footer.linksLabel": "Навігація",
     "footer.explore": "Каталог",
     "footer.blog": "Блог",
+
+    // Blog index
+    "blog.title": "Блог",
+    "blog.intro": 'Гайди та поради зі створення й читання схем для в\'язання.',
+    "blog.empty": "Поки що немає статей.",
     "footer.follow": "Ми в соцмережах",
     "footer.rights": "Усі права захищені.",
     "footer.terms": "Умови використання",
@@ -465,6 +470,11 @@ export const translations = {
     "footer.linksLabel": "Navigation",
     "footer.explore": "Explore",
     "footer.blog": "Blog",
+
+    // Blog index
+    "blog.title": "Blog",
+    "blog.intro": "Guides and tips for creating and reading knitting charts.",
+    "blog.empty": "No articles yet.",
     "footer.follow": "Follow us",
     "footer.rights": "All rights reserved.",
     "footer.terms": "Terms of Use",
