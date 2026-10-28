@@ -72,7 +72,7 @@ export default async function BlogArticlePage({
         {post.heading}
       </h1>
       <time dateTime={post.date} className="mt-2 block text-sm text-yarn-warm-gray">
-        {new Date(post.date).toLocaleDateString("uk-UA", {
+        {new Date(post.date).toLocaleDateString(post.lang === "en" ? "en-US" : "uk-UA", {
           day: "numeric",
           month: "long",
           year: "numeric"

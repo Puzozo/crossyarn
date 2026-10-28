@@ -31,7 +31,7 @@ export function BlogList({ posts }: { posts: BlogPostSummary[] }) {
                 className="mt-1 block text-xs text-yarn-warm-gray/80"
               >
                 {new Date(post.date).toLocaleDateString(
-                  lang === "en" ? "en-US" : "uk-UA",
+                  post.lang === "en" ? "en-US" : "uk-UA",
                   {
                     day: "numeric",
                     month: "long",
