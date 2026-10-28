@@ -7,11 +7,13 @@ import { createChartOnlinePost } from "./posts/create-knitting-chart-online";
 import { howToReadChartEnPost } from "./posts/how-to-read-a-knitting-chart";
 import { fairIsleColorworkEnPost } from "./posts/fair-isle-colorwork-charts";
 import { chartMakerOnlineEnPost } from "./posts/knitting-chart-maker-online";
+import { knittingChartSymbolsPost } from "./posts/knitting-chart-symbols";
 
 const posts: BlogPost[] = [
   howToReadChartPost,
   fairIsleJacquardPost,
   createChartOnlinePost,
+  knittingChartSymbolsPost,
   howToReadChartEnPost,
   fairIsleColorworkEnPost,
   chartMakerOnlineEnPost
