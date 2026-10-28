@@ -2,7 +2,7 @@
 
 ## Next (що робити далі, див. ROADMAP-week-2026-W44.md v2)
 - [ ] P1b: точність розпізнавання — зібрати 10-20 реальних фото/сканів зі «правильною» схемою, заміряти, донавчити класифікатор; ручне підлаштування 4 кутів у preview для фото
-- [ ] P4d (low): soft-404 на /patterns/[bad] (перевірити живим GET, можливо вже закрито), перевірити малювання свайпом на телефоні
+- [ ] P4d (low): перевірити малювання свайпом на телефоні
 - [ ] P5 (SEO): EN-версії статей блогу 1–3 через hreflang (блог наразі лише UA)
 - [ ] Дрібне: рядок у CLAUDE.md про режим в'язання не закомічено
 
@@ -11,6 +11,7 @@
 - Billing: мерчант-ключі WayForPay/LiqPay (ФОП) — dry-run mock покриває
 
 ## Done recently
+- P4d: справжній 404 на /patterns/[bad] (Qwen + рецензія) — soft-404 спричиняла loading.tsx, що огортала Suspense-межею і [id]/, тож статус 200 стрімився до notFound(). Qwen переніс page.tsx + loading.tsx у route-групу src/app/patterns/(list)/ (URL не змінився, [id]/ лишився як є); файли дослівно збігаються з оригіналом, старі видалено, tsconfig.tsbuildinfo у дифі немає. Перевірено живим curl на :3000 з сесією тестового юзера: /patterns/<fake> → 404 (рендериться not-found.tsx), наявна схема → 200, список → 200; без логіну /patterns/<fake> → 307 /sign-in, /p/<fake> і /u/<fake> → 404 (не ламалось). tsc + eslint чисті
 - P5: стаття 3 блогу (кластер E — онлайн-редактор, UA) — текст написав content-writer, оформив як модуль src/content/blog/posts/create-knitting-chart-online.tsx і зареєстрував у index.ts. Slug create-knitting-chart-online, цільовий запит «створити схему для в'язання онлайн», title 49 симв., description 130; 1×H1 (heading) + 7×H2 (6 кроків + «навіщо» + «що читати далі») + 2×H3 за планом. Внутрішні посилання лише на існуючі маршрути: /patterns (CTA, не /editor), /account, /explore, статті 1 і 2 (не /u/[username] — такого роуту немає). У sitemap потрапляє автоматично через getAllPosts. tsc + eslint чисті (verify=static, браузер не потрібен)
 - P5: стаття 2 блогу (кластер B — жаккард, UA) — текст написав content-writer, оформив як модуль src/content/blog/posts/fair-isle-jacquard-charts.tsx і зареєстрував у index.ts. Slug fair-isle-jacquard-charts, цільовий запит «схема жаккарда спицями», title 43 симв., description 129; 1×H1 (heading), 6×H2, 2×H3, таблиця протяжок. Внутрішні посилання лише на існуючі маршрути: /explore?tag=жаккард, /explore?tag=орнамент, /patterns (не /editor), стаття 1 /blog/how-to-read-knitting-chart; статтю 3 (ще не написана) навмисно не лінкував. У sitemap потрапляє автоматично через getAllPosts. tsc + eslint чисті (verify=static, браузер не потрібен)
 - P5: стаття 1 блогу (кластер A, UA) — текст написав content-writer, оформив як модуль src/content/blog/posts/how-to-read-knitting-chart.tsx замість заглушки welcome. Slug how-to-read-knitting-chart, цільовий запит «як читати схему для в'язання», title 56 симв. (рендериться з суфіксом — Crossyarn), description ≤155; 1×H1, 6×H2, 2×H3, 2 таблиці символів (+ стилі .blog-prose table в globals.css). Внутрішні посилання лише на існуючі маршрути: /explore, /explore?tag=для-початківців, /patterns (не /editor — такого роуту немає; плановий /editor-лінк замінено). Перевірено браузером на :3000: title і контент рендеряться, JSON-LD Article, /blog лістить статтю, усі 3 лінки 200, єдина консольна помилка — favicon.ico 404 (середовищна); tsc + eslint чисті
