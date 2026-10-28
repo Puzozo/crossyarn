@@ -9,6 +9,7 @@ import { fairIsleColorworkEnPost } from "./posts/fair-isle-colorwork-charts";
 import { chartMakerOnlineEnPost } from "./posts/knitting-chart-maker-online";
 import { knittingChartSymbolsPost } from "./posts/knitting-chart-symbols";
 import { cableKnittingChartsPost } from "./posts/cable-knitting-charts";
+import { laceKnittingChartsPost } from "./posts/lace-knitting-charts";
 import { knittingChartSymbolsExplainedPost } from "./posts/knitting-chart-symbols-explained";
 
 const posts: BlogPost[] = [
@@ -17,6 +18,7 @@ const posts: BlogPost[] = [
   createChartOnlinePost,
   knittingChartSymbolsPost,
   cableKnittingChartsPost,
+  laceKnittingChartsPost,
   howToReadChartEnPost,
   fairIsleColorworkEnPost,
   chartMakerOnlineEnPost,
