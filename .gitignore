@@ -12,6 +12,8 @@ cookies.txt
 *.cookie
 # Uploaded source images for AI image-import jobs (runtime artifacts)
 import-uploads
+# Admin-uploaded images for master classes / blog posts (WebP variants, see MediaAsset)
+media-uploads
 # Python recognition service local artifacts
 python-service/.venv
 python-service/__pycache__

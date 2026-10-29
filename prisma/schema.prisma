@@ -8,49 +8,52 @@ datasource db {
 }
 
 model User {
-  id           String             @id @default(cuid())
-  email        String             @unique
-  passwordHash String
-  name         String?
-  isAdmin      Boolean            @default(false)
-  isDisabled   Boolean            @default(false)
+  id               String             @id @default(cuid())
+  email            String             @unique
+  passwordHash     String
+  name             String?
+  isAdmin          Boolean            @default(false)
+  isDisabled       Boolean            @default(false)
   // Public profile. username is the handle used in /u/<username> URLs (lowercased, unique).
   // profilePublic is the master privacy switch: false = profile page 404s to others.
   // Default false so profiles are private-by-default; users opt in explicitly.
-  username      String?           @unique
-  bio           String?
-  location      String?
-  website       String?
-  profilePublic Boolean           @default(false)
+  username         String?            @unique
+  bio              String?
+  location         String?
+  website          String?
+  profilePublic    Boolean            @default(false)
   // Avatar as a data URI (image/jpeg|png|webp, ≤150KB decoded). Client downsizes
   // to 256×256 before upload; served via /api/users/[username]/avatar.
-  avatarData    String?
+  avatarData       String?
   // Billing — forward-compatible with the planned WayForPay subscription.
   // Source of truth for Premium is derived (isPremium helper), never a separate boolean.
   // premiumUntil = null + plan="PREMIUM" means an open-ended manual grant (admin).
-  plan         String             @default("FREE") // "FREE" | "PREMIUM"
-  premiumUntil DateTime?
+  plan             String             @default("FREE") // "FREE" | "PREMIUM"
+  premiumUntil     DateTime?
   // Password reset — token is a random string, hashed before storing.
-  resetToken     String?  @unique
+  resetToken       String?            @unique
   resetTokenExpiry DateTime?
   // Bumped on password reset; session JWTs carry it (`sv`) and are rejected once
   // it no longer matches, so a reset signs out every other device.
-  sessionVersion Int      @default(0)
-  createdAt    DateTime           @default(now())
-  updatedAt    DateTime           @updatedAt
-  patterns     Pattern[]
-  importJobs   PatternImportJob[]
-  symbols      UserSymbol[]
-  likes        PatternLike[]
+  sessionVersion   Int                @default(0)
+  createdAt        DateTime           @default(now())
+  updatedAt        DateTime           @updatedAt
+  patterns         Pattern[]
+  importJobs       PatternImportJob[]
+  symbols          UserSymbol[]
+  likes            PatternLike[]
+  masterClasses    MasterClass[]
+  posts            Post[]
+  mediaAssets      MediaAsset[]
 }
 
 model Pattern {
-  id            String           @id @default(cuid())
+  id            String            @id @default(cuid())
   userId        String
   title         String
   // ASCII transliteration of title for SQL LIKE search (Cyrillic titles are searchable).
-  titleTranslit String?          @default("")
-  tags          String           @default("[]") // JSON string of tags, e.g. '["scarf","winter","lace"]' (SQLite incompatible with String[])
+  titleTranslit String?           @default("")
+  tags          String            @default("[]") // JSON string of tags, e.g. '["scarf","winter","lace"]' (SQLite incompatible with String[])
   description   String?
   width         Int
   height        Int
@@ -58,11 +61,12 @@ model Pattern {
   paletteData   Json
   symbolSetData Json
   visibility    PatternVisibility @default(PRIVATE)
-  createdAt     DateTime         @default(now())
-  updatedAt     DateTime         @updatedAt
-  user          User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt     DateTime          @default(now())
+  updatedAt     DateTime          @updatedAt
+  user          User              @relation(fields: [userId], references: [id], onDelete: Cascade)
   versions      PatternVersion[]
   likes         PatternLike[]
+  masterClasses MasterClass[]
 }
 
 model PatternLike {
@@ -78,28 +82,28 @@ model PatternLike {
 }
 
 model PatternVersion {
-  id         String   @id @default(cuid())
-  patternId  String
-  snapshot   Json
-  createdAt  DateTime @default(now())
-  pattern    Pattern  @relation(fields: [patternId], references: [id], onDelete: Cascade)
+  id        String   @id @default(cuid())
+  patternId String
+  snapshot  Json
+  createdAt DateTime @default(now())
+  pattern   Pattern  @relation(fields: [patternId], references: [id], onDelete: Cascade)
 }
 
 model PatternImportJob {
-  id                  String            @id @default(cuid())
+  id                  String              @id @default(cuid())
   userId              String
   sourceImageUrl      String
   status              PatternImportStatus @default(PENDING)
   resultData          Json?
   errorMessage        String?
   // Queue / resource-control fields
-  processingStartedAt DateTime?         // set when a worker picks up the job; used by the stale-reaper
-  attemptCount        Int               @default(0)
-  idempotencyKey      String?           @unique
+  processingStartedAt DateTime? // set when a worker picks up the job; used by the stale-reaper
+  attemptCount        Int                 @default(0)
+  idempotencyKey      String?             @unique
   fileSizeBytes       Int?
-  createdAt           DateTime          @default(now())
-  updatedAt           DateTime          @updatedAt
-  user                User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt           DateTime            @default(now())
+  updatedAt           DateTime            @updatedAt
+  user                User                @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model UserSymbol {
@@ -123,12 +127,97 @@ model UserSymbol {
   user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
+// Master classes and DB blog posts (spec: docs/master-classes-spec.md §2).
+// Admin-only authoring for now; authorId + PENDING_REVIEW/REJECTED keep the door open
+// for user authors. JSON fields are Strings (like Pattern.tags), validated by
+// zod schemas in src/lib/content. Asset ids in cover/gallery/content are plain strings
+// (no FK) — orphan cleanup scans them, see scripts/cleanup-media.ts.
+model MasterClass {
+  id                String        @id @default(cuid())
+  authorId          String
+  slug              String        @unique
+  lang              String // "uk" | "en"
+  // Symmetric UA↔EN pair: both rows point at each other.
+  translationOfId   String?       @unique
+  title             String
+  summary           String        @default("")
+  coverAssetId      String?
+  coverAlt          String        @default("")
+  difficulty        Difficulty    @default(BEGINNER)
+  durationMinutes   Int?
+  materials         String        @default("{\"yarn\":[],\"tools\":[],\"other\":[]}")
+  tags              String        @default("[]")
+  mainPatternId     String?
+  gallery           String        @default("[]") // [{assetId, alt, caption}] ≤30
+  content           String        @default("{\"type\":\"doc\",\"content\":[]}") // Tiptap JSON
+  status            ContentStatus @default(DRAFT)
+  publishedAt       DateTime?
+  // Future sales: price in kopecks, null = free. Without access the server returns
+  // only the first previewBlockCount top-level blocks.
+  priceUah          Int?
+  previewBlockCount Int           @default(0)
+  createdAt         DateTime      @default(now())
+  updatedAt         DateTime      @updatedAt
+  author            User          @relation(fields: [authorId], references: [id], onDelete: Restrict)
+  translationOf     MasterClass?  @relation("MasterClassTranslation", fields: [translationOfId], references: [id], onDelete: SetNull)
+  translatedBy      MasterClass?  @relation("MasterClassTranslation")
+  mainPattern       Pattern?      @relation(fields: [mainPatternId], references: [id], onDelete: SetNull)
+
+  @@index([status, lang, publishedAt])
+  @@index([status, difficulty])
+  @@index([authorId])
+  @@index([mainPatternId])
+}
+
+model Post {
+  id            String        @id @default(cuid())
+  authorId      String
+  slug          String        @unique
+  lang          String // "uk" | "en"
+  // Slug of the paired post in the other language — may be a TSX article in src/content/blog.
+  translationOf String?
+  title         String // SEO title ≤60, without " — Crossyarn"
+  heading       String // H1
+  description   String // meta description ≤155
+  tags          String        @default("[]")
+  coverAssetId  String?
+  coverAlt      String        @default("")
+  content       String        @default("{\"type\":\"doc\",\"content\":[]}")
+  status        ContentStatus @default(DRAFT)
+  publishedAt   DateTime?
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+  author        User          @relation(fields: [authorId], references: [id], onDelete: Restrict)
+
+  @@index([status, lang, publishedAt])
+  @@index([authorId])
+}
+
+// Uploaded image; files live in MEDIA_UPLOAD_DIR as <id>-<width>.webp.
+model MediaAsset {
+  id           String   @id @default(cuid())
+  ownerId      String
+  kind         String   @default("IMAGE")
+  originalName String
+  mime         String // source mime (image/jpeg|png|webp)
+  sizeBytes    Int
+  width        Int
+  height       Int
+  hash         String // sha256 of the original, for dedup
+  variants     String // JSON {"480":"<file>","960":"<file>","1600":"<file>"}
+  createdAt    DateTime @default(now())
+  owner        User     @relation(fields: [ownerId], references: [id], onDelete: Restrict)
+
+  @@index([hash])
+  @@index([ownerId, createdAt])
+}
+
 model SiteSettings {
-  id                  String   @id @default("singleton")
-  registrationOpen    Boolean  @default(true)
-  announcementBanner  String?
-  featuredPatternIds  Json     @default("[]")
-  updatedAt           DateTime @updatedAt
+  id                 String   @id @default("singleton")
+  registrationOpen   Boolean  @default(true)
+  announcementBanner String?
+  featuredPatternIds Json     @default("[]")
+  updatedAt          DateTime @updatedAt
 }
 
 enum PatternVisibility {
@@ -142,4 +231,17 @@ enum PatternImportStatus {
   PROCESSING
   READY
   FAILED
+}
+
+enum ContentStatus {
+  DRAFT
+  PUBLISHED
+  PENDING_REVIEW
+  REJECTED
+}
+
+enum Difficulty {
+  BEGINNER
+  INTERMEDIATE
+  ADVANCED
 }
