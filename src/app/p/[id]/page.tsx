@@ -68,6 +68,11 @@ export default async function PublicPatternPage({
 
   const pattern = result.pattern;
 
+  const relatedMasterClass = await db.masterClass.findFirst({
+    where: { mainPatternId: pattern.id, status: "PUBLISHED" },
+    select: { slug: true, title: true }
+  });
+
   const session = await getSession();
   const [likeCount, myLike] = await Promise.all([
     db.patternLike.count({ where: { patternId: id } }),
@@ -111,6 +116,7 @@ export default async function PublicPatternPage({
       likeCount={likeCount}
       likedByMe={Boolean(myLike)}
       isAuthenticated={Boolean(session)}
+      relatedMasterClass={relatedMasterClass}
     />
   );
 }

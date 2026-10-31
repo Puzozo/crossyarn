@@ -7,8 +7,11 @@
  */
 import { PrismaClient } from "@prisma/client";
 import { hashSync } from "bcryptjs";
+import { randomUUID } from "node:crypto";
+import sharp from "sharp";
 import { createEmptyPattern } from "../src/lib/patterns/model";
 import { validateContentDoc } from "../src/lib/content/schema";
+import { processMedia, writeMediaVariants } from "../src/lib/content/media";
 
 const TEST_EMAIL = "test@crossyarn.local";
 const TEST_PASSWORD = "test1234";
@@ -57,6 +60,34 @@ async function main() {
     console.log("Created pattern: Seed Pattern for MC");
   }
 
+  const existingMc = await db.masterClass.findUnique({
+    where: { slug: "vyazhemo-shapku-spicyami" },
+    select: { coverAssetId: true }
+  });
+  let coverId = existingMc?.coverAssetId ?? null;
+  if (!coverId) {
+    const coverBytes = await sharp({
+      create: { width: 1200, height: 630, channels: 3, background: { r: 196, g: 106, b: 79 } }
+    }).jpeg().toBuffer();
+    const processed = await processMedia(coverBytes);
+    coverId = randomUUID();
+    const variants = await writeMediaVariants(coverId, processed.variants);
+    await db.mediaAsset.create({
+      data: {
+        id: coverId,
+        ownerId: user.id,
+        kind: "IMAGE",
+        originalName: "cover.jpg",
+        mime: "image/jpeg",
+        sizeBytes: coverBytes.length,
+        width: processed.width,
+        height: processed.height,
+        hash: processed.hash,
+        variants: JSON.stringify(variants)
+      }
+    });
+  }
+
   const mcMaterials = JSON.stringify({
     yarn: ["Пряжа середньої толщини, 100г"],
     tools: ["Спиці №4"],
@@ -99,7 +130,9 @@ async function main() {
     where: { slug: "vyazhemo-shapku-spicyami" },
     update: {
       authorId: user.id,
-      title: "В'яжемо шапку спицями: майстер-клас зі схемою",
+      // SEO <title> template (buildContentMetadata) already appends ": майстер-клас зі схемою" —
+      // keep this field the plain display title so the H1/<title> don't double it up.
+      title: "В'яжемо шапку спицями",
       summary: "Проста в'язана шапка спицями за готовою схемою — покроково, для початківців.",
       difficulty: "BEGINNER",
       durationMinutes: 90,
@@ -107,13 +140,15 @@ async function main() {
       publishedAt: new Date(),
       mainPatternId: pattern.id,
       materials: mcMaterials,
-      content: masterClassContent
+      content: masterClassContent,
+      coverAssetId: coverId,
+      coverAlt: "В'язана шапка спицями"
     },
     create: {
       slug: "vyazhemo-shapku-spicyami",
       authorId: user.id,
       lang: "uk",
-      title: "В'яжемо шапку спицями: майстер-клас зі схемою",
+      title: "В'яжемо шапку спицями",
       summary: "Проста в'язана шапка спицями за готовою схемою — покроково, для початківців.",
       difficulty: "BEGINNER",
       durationMinutes: 90,
@@ -122,7 +157,9 @@ async function main() {
       mainPatternId: pattern.id,
       materials: mcMaterials,
       tags: JSON.stringify(["шапка", "спицями"]),
-      content: masterClassContent
+      content: masterClassContent,
+      coverAssetId: coverId,
+      coverAlt: "В'язана шапка спицями"
     }
   });
 

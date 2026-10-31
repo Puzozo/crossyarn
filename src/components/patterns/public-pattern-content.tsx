@@ -26,6 +26,7 @@ type Props = {
   likeCount: number;
   likedByMe: boolean;
   isAuthenticated: boolean;
+  relatedMasterClass: { slug: string; title: string } | null;
 };
 
 export function PublicPatternContent({
@@ -35,7 +36,8 @@ export function PublicPatternContent({
   author,
   likeCount,
   likedByMe,
-  isAuthenticated
+  isAuthenticated,
+  relatedMasterClass
 }: Props) {
   const { t } = useTranslation();
   const knitting = useKnittingProgress(
@@ -100,6 +102,17 @@ export function PublicPatternContent({
           </p>
         ) : null}
       </div>
+
+      {relatedMasterClass ? (
+        <Link
+          href={`/master-classes/${relatedMasterClass.slug}`}
+          className="block rounded-2xl border border-yarn-sand/50 bg-white/70 p-5 shadow-warm-sm hover:bg-yarn-cream/40 transition-colors"
+        >
+          <p className="text-xs uppercase tracking-wide text-yarn-warm-gray">{t("masterClass.relatedBlock.badge")}</p>
+          <p className="mt-1 font-display text-lg font-semibold text-yarn-charcoal">{relatedMasterClass.title}</p>
+          <p className="mt-1 text-sm text-yarn-terracotta">{t("masterClass.relatedBlock.cta")}</p>
+        </Link>
+      ) : null}
 
       <KnittingModeBar knitting={knitting} />
 

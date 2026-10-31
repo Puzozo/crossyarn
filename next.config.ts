@@ -5,11 +5,13 @@ import type { NextConfig } from "next";
 // Tighten script-src with nonces once an ad/analytics provider is finalized.
 const csp = [
   "default-src 'self'",
-  "img-src 'self' data: blob:",
+  // i.ytimg.com: YouTubeFacade's click-to-load thumbnail; youtube-nocookie.com: the iframe embed after click.
+  "img-src 'self' data: blob: https://i.ytimg.com",
   "style-src 'self' 'unsafe-inline'",
   "script-src 'self' 'unsafe-inline' 'unsafe-eval'",
   "connect-src 'self'",
   "font-src 'self' data:",
+  "frame-src 'self' https://www.youtube-nocookie.com",
   "frame-ancestors 'none'",
   "object-src 'none'",
   "base-uri 'self'",

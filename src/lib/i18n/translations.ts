@@ -467,6 +467,25 @@ export const translations = {
     "masterClass.video.watchOnYoutube": "Дивитися на YouTube",
     "masterClass.locked.title": "Контент доступний після покупки",
     "masterClass.locked.description": "Це преміум майстер-клас. Решта кроків і відео відкриються після оплати.",
+    "masterClass.relatedBlock.badge": "Майстер-клас",
+    "masterClass.relatedBlock.cta": "Переглянути майстер-клас",
+
+    // Master class public page (docs/master-classes-spec.md §9/§10)
+    "masterClass.breadcrumb.home": "Головна",
+    "masterClass.breadcrumb.catalog": "Майстер-класи",
+    "masterClass.difficulty.BEGINNER": "Початковий",
+    "masterClass.difficulty.INTERMEDIATE": "Середній",
+    "masterClass.difficulty.ADVANCED": "Просунутий",
+    "masterClass.duration": "{minutes} хв",
+    "masterClass.materials.title": "Матеріали",
+    "masterClass.materials.yarn": "Пряжа",
+    "masterClass.materials.tools": "Інструменти",
+    "masterClass.materials.other": "Інше",
+    "masterClass.mainPattern.title": "Основна схема",
+    "masterClass.gallery.title": "Готовий виріб",
+    "masterClass.tags.title": "Теги",
+    "masterClass.translation.uk": "Українською",
+    "masterClass.translation.en": "In English",
   },
   en: {
     // Nav / Header
@@ -934,6 +953,25 @@ export const translations = {
     "masterClass.video.watchOnYoutube": "Watch on YouTube",
     "masterClass.locked.title": "Content available after purchase",
     "masterClass.locked.description": "This is a premium tutorial. The remaining steps and videos unlock after purchase.",
+    "masterClass.relatedBlock.badge": "Tutorial",
+    "masterClass.relatedBlock.cta": "View tutorial",
+
+    // Master class public page (docs/master-classes-spec.md §9/§10)
+    "masterClass.breadcrumb.home": "Home",
+    "masterClass.breadcrumb.catalog": "Tutorials",
+    "masterClass.difficulty.BEGINNER": "Beginner",
+    "masterClass.difficulty.INTERMEDIATE": "Intermediate",
+    "masterClass.difficulty.ADVANCED": "Advanced",
+    "masterClass.duration": "{minutes} min",
+    "masterClass.materials.title": "Materials",
+    "masterClass.materials.yarn": "Yarn",
+    "masterClass.materials.tools": "Tools",
+    "masterClass.materials.other": "Other",
+    "masterClass.mainPattern.title": "Main pattern",
+    "masterClass.gallery.title": "Finished project",
+    "masterClass.tags.title": "Tags",
+    "masterClass.translation.uk": "Українською",
+    "masterClass.translation.en": "In English",
   }
 } as const;
 
