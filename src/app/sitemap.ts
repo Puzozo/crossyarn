@@ -42,6 +42,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     take: 5000
   });
 
+  const dbPosts = await db.post.findMany({
+    where: { status: "PUBLISHED" },
+    select: { slug: true, updatedAt: true },
+    take: 5000
+  });
+
   return [
     ...staticPages,
     ...patterns.map((p) => ({
@@ -75,6 +81,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ...getAllPosts().map((post) => ({
       url: `${SITE_URL}/blog/${post.slug}`,
       lastModified: new Date(post.date),
+      changeFrequency: "monthly" as const,
+      priority: 0.6
+    })),
+    ...dbPosts.map((post) => ({
+      url: `${SITE_URL}/blog/${post.slug}`,
+      lastModified: post.updatedAt,
       changeFrequency: "monthly" as const,
       priority: 0.6
     }))

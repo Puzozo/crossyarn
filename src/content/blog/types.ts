@@ -21,4 +21,8 @@ export type BlogPost = {
   body: ReactNode;
 };
 
-export type BlogPostSummary = Omit<BlogPost, "body">;
+export type BlogPostSummary = Omit<BlogPost, "body"> & {
+  /** Лише для DB-постів — обкладинка через /api/media (TSX-статей обкладинок немає). */
+  coverAssetId?: string | null;
+  coverAlt?: string;
+};

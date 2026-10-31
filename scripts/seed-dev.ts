@@ -55,6 +55,28 @@ async function main() {
     console.log("Created: Test Pattern");
   }
 
+  await db.post.upsert({
+    where: { slug: "seed-test-post" },
+    update: {},
+    create: {
+      authorId: user.id,
+      slug: "seed-test-post",
+      lang: "uk",
+      title: "Тестова стаття (seed)",
+      heading: "Тестова стаття для перевірки блогу",
+      description: "Seed-пост для автоматизованої перевірки UI блогу.",
+      content: JSON.stringify({
+        type: "doc",
+        content: [
+          { type: "paragraph", content: [{ type: "text", text: "Текст seed-поста для перевірки /blog." }] }
+        ]
+      }),
+      status: "PUBLISHED",
+      publishedAt: new Date()
+    }
+  });
+  console.log("Seeded: Post seed-test-post");
+
   console.log(`Seeded. Login: ${TEST_EMAIL} / ${TEST_PASSWORD} (admin)`);
 }
 
