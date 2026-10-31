@@ -2,6 +2,7 @@ import { db } from "@/lib/db";
 import { Language, translate } from "@/lib/i18n/translations";
 import { MediaImage } from "@/components/content/media-image";
 import { YouTubeFacade } from "@/components/content/youtube-facade";
+import { GalleryGrid } from "@/components/content/gallery-grid";
 import type { ContentDoc, TopLevelBlock, InlineNode, TextNode, TextMark } from "@/lib/content/types";
 
 type ContentRendererProps = { doc: ContentDoc; lang: Language };
@@ -93,11 +94,13 @@ function renderBlock(block: TopLevelBlock, key: React.Key, ctx: RenderContext): 
       );
     case "gallery":
       return (
-        <div key={key} className="grid grid-cols-2 gap-3 sm:grid-cols-3">
-          {block.attrs.items.map((item, j) => (
-            <MediaImage key={j} assetId={item.assetId} alt={item.alt} sizes="33vw" />
-          ))}
-        </div>
+        <GalleryGrid
+          key={key}
+          items={block.attrs.items}
+          lang={ctx.lang}
+          className="grid grid-cols-2 gap-3 sm:grid-cols-3"
+          thumbClassName="relative aspect-square overflow-hidden rounded-lg border-none bg-transparent cursor-pointer"
+        />
       );
     case "step": {
       const n = ctx.nextStepNumber();

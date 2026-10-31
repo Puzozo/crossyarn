@@ -13,6 +13,7 @@ import { parseStoredContent } from "@/lib/content/repo-shared";
 import { materialsSchema, DEFAULT_MATERIALS, type Materials } from "@/lib/content/materials";
 import { gallerySchema, type GalleryItem } from "@/lib/content/gallery";
 import { ContentRenderer } from "@/components/content/content-renderer";
+import { GalleryGrid } from "@/components/content/gallery-grid";
 import { LockedContentCta } from "@/components/content/locked-content-cta";
 import { Button } from "@/components/ui/button";
 
@@ -308,13 +309,7 @@ export default async function MasterClassPage({
           <h2 className="font-display text-lg font-semibold text-yarn-charcoal">
             {translate(lang, "masterClass.gallery.title")}
           </h2>
-          <div className="mt-3 grid grid-cols-2 gap-3 sm:grid-cols-3">
-            {gallery.map((item, i) => (
-              <div key={i} className="relative aspect-square overflow-hidden rounded-lg border border-yarn-sand/40 bg-white">
-                <Image src={`/api/media/${item.assetId}/960`} alt={item.alt} fill unoptimized className="object-cover" />
-              </div>
-            ))}
-          </div>
+          <GalleryGrid items={gallery} lang={lang} className="mt-3 grid grid-cols-2 gap-3 sm:grid-cols-3" />
         </div>
       ) : null}
 
