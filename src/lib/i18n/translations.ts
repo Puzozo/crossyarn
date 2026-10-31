@@ -457,6 +457,16 @@ export const translations = {
     "premium.thanks": "Дякуємо за тестування! 🧶",
     "premium.backToPatterns": "← До моїх схем",
     "premium.explore": "Досліджуйте схеми",
+
+    // Master class renderer (docs/master-classes-spec.md §5)
+    "masterClass.step": "Крок {number}",
+    "masterClass.schemeLabel": "Схема",
+    "masterClass.pattern.unavailable": "Схема недоступна",
+    "masterClass.pattern.openPattern": "Відкрити схему",
+    "masterClass.video.play": "Відтворити відео",
+    "masterClass.video.watchOnYoutube": "Дивитися на YouTube",
+    "masterClass.locked.title": "Контент доступний після покупки",
+    "masterClass.locked.description": "Це преміум майстер-клас. Решта кроків і відео відкриються після оплати.",
   },
   en: {
     // Nav / Header
@@ -914,7 +924,32 @@ export const translations = {
     "premium.thanks": "Thanks for testing! 🧶",
     "premium.backToPatterns": "← Back to my patterns",
     "premium.explore": "Explore patterns",
+
+    // Master class renderer (docs/master-classes-spec.md §5)
+    "masterClass.step": "Step {number}",
+    "masterClass.schemeLabel": "Pattern",
+    "masterClass.pattern.unavailable": "Pattern unavailable",
+    "masterClass.pattern.openPattern": "Open pattern",
+    "masterClass.video.play": "Play video",
+    "masterClass.video.watchOnYoutube": "Watch on YouTube",
+    "masterClass.locked.title": "Content available after purchase",
+    "masterClass.locked.description": "This is a premium tutorial. The remaining steps and videos unlock after purchase.",
   }
 } as const;
 
 export type TranslationKey = keyof typeof translations.uk;
+
+/**
+ * Same lookup + {param} substitution as useTranslation()'s t(), but usable outside
+ * React (server components) and independent of the viewer's UI language toggle —
+ * content language (MasterClass.lang / Post.lang) is passed in explicitly.
+ */
+export function translate(lang: Language, key: TranslationKey, params?: Record<string, string | number>): string {
+  let value: string = translations[lang][key] ?? key;
+  if (params) {
+    for (const [k, v] of Object.entries(params)) {
+      value = value.replace(`{${k}}`, String(v));
+    }
+  }
+  return value;
+}
