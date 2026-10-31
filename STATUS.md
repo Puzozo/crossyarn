@@ -5,13 +5,14 @@
 - [ ] P4d (low): перевірити малювання свайпом на телефоні
 - [ ] Дрібне: рядок у CLAUDE.md про режим в'язання не закомічено
 - [ ] P5: кластер D (ажур) — supporting-статті (shawl/scarf lace deep-dives)
-- [ ] mc-admin: admin-редактор МК/постів §8 (Tiptap, списки, пікери, публікація)
-- [ ] mc-admin-ui: admin-UI поверх готового адмін-API (списки, редактор, пікери, діалоги публікації)
+- [ ] mc-admin: admin-редактор МК/постів §8 (Tiptap, пікери, публікація) — списки вже є (`/admin/master-classes`, `/admin/posts`)
+- [ ] (low) Admin-панель: sidebar не ховається/не колапсує на мобільних (375px) — внутрішній горизонтальний скрол `main`, видно на всіх `/admin/*` сторінках (не специфічно для mc-admin-list)
 ## Blocked
 - P2 billing WayForPay → перенесено на тиждень 2026-11-02 (йде оформлення ФОП); Universal Premium згорає 2026-11-15 — якщо не встигаємо, продовжити дату
 - Billing: мерчант-ключі WayForPay/LiqPay (ФОП) — dry-run mock покриває
 
 ## Done recently
+- mc-admin-list: пункти «Майстер-класи»/«Пости» в admin-sidebar, темний `AdminConfirmDialog`, `AdminContentList` (таблиця ≥768 / картки mobile, бейджі статусу, Опублікувати/Зняти/Видалити з підтвердженням), сторінки `/admin/master-classes` і `/admin/posts` (фільтр status/lang/q+пагінація в URL, кнопка «Створити»→POST→редірект на ще не збудований `/admin/.../[id]`, тож там очікувано 404). Перевірено Playwright: показує seed-записи, Зняти/Опублікувати/Видалити оновлюють список без перезавантаження, неавторизований → редірект на `/admin/login`, 375px без скролу сторінки (сам admin sidebar не адаптивний — див. Next). tsc+eslint чисті
 - mc-lightbox: `GalleryLightbox` (портал, role=dialog, Esc/←→, лічильник, свайп, блок скролу body, повернення фокуса на тригер) + клієнтська `GalleryGrid`, підключені в МК-сторінці («Готовий виріб») і в `case "gallery"` content-renderer; ключі `masterClass.lightbox.*`. Перевірено Playwright (375/1280): клік+Enter відкриває, Esc/клік по фону закриває, стрілки й свайп гортають, фокус повертається, body overflow lock/unlock, 0 помилок у консолі (крім стороннього таймауту i.ytimg.com). tsc+eslint чисті
 - mc-catalog-nav: публічний `/master-classes` (spec §9/§10) — фільтри level/lang через query (2 ряди пілюль, зміна фільтра скидає page), 12/сторінку, `page>totalPages → notFound()`, canonical: з фільтрами → `/master-classes` без query, `?page=N>1` без фільтрів → self-canonical + «— сторінка N»; `loading.tsx` 6 скелетонів; порожні стани («скоро з'являться» / «Нічого не знайдено» + «Скинути фільтри»); nav.masterClasses у шапці (desktop+мобільне) і футері; `/master-classes` + PUBLISHED МК у sitemap.ts з `alternates.languages`. Запит каталогу не вибирає `content`. Перевірено curl: canonical collapse/suffix, 404 на page=2, картка з seed-МК, нав-посилання в HTML. tsc+eslint чисті
 - mc-catalog (компоненти): `src/components/master-classes/level-badge.tsx` (серверний LevelBadge, та сама мапа ключів difficulty що в [slug]/page.tsx) + `master-class-card.tsx` (серверна картка сітки: aspect-[4/3] обкладинка object-cover, LevelBadge absolute left-2 top-2, трек-тайм + мова) — тил під `/master-classes` каталог. tsc + eslint чисті

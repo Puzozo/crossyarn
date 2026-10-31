@@ -15,6 +15,25 @@ const navItems = [
     )
   },
   {
+    href: "/admin/master-classes",
+    label: "Майстер-класи",
+    icon: (
+      <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M3 3h12v12H3z" />
+        <path d="M6 7h6M6 10h6M6 13h3" />
+      </svg>
+    )
+  },
+  {
+    href: "/admin/posts",
+    label: "Пости",
+    icon: (
+      <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M4 3h10v12l-5-3-5 3z" />
+      </svg>
+    )
+  },
+  {
     href: "/admin/symbols",
     label: "Позначки",
     icon: (
