@@ -4,6 +4,7 @@ export const translations = {
   uk: {
     // Nav / Header
     "nav.patterns": "Схеми",
+    "nav.masterClasses": "Майстер-класи",
     "nav.account": "Акаунт",
     "nav.signIn": "Увійти",
     "nav.signUp": "Реєстрація",
@@ -13,6 +14,7 @@ export const translations = {
     "footer.about": "Crossyarn — платформа для спільноти в'язарів. Діліться схемами, надихайтесь та створюйте разом.",
     "footer.linksLabel": "Навігація",
     "footer.explore": "Каталог",
+    "footer.masterClasses": "Майстер-класи",
     "footer.blog": "Блог",
 
     // Blog index
@@ -486,10 +488,28 @@ export const translations = {
     "masterClass.tags.title": "Теги",
     "masterClass.translation.uk": "Українською",
     "masterClass.translation.en": "In English",
+
+    // Master class catalog (docs/master-classes-spec.md §9/§10)
+    "masterClass.catalog.title": "Майстер-класи",
+    "masterClass.catalog.intro": "Покрокові відеоуроки та схеми в'язання — від базових петель до складних жакардових узорів.",
+    "masterClass.catalog.filterLevel": "Рівень",
+    "masterClass.catalog.filterLang": "Мова",
+    "masterClass.catalog.levelAll": "Усі рівні",
+    "masterClass.catalog.langAll": "Усі",
+    "masterClass.catalog.langUk": "UA",
+    "masterClass.catalog.langEn": "EN",
+    "masterClass.catalog.empty": "Майстер-класи скоро з'являться",
+    "masterClass.catalog.noResults": "Нічого не знайдено",
+    "masterClass.catalog.resetFilters": "Скинути фільтри",
+    "masterClass.catalog.prevPage": "Назад",
+    "masterClass.catalog.nextPage": "Далі",
+    "masterClass.catalog.pageOf": "{page} / {total}",
+    "masterClass.catalog.pageTitleSuffix": " — сторінка {page}",
   },
   en: {
     // Nav / Header
     "nav.patterns": "Patterns",
+    "nav.masterClasses": "Tutorials",
     "nav.account": "Account",
     "nav.signIn": "Sign In",
     "nav.signUp": "Sign Up",
@@ -499,6 +519,7 @@ export const translations = {
     "footer.about": "Crossyarn — a knitting community platform. Share patterns, get inspired, and create together.",
     "footer.linksLabel": "Navigation",
     "footer.explore": "Explore",
+    "footer.masterClasses": "Tutorials",
     "footer.blog": "Blog",
 
     // Blog index
@@ -972,6 +993,23 @@ export const translations = {
     "masterClass.tags.title": "Tags",
     "masterClass.translation.uk": "Українською",
     "masterClass.translation.en": "In English",
+
+    // Master class catalog (docs/master-classes-spec.md §9/§10)
+    "masterClass.catalog.title": "Tutorials",
+    "masterClass.catalog.intro": "Step-by-step video tutorials and knitting charts — from basic stitches to advanced jacquard patterns.",
+    "masterClass.catalog.filterLevel": "Level",
+    "masterClass.catalog.filterLang": "Language",
+    "masterClass.catalog.levelAll": "All levels",
+    "masterClass.catalog.langAll": "All",
+    "masterClass.catalog.langUk": "UA",
+    "masterClass.catalog.langEn": "EN",
+    "masterClass.catalog.empty": "Tutorials are coming soon",
+    "masterClass.catalog.noResults": "Nothing found",
+    "masterClass.catalog.resetFilters": "Reset filters",
+    "masterClass.catalog.prevPage": "Back",
+    "masterClass.catalog.nextPage": "Next",
+    "masterClass.catalog.pageOf": "{page} / {total}",
+    "masterClass.catalog.pageTitleSuffix": " — page {page}",
   }
 } as const;
 
