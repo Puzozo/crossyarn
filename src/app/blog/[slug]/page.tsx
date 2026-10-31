@@ -3,7 +3,7 @@ import { notFound } from "next/navigation";
 import { getAllPosts, getPostBySlug, getPostTranslations } from "@/content/blog";
 import { SITE_URL } from "@/lib/site";
 import { db } from "@/lib/db";
-import type { Language } from "@/lib/i18n/translations";
+import { translate, type Language } from "@/lib/i18n/translations";
 import { buildContentMetadata } from "@/lib/seo/content-metadata";
 import { parseStoredContent } from "@/lib/content/repo-shared";
 import { ContentRenderer } from "@/components/content/content-renderer";
@@ -60,29 +60,21 @@ export async function generateMetadata({
   const tsxPost = getPostBySlug(slug);
   if (tsxPost) {
     const langs = getPostTranslations(tsxPost);
-    return {
+    const otherLang: Language = tsxPost.lang === "uk" ? "en" : "uk";
+    const otherSlug = langs[otherLang];
+    const translation = otherSlug ? { lang: otherLang, path: `/blog/${otherSlug}` } : null;
+
+    return buildContentMetadata({
+      path: `/blog/${tsxPost.slug}`,
+      lang: tsxPost.lang,
       title: `${tsxPost.title} — Crossyarn`,
       description: tsxPost.description,
-      alternates: {
-        canonical: `/blog/${tsxPost.slug}`,
-        ...(langs.uk && langs.en
-          ? {
-              languages: {
-                uk: `/blog/${langs.uk}`,
-                en: `/blog/${langs.en}`,
-                "x-default": `/blog/${langs.uk}`
-              }
-            }
-          : {})
-      },
-      openGraph: {
-        type: "article",
-        title: tsxPost.title,
-        description: tsxPost.description,
-        url: `/blog/${tsxPost.slug}`,
-        publishedTime: tsxPost.date
-      }
-    };
+      status: "PUBLISHED",
+      publishedAt: new Date(tsxPost.date),
+      updatedAt: new Date(tsxPost.date),
+      coverUrl: null,
+      translation
+    });
   }
 
   const post = await loadDbPost(slug);
@@ -119,9 +111,20 @@ export default async function BlogArticlePage({
       description: tsxPost.description,
       datePublished: tsxPost.date,
       dateModified: tsxPost.date,
+      inLanguage: tsxPost.lang,
       author: { "@type": "Organization", name: "Crossyarn" },
       publisher: { "@type": "Organization", name: "Crossyarn" },
       mainEntityOfPage: `${SITE_URL}/blog/${tsxPost.slug}`
+    };
+
+    const breadcrumbJsonLd = {
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      itemListElement: [
+        { "@type": "ListItem", position: 1, name: translate(tsxPost.lang, "masterClass.breadcrumb.home"), item: SITE_URL },
+        { "@type": "ListItem", position: 2, name: translate(tsxPost.lang, "blog.title"), item: `${SITE_URL}/blog` },
+        { "@type": "ListItem", position: 3, name: tsxPost.heading }
+      ]
     };
 
     return (
@@ -129,6 +132,10 @@ export default async function BlogArticlePage({
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
         />
         <h1 className="font-display text-3xl sm:text-4xl font-bold text-yarn-charcoal">
           {tsxPost.heading}
@@ -166,11 +173,25 @@ export default async function BlogArticlePage({
     mainEntityOfPage: `${SITE_URL}/blog/${post.slug}`
   };
 
+  const breadcrumbJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: translate(lang, "masterClass.breadcrumb.home"), item: SITE_URL },
+      { "@type": "ListItem", position: 2, name: translate(lang, "blog.title"), item: `${SITE_URL}/blog` },
+      { "@type": "ListItem", position: 3, name: post.heading }
+    ]
+  };
+
   return (
     <article lang={post.lang} className="mx-auto max-w-3xl">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
       />
       <h1 className="font-display text-3xl sm:text-4xl font-bold text-yarn-charcoal">
         {post.heading}

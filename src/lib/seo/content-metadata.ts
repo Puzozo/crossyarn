@@ -37,6 +37,25 @@ export function buildContentMetadata(input: ContentMetadataInput): Metadata {
   }
   languages["x-default"] = abs(xDefaultPath);
 
+  const openGraph: Metadata["openGraph"] = {
+    type: "article",
+    title: input.title,
+    description: input.description,
+    url: input.path,
+    locale: input.lang === "en" ? "en_US" : "uk_UA",
+    publishedTime: input.publishedAt ? input.publishedAt.toISOString() : undefined,
+    modifiedTime: input.updatedAt.toISOString()
+  };
+  const twitter: Metadata["twitter"] = {
+    card: "summary_large_image",
+    title: input.title,
+    description: input.description
+  };
+  if (input.coverUrl) {
+    openGraph.images = [{ url: input.coverUrl, width: 1200 }];
+    twitter.images = [input.coverUrl];
+  }
+
   const metadata: Metadata = {
     title: input.title,
     description: input.description,
@@ -44,22 +63,8 @@ export function buildContentMetadata(input: ContentMetadataInput): Metadata {
       canonical: input.path,
       languages
     },
-    openGraph: {
-      type: "article",
-      title: input.title,
-      description: input.description,
-      url: input.path,
-      locale: input.lang === "en" ? "en_US" : "uk_UA",
-      publishedTime: input.publishedAt ? input.publishedAt.toISOString() : undefined,
-      modifiedTime: input.updatedAt.toISOString(),
-      images: input.coverUrl ? [{ url: input.coverUrl, width: 1200 }] : undefined
-    },
-    twitter: {
-      card: "summary_large_image",
-      title: input.title,
-      description: input.description,
-      images: input.coverUrl ? [input.coverUrl] : undefined
-    }
+    openGraph,
+    twitter
   };
 
   if (input.status !== "PUBLISHED") {
