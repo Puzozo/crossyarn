@@ -5,6 +5,7 @@ import Link from "next/link";
 import { CollapsiblePanel } from "@/components/ui/collapsible-panel";
 import { ImageUploadDialog } from "@/components/admin/content/image-upload-dialog";
 import { PatternPickerDialog } from "@/components/admin/content/pattern-picker-dialog";
+import { BlockEditor } from "@/components/admin/content/block-editor";
 import { slugify } from "@/lib/content/slug";
 
 export type MasterClassEditorData = {
@@ -178,7 +179,6 @@ export function ContentEditor(props: Props) {
   const [saveState, setSaveState] = useState<"saved" | "unsaved" | "saving" | "error">("saved");
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [mobileTab, setMobileTab] = useState<"content" | "settings">("content");
-  // Задекларовано для task 3 (textarea вмісту), поки не використовується.
   const [contentError, setContentError] = useState<string | null>(null);
   const [coverDialogOpen, setCoverDialogOpen] = useState(false);
   const [galleryDialogOpen, setGalleryDialogOpen] = useState(false);
@@ -428,16 +428,7 @@ export function ContentEditor(props: Props) {
       <div className="md:grid md:grid-cols-[1fr_360px] gap-6 p-4">
         <main className={mobileTab === "content" ? "block" : "hidden md:block"}>
           <div id="field-content" className="rounded-xl border border-gray-800 p-4 space-y-2">
-            <label className="block text-xs text-gray-400">Вміст (JSON, тимчасово — блочний редактор буде в наступній фічі)</label>
-            <textarea
-              value={form.content}
-              onChange={(e) => updateForm((f) => ({ ...f, content: e.target.value }))}
-              rows={20}
-              className={
-                "w-full rounded-lg bg-gray-800 border px-3 py-2 text-xs font-mono text-gray-200 focus:outline-none " +
-                (contentError ? "border-red-600" : "border-gray-700 focus:border-indigo-500")
-              }
-            />
+            <BlockEditor value={form.content} onChange={(json) => updateForm((f) => ({ ...f, content: JSON.stringify(json) }))} />
             {contentError && <p className="text-xs text-red-400">{contentError}</p>}
           </div>
         </main>
