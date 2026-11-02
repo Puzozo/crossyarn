@@ -317,10 +317,22 @@ export function ContentEditor(props: Props) {
         setErrorMessage("Не вдалося зберегти зміни");
         return;
       }
+      // Publishing bumps the row's updatedAt; without it the next PATCH is rejected as stale (409).
+      let updatedAt: string | undefined;
+      try {
+        updatedAt = ((await res.json()) as { updatedAt?: string }).updatedAt;
+      } catch {
+        // keep the old value
+      }
       if (wasPublished) {
-        setForm((f) => ({ ...f, status: "DRAFT" }));
+        setForm((f) => ({ ...f, status: "DRAFT", updatedAt: updatedAt ?? f.updatedAt }));
       } else {
-        setForm((f) => ({ ...f, status: "PUBLISHED", publishedAt: new Date().toISOString() }));
+        setForm((f) => ({
+          ...f,
+          status: "PUBLISHED",
+          publishedAt: new Date().toISOString(),
+          updatedAt: updatedAt ?? f.updatedAt
+        }));
       }
     } finally {
       setPublishBusy(false);
@@ -350,7 +362,7 @@ export function ContentEditor(props: Props) {
       <span className="text-xs text-emerald-400">Збережено</span>
     ) : (
       <span title={errorMessage ?? undefined} className="text-xs text-red-400">
-        Помилка збереження
+        Помилка збереження{errorMessage ? ": " + errorMessage : ""}
       </span>
     );
 
