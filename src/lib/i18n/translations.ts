@@ -475,6 +475,7 @@ export const translations = {
     // Master class public page (docs/master-classes-spec.md §9/§10)
     "masterClass.breadcrumb.home": "Головна",
     "masterClass.breadcrumb.catalog": "Майстер-класи",
+    "masterClass.draftBanner": "Перегляд чернетки — видно лише адміністраторам",
     "masterClass.difficulty.BEGINNER": "Початковий",
     "masterClass.difficulty.INTERMEDIATE": "Середній",
     "masterClass.difficulty.ADVANCED": "Просунутий",
@@ -984,6 +985,7 @@ export const translations = {
     // Master class public page (docs/master-classes-spec.md §9/§10)
     "masterClass.breadcrumb.home": "Home",
     "masterClass.breadcrumb.catalog": "Tutorials",
+    "masterClass.draftBanner": "Draft preview — visible to admins only",
     "masterClass.difficulty.BEGINNER": "Beginner",
     "masterClass.difficulty.INTERMEDIATE": "Intermediate",
     "masterClass.difficulty.ADVANCED": "Advanced",
