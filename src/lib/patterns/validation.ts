@@ -10,6 +10,7 @@ const hexColor = z.string().regex(/^#[0-9a-fA-F]{3,8}$/);
 // JSON body is rejected instead of exhausting memory during validation.
 const MAX_GRID = 200;
 const MAX_ID = 200;
+const MAX_RAPPORT_MARKS = 200;
 // All symbol images in one document together (each is ≤300KB on its own).
 const MAX_DOCUMENT_IMAGE_BYTES = 4_000_000;
 
@@ -70,6 +71,19 @@ export const patternDocumentSchema = z.object({
       })
     )
     .max(100)
+    .optional(),
+  rapportMarks: z
+    .array(
+      z.object({
+        id: z.string().min(1).max(MAX_ID),
+        row: z.number().int().min(0),
+        col: z.number().int().min(0),
+        width: z.number().int().positive().max(MAX_GRID),
+        height: z.number().int().positive().max(MAX_GRID),
+        rapportId: z.string().min(1).max(MAX_ID).optional()
+      })
+    )
+    .max(MAX_RAPPORT_MARKS)
     .optional()
 }).superRefine((doc, ctx) => {
   // Renderers index cells[row][col] for row < height, col < width; a mismatched
@@ -89,6 +103,12 @@ export const patternDocumentSchema = z.object({
   const imageBytes = doc.symbols.reduce((sum, symbol) => sum + (symbol.imageData?.length ?? 0), 0);
   if (imageBytes > MAX_DOCUMENT_IMAGE_BYTES) {
     ctx.addIssue({ code: "custom", message: "symbol images too large in total", path: ["symbols"] });
+  }
+  for (const mark of doc.rapportMarks ?? []) {
+    if (mark.row < 0 || mark.row + mark.height > doc.height || mark.col < 0 || mark.col + mark.width > doc.width) {
+      ctx.addIssue({ code: "custom", message: "rapportMarks out of bounds", path: ["rapportMarks"] });
+      return;
+    }
   }
 });
 

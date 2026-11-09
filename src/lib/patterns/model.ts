@@ -32,6 +32,15 @@ export type Rapport = {
   cells: PatternCell[][];
 };
 
+export type RapportMark = {
+  id: string;
+  row: number;
+  col: number;
+  width: number;
+  height: number;
+  rapportId?: string;
+};
+
 export type PatternPaletteColor = {
   id: string;
   name: string;
@@ -54,6 +63,7 @@ export type PatternDocument = {
     skipPurlRows?: boolean;
   };
   rapports?: Rapport[];
+  rapportMarks?: RapportMark[];
 };
 
 export const DEFAULT_SYMBOLS: PatternSymbol[] = [

@@ -1,7 +1,7 @@
 "use client";
 
 import { create } from "zustand";
-import { PatternDocument, PatternGrid, PatternSymbol, Rapport, PatternCell } from "@/lib/patterns/model";
+import { PatternDocument, PatternGrid, PatternSymbol, Rapport, RapportMark, PatternCell } from "@/lib/patterns/model";
 
 function getSymbolWidth(symbolId: string, symbols: PatternSymbol[]): number {
   return symbols.find((s) => s.id === symbolId)?.width ?? 1;
@@ -42,6 +42,18 @@ function findAndClearOccupyingSymbol(cells: PatternGrid, symbols: PatternSymbol[
       clearMultiCellSymbol(cells, row, col, width, height, defaultColor);
     }
   }
+}
+
+function clipRapportMarks(marks: RapportMark[] | undefined, width: number, height: number): RapportMark[] | undefined {
+  if (!marks) return marks;
+  return marks
+    .map((m) => ({ ...m, width: Math.min(m.width, width - m.col), height: Math.min(m.height, height - m.row) }))
+    .filter((m) => m.row >= 0 && m.col >= 0 && m.row < height && m.col < width && m.width > 0 && m.height > 0);
+}
+
+function shiftRapportMarks(marks: RapportMark[] | undefined, dRow: number, dCol: number): RapportMark[] | undefined {
+  if (!marks) return marks;
+  return marks.map((m) => ({ ...m, row: m.row + dRow, col: m.col + dCol }));
 }
 
 /**
@@ -88,6 +100,10 @@ function paintOneCellInto(
 
 function nanoid() {
   return Math.random().toString(36).slice(2, 10) + Date.now().toString(36);
+}
+
+function markId() {
+  return "mark-" + nanoid();
 }
 
 export type ToastData = {
@@ -187,6 +203,9 @@ type EditorState = {
   endSelection: () => void;
   clearSelection: () => void;
   saveSelectionAsRapport: (name: string) => void;
+  markSelectionAsRapport: () => void;
+  removeRapportMark: (id: string) => void;
+  clearRapportMarks: () => void;
   deleteRapport: (id: string) => void;
 
   startRapportInsert: (id: string) => void;
@@ -442,6 +461,7 @@ export const usePatternEditorStore = create<EditorState>((set, get) => ({
 
     next.width = w;
     next.height = h;
+    next.rapportMarks = clipRapportMarks(next.rapportMarks, w, h);
     set({ pattern: next, history: [...state.history, previous], future: [] });
   },
 
@@ -458,6 +478,9 @@ export const usePatternEditorStore = create<EditorState>((set, get) => ({
     else if (edge === "bottom") { next.cells = [...next.cells, emptyRow()]; next.height += 1; }
     else if (edge === "left") { next.cells = next.cells.map((row) => [emptyCell(), ...row]); next.width += 1; }
     else { next.cells = next.cells.map((row) => [...row, emptyCell()]); next.width += 1; }
+
+    if (edge === "top") next.rapportMarks = shiftRapportMarks(next.rapportMarks, 1, 0);
+    else if (edge === "left") next.rapportMarks = shiftRapportMarks(next.rapportMarks, 0, 1);
 
     set({ pattern: next, history: [...state.history, prev], future: [] });
   },
@@ -476,6 +499,10 @@ export const usePatternEditorStore = create<EditorState>((set, get) => ({
     else if (edge === "bottom") { next.cells = next.cells.slice(0, -1); next.height -= 1; }
     else if (edge === "left") { next.cells = next.cells.map((row) => row.slice(1)); next.width -= 1; }
     else { next.cells = next.cells.map((row) => row.slice(0, -1)); next.width -= 1; }
+
+    if (edge === "top") next.rapportMarks = clipRapportMarks(shiftRapportMarks(next.rapportMarks, -1, 0), next.width, next.height);
+    else if (edge === "left") next.rapportMarks = clipRapportMarks(shiftRapportMarks(next.rapportMarks, 0, -1), next.width, next.height);
+    else next.rapportMarks = clipRapportMarks(next.rapportMarks, next.width, next.height);
 
     set({ pattern: next, history: [...state.history, prev], future: [] });
   },
@@ -603,6 +630,8 @@ export const usePatternEditorStore = create<EditorState>((set, get) => ({
     const previous = clonePattern(state.pattern);
     const next = clonePattern(state.pattern);
     next.rapports = [...(next.rapports ?? []), rapport];
+    const mark: RapportMark = { id: markId(), row: r1, col: c1, width: rapport.width, height: rapport.height, rapportId: rapport.id };
+    next.rapportMarks = [...(next.rapportMarks ?? []), mark];
 
     set({
       pattern: next,
@@ -612,6 +641,58 @@ export const usePatternEditorStore = create<EditorState>((set, get) => ({
       selectionEnd: null,
       isSelectionMode: false,
       isSelecting: false
+    });
+  },
+
+  markSelectionAsRapport: () => {
+    const state = get();
+    if (!state.pattern || !state.selectionStart || !state.selectionEnd) return;
+
+    // Bounds already expanded by endSelection
+    const r1 = Math.min(state.selectionStart[0], state.selectionEnd[0]);
+    const c1 = Math.min(state.selectionStart[1], state.selectionEnd[1]);
+    const width = Math.abs(state.selectionEnd[1] - state.selectionStart[1]) + 1;
+    const height = Math.abs(state.selectionEnd[0] - state.selectionStart[0]) + 1;
+
+    const previous = clonePattern(state.pattern);
+    const next = clonePattern(state.pattern);
+    const mark: RapportMark = { id: markId(), row: r1, col: c1, width, height };
+    next.rapportMarks = [...(next.rapportMarks ?? []), mark];
+
+    set({
+      pattern: next,
+      history: [...state.history, previous],
+      future: [],
+      selectionStart: null,
+      selectionEnd: null,
+      isSelectionMode: false,
+      isSelecting: false
+    });
+  },
+
+  removeRapportMark: (id: string) => {
+    const state = get();
+    if (!state.pattern) return;
+    const previous = clonePattern(state.pattern);
+    const next = clonePattern(state.pattern);
+    next.rapportMarks = (next.rapportMarks ?? []).filter((m) => m.id !== id);
+    set({
+      pattern: next,
+      history: [...state.history, previous],
+      future: []
+    });
+  },
+
+  clearRapportMarks: () => {
+    const state = get();
+    if (!state.pattern) return;
+    const previous = clonePattern(state.pattern);
+    const next = clonePattern(state.pattern);
+    next.rapportMarks = [];
+    set({
+      pattern: next,
+      history: [...state.history, previous],
+      future: []
     });
   },
 
@@ -729,6 +810,9 @@ export const usePatternEditorStore = create<EditorState>((set, get) => ({
         }
       }
     }
+
+    const insertedMark: RapportMark = { id: markId(), row: anchorRow, col: anchorCol, width: insertWidth, height: insertHeight, rapportId: state.rapportInsertId };
+    next.rapportMarks = [...(next.rapportMarks ?? []), insertedMark];
 
     set({
       pattern: next,
