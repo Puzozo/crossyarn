@@ -15,9 +15,9 @@ export function PatternLegend({ usedSymbols }: { usedSymbols: PatternSymbol[] })
       style={{ breakInside: "avoid", pageBreakInside: "avoid" }}
     >
       <h3 className="text-sm font-semibold text-yarn-charcoal">{t("print.legend")}</h3>
-      <div className="mt-3 grid grid-cols-2 gap-x-8 gap-y-2 text-sm md:grid-cols-3 lg:grid-cols-4">
+      <div className="mt-3 grid grid-cols-2 gap-x-8 gap-y-2 text-sm md:grid-cols-3 lg:grid-cols-4 print:grid-cols-2">
         {usedSymbols.map((symbol) => (
-          <div key={symbol.id} className="flex items-center gap-3">
+          <div key={symbol.id} className="flex items-center gap-3 min-w-0">
             <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg border border-yarn-sand bg-white overflow-hidden">
               {symbol.imageData ? (
                 <Image
@@ -31,7 +31,7 @@ export function PatternLegend({ usedSymbols }: { usedSymbols: PatternSymbol[] })
                 <span className="text-sm font-semibold text-yarn-charcoal">{symbol.glyph}</span>
               )}
             </span>
-            <span className="text-yarn-charcoal">
+            <span className="text-yarn-charcoal min-w-0 break-words">
               <span className="font-medium">{symbol.label}</span>
               {symbol.description && symbol.description !== symbol.label ? (
                 <span className="text-yarn-warm-gray"> — {symbol.description}</span>

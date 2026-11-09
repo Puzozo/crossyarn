@@ -458,19 +458,19 @@ export function PatternEditor({ patternId, initialPattern, title, description, i
               return (
                 <div key={symbol.id} className="group relative">
                   <button type="button" onClick={() => setSelectedSymbolId(symbol.id)}
-                    className={`rounded-lg border px-2.5 py-1.5 text-sm transition-all duration-150 ${
+                    className={`max-w-[180px] rounded-lg border px-2.5 py-1.5 text-sm transition-all duration-150 ${
                       selectedSymbolId === symbol.id
                         ? "border-yarn-terracotta bg-yarn-terracotta-light text-yarn-terracotta shadow-warm-sm"
                         : "border-yarn-sand/60 bg-white hover:border-yarn-terracotta/40 hover:bg-yarn-terracotta-light/30"
                     }`}
-                    title={symbol.description}>
+                    title={symbol.description && symbol.description !== symbol.label ? `${symbol.label} — ${symbol.description}` : symbol.label}>
                     <span className="flex items-center gap-1.5">
                       {symbol.imageData ? (
                         <Image src={symbol.imageData} alt={symbol.label} width={20} height={20} className="object-contain" />
                       ) : (
                         <span className="inline-flex min-w-5 justify-center font-mono">{symbol.glyph}</span>
                       )}
-                      <span className="text-xs">{symbol.label}</span>
+                      <span className="text-xs truncate max-w-[110px]">{symbol.label}</span>
                       {isUnknown && (
                         <span className="rounded-full bg-amber-100 px-1 py-0.5 text-[9px] font-bold text-amber-700">?</span>
                       )}

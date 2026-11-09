@@ -215,8 +215,8 @@ export function OfficialSymbolManager({
                 <div className="flex-1 min-w-0">
                   <div className="flex items-start justify-between gap-2">
                     <div>
-                      <div className="text-white font-medium truncate">{s.name}</div>
-                      <div className="text-gray-400 text-sm truncate">{s.description}</div>
+                      <div className="text-white font-medium truncate" title={s.name}>{s.name}</div>
+                      <div className="text-gray-400 text-sm truncate" title={s.description}>{s.description}</div>
                       {s.width > 1 && <span className="text-xs text-indigo-400">{s.width}×{s.height ?? 1} клітинки</span>}
                     </div>
                     <button type="button" onClick={() => void handleDelete(s.id, s.name)}
@@ -305,10 +305,10 @@ export function OfficialSymbolManager({
                         <div className="flex items-start justify-between gap-2">
                           <div>
                             <div className="flex items-center gap-1.5">
-                              <span className="text-gray-200 font-medium truncate">{display.name}</span>
+                              <span className="text-gray-200 font-medium truncate" title={display.name}>{display.name}</span>
                               {override && <span className="text-[10px] bg-amber-800/60 text-amber-300 px-1.5 py-0.5 rounded">змінено</span>}
                             </div>
-                            <div className="text-gray-500 text-sm truncate">{display.description}</div>
+                            <div className="text-gray-500 text-sm truncate" title={display.description}>{display.description}</div>
                             {display.width > 1 && <span className="text-xs text-indigo-400/70">{display.width}×{(display.height ?? 1)} клітинки</span>}
                             <div className="text-[10px] text-gray-600 mt-0.5">id: {s.id}</div>
                           </div>

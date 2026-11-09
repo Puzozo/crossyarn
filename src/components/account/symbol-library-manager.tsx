@@ -155,7 +155,7 @@ export function SymbolLibraryManager({ initialSymbols }: Props) {
         {customSymbols.length === 0 ? (
           <p className="text-sm text-yarn-warm-gray">{t("symbols.none")}</p>
         ) : (
-          <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-3">
             {customSymbols.map((symbol) => (
               <div key={symbol.id} className="rounded-xl border border-yarn-sand/60 bg-white p-4 flex items-start gap-4">
                 {symbol.imageData ? (
@@ -168,8 +168,8 @@ export function SymbolLibraryManager({ initialSymbols }: Props) {
                   />
                 ) : null}
                 <div className="flex-1 min-w-0">
-                  <div className="font-medium text-yarn-charcoal truncate">{symbol.label}</div>
-                  <div className="text-sm text-yarn-warm-gray truncate">{symbol.description}</div>
+                  <div className="font-medium text-yarn-charcoal truncate" title={symbol.label}>{symbol.label}</div>
+                  <div className="text-sm text-yarn-warm-gray truncate" title={symbol.description}>{symbol.description}</div>
                   {((symbol.width ?? 1) > 1 || (symbol.height ?? 1) > 1) && (
                     <span className="text-xs text-yarn-sage font-semibold">
                       {symbol.width ?? 1}×{symbol.height ?? 1} {t("symbols.cells")}

@@ -9,10 +9,30 @@ function escapeXml(str: string): string {
     .replace(/'/g, "&apos;");
 }
 
+function wrapLabel(text: string, maxWidth: number, charWidth = 6.2): string[] {
+  const words = text.split(" ");
+  const lines: string[] = [];
+  let current = "";
+  for (const word of words) {
+    if (current === "") {
+      // A single word always starts (or fills) a line, even if it overflows.
+      current = word;
+    } else if ((current + " " + word).length * charWidth <= maxWidth) {
+      current = current + " " + word;
+    } else {
+      lines.push(current);
+      current = word;
+    }
+  }
+  if (current) lines.push(current);
+  return lines;
+}
+
 export function patternToSvg(pattern: PatternDocument, title: string) {
   const cellSize = 24;
   const rightGutter = 32;
   const bottomGutter = 32;
+  const MIN_LEGEND_WIDTH = 520;
 
   // When skipPurlRows is on, only odd-numbered rows are rendered (row number = height - rowIndex)
   const skipPurl = pattern.view.skipPurlRows ?? false;
@@ -21,7 +41,7 @@ export function patternToSvg(pattern: PatternDocument, title: string) {
 
   const gridWidth = pattern.width * cellSize;
   const gridHeight = visibleRowIndexes.length * cellSize;
-  const width = gridWidth + rightGutter;
+  const width = Math.max(gridWidth + rightGutter, MIN_LEGEND_WIDTH);
   const gridBottom = gridHeight;
 
   // Collect unique used symbols for legend (skip occupied cells and the background "empty")
@@ -52,11 +72,31 @@ export function patternToSvg(pattern: PatternDocument, title: string) {
 
   // Legend layout
   const legendTop = gridBottom + bottomGutter + 24;
-  const legendRowHeight = 28;
-  const legendColumns = 2;
+  const symbolLabels = usedSymbols.map((symbol) => {
+    const label = symbol.description && symbol.description !== symbol.label
+      ? symbol.label + " — " + symbol.description
+      : symbol.label;
+    const widthLabel = (symbol.width ?? 1) > 1 ? ` (×${symbol.width})` : "";
+    return label + widthLabel;
+  });
+  const maxLabelWidthPx = symbolLabels.reduce(
+    (max, label) => Math.max(max, label.length * 6.2),
+    0
+  );
+  const legendColumns = maxLabelWidthPx > width / 2 - 28 ? 1 : 2;
   const legendColWidth = Math.floor(width / legendColumns);
-  const legendRows = Math.ceil(usedSymbols.length / legendColumns);
-  const legendHeight = usedSymbols.length > 0 ? 24 + legendRows * legendRowHeight + 16 : 0;
+
+  const columnY: number[] = Array.from({ length: legendColumns }, () => legendTop + 24);
+  const legendEntries = usedSymbols.map((symbol, index) => {
+    const col = index % legendColumns;
+    const label = symbolLabels[index];
+    const lines = wrapLabel(label, legendColWidth - 28);
+    const rowHeight = Math.max(28, lines.length * 14 + 8);
+    const y = columnY[col];
+    columnY[col] += rowHeight;
+    return { symbol, col, y, lines };
+  });
+  const legendHeight = usedSymbols.length > 0 ? Math.max(...columnY) - legendTop - 24 + 16 : 0;
 
   const totalHeight = legendTop + legendHeight;
 
@@ -122,21 +162,19 @@ export function patternToSvg(pattern: PatternDocument, title: string) {
     const legendTitleY = legendTop + 14;
     legendMarkup += `<text x="0" y="${legendTitleY}" font-size="14" font-family="Arial" font-weight="bold" fill="#1e293b">Легенда</text>`;
 
-    usedSymbols.forEach((symbol, index) => {
-      const col = index % legendColumns;
-      const row = Math.floor(index / legendColumns);
+    legendEntries.forEach(({ symbol, col, y, lines }) => {
       const x = col * legendColWidth;
-      const y = legendTop + 24 + row * legendRowHeight;
 
       const iconMarkup = symbol.imageData
         ? `<use href="#${symbolDefIds.get(symbol.id)}" x="${x}" y="${y}" width="20" height="20" />`
         : `<text x="${x + 10}" y="${y + 15}" text-anchor="middle" font-size="14" fill="#1e293b">${escapeXml(symbol.glyph ?? "\u00B7")}</text>`;
 
-      const label = symbol.description ?? symbol.label;
-      const widthLabel = (symbol.width ?? 1) > 1 ? ` (×${symbol.width})` : "";
+      const tspans = lines
+        .map((line, i) => `<tspan x="${x + 28}" dy="${i === 0 ? 0 : 14}">${escapeXml(line)}</tspan>`)
+        .join("");
       legendMarkup += `
         ${iconMarkup}
-        <text x="${x + 28}" y="${y + 15}" font-size="11" font-family="Arial" fill="#334155">${escapeXml(label + widthLabel)}</text>
+        <text x="${x + 28}" y="${y + 15}" font-size="11" font-family="Arial" fill="#334155">${tspans}</text>
       `;
     });
   }
