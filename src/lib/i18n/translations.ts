@@ -422,6 +422,7 @@ export const translations = {
     // Editor — fill tool
     "editor.fillMode": "Заливка",
     "editor.fillHint": "Клікніть на клітинку — заллється суцільна область того ж кольору і позначки.",
+    "editor.dragPaintHint": "Малюйте, затиснувши кнопку миші або палець. Shift+клік — заповнити рядок/стовпець до останньої клітинки.",
 
     // Version history
     "versions.title": "Історія",
@@ -932,6 +933,7 @@ export const translations = {
     // Editor \u2014 fill tool
     "editor.fillMode": "Fill",
     "editor.fillHint": "Click a cell to fill the connected area of the same color and symbol.",
+    "editor.dragPaintHint": "Draw by holding the mouse button or your finger down. Shift+click fills to the last painted cell.",
 
     // Version history
     "versions.title": "History",

@@ -71,14 +71,38 @@ export function PatternEditor({ patternId, initialPattern, title, description, i
     setRapportMirror,
     isFillMode,
     toggleFillMode,
-    fillCells
+    fillCells,
+    beginStroke,
+    endStroke,
+    paintSegment,
+    isPainting,
+    lastPaintedCell
   } = usePatternEditorStore();
   const { t } = useTranslation();
+  useEffect(() => {
+    if (!isPainting) return;
+    const onPointerMove = (e: PointerEvent) => {
+      const hit = document.elementFromPoint(e.clientX, e.clientY) as HTMLElement | null;
+      const el = hit?.closest<HTMLElement>("[data-row][data-col]");
+      const row = el?.dataset.row;
+      const col = el?.dataset.col;
+      if (row === undefined || col === undefined) return;
+      usePatternEditorStore.getState().paintCell(Number(row), Number(col), { inStroke: true });
+    };
+    window.addEventListener("pointermove", onPointerMove);
+    return () => window.removeEventListener("pointermove", onPointerMove);
+  }, [isPainting]);
+  useEffect(() => {
+    const onPointerUp = () => endStroke();
+    window.addEventListener("pointerup", onPointerUp);
+    return () => window.removeEventListener("pointerup", onPointerUp);
+  }, [endStroke]);
   const [saveState, setSaveState] = useState<SaveState>("saved");
   const [resizing, setResizing] = useState(false);
   const [draftWidth, setDraftWidth] = useState(0);
   const [draftHeight, setDraftHeight] = useState(0);
   const initializedRef = useRef(false);
+  const strokePaintedRef = useRef(false);
   const [availableSymbols, setAvailableSymbols] = useState(initialPattern.symbols);
   const [rapportNameInput, setRapportNameInput] = useState("");
   const [editingSymbolId, setEditingSymbolId] = useState<string | null>(null);
@@ -695,6 +719,9 @@ export function PatternEditor({ patternId, initialPattern, title, description, i
       {isFillMode && (
         <p className="px-1 text-[11px] text-yarn-warm-gray/80">{t("editor.fillHint")}</p>
       )}
+      {!isFillMode && !isSelectionMode && !rapportInsertId && (
+        <p className="px-1 text-[11px] text-yarn-warm-gray/80">{t("editor.dragPaintHint")}</p>
+      )}
       <section ref={gridSectionRef} className="overflow-auto rounded-2xl bg-white/70 border border-yarn-sand/50 p-3 sm:p-4 lg:p-5 shadow-warm-sm">
         <p className="mb-2 hidden text-right text-[10px] text-yarn-warm-gray/70 lg:block">{t("editor.zoomScrollHint")}</p>
 
@@ -731,7 +758,8 @@ export function PatternEditor({ patternId, initialPattern, title, description, i
                 : `repeat(${pattern.width}, ${cellPx}px) ${cellPx}px`,
               gridTemplateRows: zoomLevel === 1
                 ? `repeat(${visibleRowIndexes.length}, minmax(40px, auto)) 40px`
-                : `repeat(${visibleRowIndexes.length}, ${cellPx}px) ${cellPx}px`
+                : `repeat(${visibleRowIndexes.length}, ${cellPx}px) ${cellPx}px`,
+              touchAction: isPainting ? "none" : "auto"
             }}
             onPointerUp={() => { if (isSelectionMode && isSelecting) endSelection(); }}
           >
@@ -768,16 +796,38 @@ export function PatternEditor({ patternId, initialPattern, title, description, i
                     type="button"
                     data-row={rowIndex}
                     data-col={columnIndex}
-                    onClick={() => {
+                    onClick={(e) => {
                       if (isSelectionMode) return;
                       if (rapportInsertId) { insertRapport(rowIndex, columnIndex); return; }
                       if (isFillMode) { fillCells(rowIndex, columnIndex); return; }
+                      if (strokePaintedRef.current) {
+                        // Already painted by onPointerDown/onPointerMove for this gesture — the
+                        // click event that follows a mouse press+release would otherwise paint
+                        // (and push a second history entry for) the same cell again.
+                        strokePaintedRef.current = false;
+                        return;
+                      }
+                      const last = lastPaintedCell;
+                      if (e.shiftKey && last && (last[0] === rowIndex || last[1] === columnIndex)
+                        && !(last[0] === rowIndex && last[1] === columnIndex)) {
+                        paintSegment(last[0], last[1], rowIndex, columnIndex);
+                        return;
+                      }
                       paintCell(rowIndex, columnIndex);
                     }}
                     onPointerDown={(e) => {
-                      if (!isSelectionMode) return;
-                      e.preventDefault();
-                      startSelection(rowIndex, columnIndex);
+                      strokePaintedRef.current = false;
+                      if (isSelectionMode) {
+                        e.preventDefault();
+                        startSelection(rowIndex, columnIndex);
+                        return;
+                      }
+                      if (!rapportInsertId && !isFillMode && e.button === 0 && !e.shiftKey) {
+                        e.preventDefault();
+                        beginStroke();
+                        paintCell(rowIndex, columnIndex, { inStroke: true });
+                        strokePaintedRef.current = true;
+                      }
                     }}
                     onPointerEnter={() => {
                       if (!isSelectionMode || !isSelecting) return;

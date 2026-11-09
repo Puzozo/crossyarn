@@ -44,6 +44,48 @@ function findAndClearOccupyingSymbol(cells: PatternGrid, symbols: PatternSymbol[
   }
 }
 
+/**
+ * Paints one symbol (with multi-cell expansion) into `pattern` at (row, column).
+ * Returns false if the symbol doesn't fit within the pattern bounds.
+ */
+function paintOneCellInto(
+  pattern: PatternDocument,
+  symbols: PatternSymbol[],
+  row: number,
+  column: number,
+  selectedSymbolId: string,
+  selectedColor: string,
+  defaultColor: string
+): boolean {
+  const width = getSymbolWidth(selectedSymbolId, symbols);
+  const height = getSymbolHeight(selectedSymbolId, symbols);
+  if (column + width > pattern.width || row + height > pattern.height) return false;
+
+  for (let r = row; r < row + height; r++) {
+    for (let c = column; c < column + width; c++) {
+      const targetCell = pattern.cells[r][c];
+      if (
+        targetCell.occupiedByAnchor ||
+        getSymbolWidth(targetCell.symbolId, symbols) > 1 ||
+        getSymbolHeight(targetCell.symbolId, symbols) > 1
+      ) {
+        findAndClearOccupyingSymbol(pattern.cells, symbols, r, c, defaultColor);
+      }
+    }
+  }
+
+  pattern.cells[row][column] = { symbolId: selectedSymbolId, color: selectedColor };
+
+  for (let r = row; r < row + height; r++) {
+    for (let c = column; c < column + width; c++) {
+      if (r === row && c === column) continue;
+      pattern.cells[r][c] = { symbolId: "empty", color: selectedColor, occupiedByAnchor: [row, column] };
+    }
+  }
+
+  return true;
+}
+
 function nanoid() {
   return Math.random().toString(36).slice(2, 10) + Date.now().toString(36);
 }
@@ -114,10 +156,18 @@ type EditorState = {
   zoomLevel: number;
   isFillMode: boolean;
 
+  isPainting: boolean;
+  lastPaintedCell: [number, number] | null;
+  strokeSnapshot: PatternDocument | null;
+  strokeTouched: Set<string>;
+
   setZoom: (level: number) => void;
   setRapportMirror: (mirror: RapportMirror) => void;
   setPattern: (pattern: PatternDocument) => void;
-  paintCell: (row: number, column: number) => void;
+  beginStroke: () => void;
+  paintCell: (row: number, column: number, options?: { inStroke?: boolean }) => void;
+  endStroke: () => void;
+  paintSegment: (r1: number, c1: number, r2: number, c2: number) => void;
   toggleFillMode: () => void;
   fillCells: (row: number, column: number) => void;
   setSelectedSymbolId: (symbolId: string) => void;
@@ -163,6 +213,10 @@ export const usePatternEditorStore = create<EditorState>((set, get) => ({
   rapportMirror: "none",
   zoomLevel: 1,
   isFillMode: false,
+  isPainting: false,
+  lastPaintedCell: null,
+  strokeSnapshot: null,
+  strokeTouched: new Set<string>(),
 
   setZoom: (level) => set({ zoomLevel: Math.max(0.4, Math.min(2.5, level)) }),
   setRapportMirror: (rapportMirror) => set({ rapportMirror }),
@@ -178,9 +232,77 @@ export const usePatternEditorStore = create<EditorState>((set, get) => ({
       selectedSymbolId: pattern.symbols[0]?.id ?? "empty"
     }),
 
-  paintCell: (row, column) => {
+  beginStroke: () => {
     const state = get();
     if (!state.pattern) return;
+    set({
+      strokeSnapshot: clonePattern(state.pattern),
+      strokeTouched: new Set<string>(),
+      isPainting: true
+    });
+  },
+
+  paintCell: (row, column, options) => {
+    const state = get();
+    if (!state.pattern) return;
+
+    const inStroke = options?.inStroke === true;
+    const key = `${row},${column}`;
+    if (inStroke && state.strokeTouched.has(key)) return;
+
+    const next = clonePattern(state.pattern);
+    const symbols = next.symbols;
+    const width = getSymbolWidth(state.selectedSymbolId, symbols);
+    const height = getSymbolHeight(state.selectedSymbolId, symbols);
+    const defaultColor = next.palette[0]?.hex ?? "#f5ede1";
+
+    const painted = paintOneCellInto(next, symbols, row, column, state.selectedSymbolId, state.selectedColor, defaultColor);
+    if (!painted) {
+      if (column + width > next.width) {
+        set({ toastData: { key: "toast.notEnoughSpace", params: { needed: width, available: next.width - column } } });
+      } else {
+        set({ toastData: { key: "toast.notEnoughSpace", params: { needed: height, available: next.height - row } } });
+      }
+      return;
+    }
+
+    if (inStroke) {
+      const strokeTouched = new Set(state.strokeTouched);
+      for (let r = row; r < row + height; r++) {
+        for (let c = column; c < column + width; c++) {
+          strokeTouched.add(`${r},${c}`);
+        }
+      }
+      // No history push mid-stroke: the whole stroke is one undo step (pushed in endStroke).
+      set({ pattern: next, strokeTouched, lastPaintedCell: [row, column] });
+    } else {
+      const previous = clonePattern(state.pattern);
+      set({ pattern: next, history: [...state.history, previous], future: [], lastPaintedCell: [row, column] });
+    }
+  },
+
+  endStroke: () => {
+    const state = get();
+    if (!state.isPainting) return;
+    if (state.strokeTouched.size > 0 && state.strokeSnapshot) {
+      // One history entry for the whole stroke.
+      set({
+        history: [...state.history, state.strokeSnapshot],
+        future: [],
+        isPainting: false,
+        strokeSnapshot: null,
+        strokeTouched: new Set<string>()
+      });
+    } else {
+      set({ isPainting: false, strokeSnapshot: null, strokeTouched: new Set<string>() });
+    }
+  },
+
+  paintSegment: (r1, c1, r2, c2) => {
+    const state = get();
+    if (!state.pattern) return;
+    if (r1 !== r2 && c1 !== c2) return; // only straight horizontal/vertical segments
+
     const previous = clonePattern(state.pattern);
     const next = clonePattern(state.pattern);
     const symbols = next.symbols;
@@ -188,38 +310,36 @@ export const usePatternEditorStore = create<EditorState>((set, get) => ({
     const height = getSymbolHeight(state.selectedSymbolId, symbols);
     const defaultColor = next.palette[0]?.hex ?? "#f5ede1";
 
-    if (column + width > next.width) {
-      set({ toastData: { key: "toast.notEnoughSpace", params: { needed: width, available: next.width - column } } });
-      return;
-    }
-    if (row + height > next.height) {
-      set({ toastData: { key: "toast.notEnoughSpace", params: { needed: height, available: next.height - row } } });
-      return;
+    // Anchor positions from (r1,c1) to (r2,c2) inclusive, stepped by the
+    // selected symbol's width (horizontal) / height (vertical); the last
+    // anchor always lands exactly on the endpoint.
+    const positions: [number, number][] = [];
+    if (r1 === r2) {
+      const dir = Math.sign(c2 - c1);
+      const count = Math.max(1, Math.ceil(Math.abs(c2 - c1) / width));
+      for (let i = 1; i <= count; i++) {
+        positions.push([r1, i === count ? c2 : c1 + dir * i * width]);
+      }
+    } else {
+      const dir = Math.sign(r2 - r1);
+      const count = Math.max(1, Math.ceil(Math.abs(r2 - r1) / height));
+      for (let i = 1; i <= count; i++) {
+        positions.push([i === count ? r2 : r1 + dir * i * height, c1]);
+      }
     }
 
-    for (let r = row; r < row + height; r++) {
-      for (let c = column; c < column + width; c++) {
-        const targetCell = next.cells[r][c];
-        if (
-          targetCell.occupiedByAnchor ||
-          getSymbolWidth(targetCell.symbolId, symbols) > 1 ||
-          getSymbolHeight(targetCell.symbolId, symbols) > 1
-        ) {
-          findAndClearOccupyingSymbol(next.cells, symbols, r, c, defaultColor);
+    for (const [r, c] of positions) {
+      if (!paintOneCellInto(next, symbols, r, c, state.selectedSymbolId, state.selectedColor, defaultColor)) {
+        if (c + width > next.width) {
+          set({ toastData: { key: "toast.notEnoughSpace", params: { needed: width, available: next.width - c } } });
+        } else {
+          set({ toastData: { key: "toast.notEnoughSpace", params: { needed: height, available: next.height - r } } });
         }
+        break;
       }
     }
 
-    next.cells[row][column] = { symbolId: state.selectedSymbolId, color: state.selectedColor };
-
-    for (let r = row; r < row + height; r++) {
-      for (let c = column; c < column + width; c++) {
-        if (r === row && c === column) continue;
-        next.cells[r][c] = { symbolId: "empty", color: state.selectedColor, occupiedByAnchor: [row, column] };
-      }
-    }
-
-    set({ pattern: next, history: [...state.history, previous], future: [] });
+    set({ pattern: next, history: [...state.history, previous], future: [], lastPaintedCell: [r2, c2] });
   },
 
   toggleFillMode: () => {
