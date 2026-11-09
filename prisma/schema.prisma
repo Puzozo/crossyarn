@@ -54,6 +54,7 @@ model Pattern {
   // ASCII transliteration of title for SQL LIKE search (Cyrillic titles are searchable).
   titleTranslit String?           @default("")
   tags          String            @default("[]") // JSON string of tags, e.g. '["scarf","winter","lace"]' (SQLite incompatible with String[])
+  photos        String            @default("[]") // JSON [{assetId, alt}] — up to 5 product photos (MediaAsset ids owned by the author)
   description   String?
   width         Int
   height        Int

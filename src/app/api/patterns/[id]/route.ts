@@ -84,6 +84,25 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
     const body = await request.json().catch(() => null);
     const title = typeof body.title === "string" ? body.title.trim() : "";
     const description = typeof body.description === "string" ? body.description.trim() : "";
+    const rawPhotos = body !== null ? body.photos : undefined;
+    let photos: { assetId: string; alt: string }[] | undefined;
+    if (rawPhotos !== undefined) {
+      const valid =
+        Array.isArray(rawPhotos) &&
+        rawPhotos.length <= 5 &&
+        rawPhotos.every(
+          (p) =>
+            p !== null &&
+            typeof p === "object" &&
+            typeof p.assetId === "string" &&
+            typeof p.alt === "string" &&
+            p.alt.length <= 200
+        );
+      if (!valid) {
+        return NextResponse.json({ error: "INVALID_PHOTOS" }, { status: 400 });
+      }
+      photos = rawPhotos;
+    }
 
     if (title.length < 2 || title.length > 120) {
       return NextResponse.json({ error: "Некоректна назва" }, { status: 400 });
@@ -97,12 +116,35 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
       return NextResponse.json({ error: "Not found" }, { status: 404 });
     }
 
+    if (photos !== undefined && photos.length > 0) {
+      const uniqueAssetIds = [...new Set(photos.map((p) => p.assetId))];
+      const owned = await db.mediaAsset.findMany({
+        where: { id: { in: uniqueAssetIds }, ownerId: session.userId },
+        select: { id: true }
+      });
+      if (owned.length !== uniqueAssetIds.length) {
+        return NextResponse.json({ error: "PHOTO_NOT_OWNED" }, { status: 400 });
+      }
+    }
+
     const pattern = await db.pattern.update({
       where: { id },
-      data: { title, titleTranslit: translit(title), description }
+      data: {
+        title,
+        titleTranslit: translit(title),
+        description,
+        ...(photos !== undefined ? { photos: JSON.stringify(photos) } : {})
+      }
     });
 
-    return NextResponse.json({ id: pattern.id, title: pattern.title, description: pattern.description });
+    return NextResponse.json({
+      id: pattern.id,
+      title: pattern.title,
+      description: pattern.description,
+      // Echo the validated input rather than the update result so this stays
+      // independent of whether the generated client already exposes `photos`.
+      ...(photos !== undefined ? { photos } : {})
+    });
   } catch {
     return NextResponse.json({ error: "Не вдалося оновити" }, { status: 400 });
   }

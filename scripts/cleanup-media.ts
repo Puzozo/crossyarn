@@ -53,6 +53,12 @@ function collectAssetIdsFromContent(raw: string): string[] {
   return ids;
 }
 
+function collectAssetIdsFromPhotosField(raw: string): string[] {
+  return safeParseArray(raw)
+    .map((item: { assetId?: string }) => item?.assetId)
+    .filter((id: unknown): id is string => typeof id === "string");
+}
+
 function collectAssetIdsFromGalleryField(raw: string): string[] {
   return safeParseArray(raw)
     .map((item: { assetId?: string }) => item?.assetId)
@@ -73,6 +79,11 @@ async function main() {
   for (const post of posts) {
     if (post.coverAssetId) usedIds.add(post.coverAssetId);
     for (const id of collectAssetIdsFromContent(post.content)) usedIds.add(id);
+  }
+
+  const patterns = await db.pattern.findMany({ select: { photos: true } });
+  for (const pattern of patterns) {
+    for (const id of collectAssetIdsFromPhotosField(pattern.photos)) usedIds.add(id);
   }
 
   const cutoff = new Date(Date.now() - SEVEN_DAYS_MS);
