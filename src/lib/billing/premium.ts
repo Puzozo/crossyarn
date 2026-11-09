@@ -14,7 +14,7 @@ const GRACE_DAYS = 3;
  * universal access until the cutoff so the import pipeline can be tested
  * by real users without gating on a non-existent billing flow.
  */
-const UNIVERSAL_PREMIUM_UNTIL = new Date("2026-11-15T00:00:00Z");
+const UNIVERSAL_PREMIUM_UNTIL = new Date("2026-11-30T22:00:00Z"); // кінець 30.11.2026 за Києвом
 
 export type PremiumFields = {
   plan: string;

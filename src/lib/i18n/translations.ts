@@ -453,7 +453,7 @@ export const translations = {
     // Premium page
     "premium.heading": "Crossyarn Premium",
     "premium.subtitle": "Зараз Premium доступний для всіх користувачів безкоштовно!",
-    "premium.note": "Ми працюємо над підпискою — до 15 листопада 2026 всі функції відкриті.",
+    "premium.note": "Ми працюємо над підпискою — до 30 листопада 2026 всі функції відкриті.",
     "premium.feature1": "AI-розпізнавання схем із зображень",
     "premium.feature2": "Без реклами",
     "premium.feature3": "Безліміт схем і кастомних позначок",
@@ -964,7 +964,7 @@ export const translations = {
     // Premium page
     "premium.heading": "Crossyarn Premium",
     "premium.subtitle": "Premium is currently available to all users for free!",
-    "premium.note": "We're working on subscriptions — all features are open until November 15, 2026.",
+    "premium.note": "We're working on subscriptions — all features are open until November 30, 2026.",
     "premium.feature1": "AI chart recognition from images",
     "premium.feature2": "No ads",
     "premium.feature3": "Unlimited patterns and custom symbols",
