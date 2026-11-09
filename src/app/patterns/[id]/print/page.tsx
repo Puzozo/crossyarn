@@ -2,7 +2,7 @@ import { notFound } from "next/navigation";
 import { db } from "@/lib/db";
 import { requireUserPage } from "@/lib/auth/guards";
 import { PatternDocument } from "@/lib/patterns/model";
-import { hydrateBuiltinSymbols } from "@/lib/patterns/normalize-symbols";
+import { hydrateBuiltinSymbols, hydrateUserSymbolLabels } from "@/lib/patterns/normalize-symbols";
 import { PrintContent } from "@/components/patterns/print-content";
 
 export default async function PatternPrintPage({
@@ -25,16 +25,17 @@ export default async function PatternPrintPage({
   }
 
   const document = hydrateBuiltinSymbols(pattern.patternData as unknown as PatternDocument);
+  const hydratedDocument = await hydrateUserSymbolLabels(document, session.userId);
 
   const usedSymbolIds = new Set<string>();
-  for (const row of document.cells) {
+  for (const row of hydratedDocument.cells) {
     for (const cell of row) {
       if (cell.occupiedByAnchor) continue;
       usedSymbolIds.add(cell.symbolId);
     }
   }
   usedSymbolIds.delete("empty");
-  const usedSymbols = document.symbols.filter((s) => usedSymbolIds.has(s.id));
+  const usedSymbols = hydratedDocument.symbols.filter((s) => usedSymbolIds.has(s.id));
 
   return (
     <PrintContent
@@ -45,7 +46,7 @@ export default async function PatternPrintPage({
         height: pattern.height,
         updatedAt: pattern.updatedAt.toISOString()
       }}
-      document={document}
+      document={hydratedDocument}
       usedSymbols={usedSymbols}
     />
   );

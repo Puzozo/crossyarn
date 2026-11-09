@@ -106,6 +106,8 @@ export function PatternEditor({ patternId, initialPattern, title, description, i
   const [availableSymbols, setAvailableSymbols] = useState(initialPattern.symbols);
   const [rapportNameInput, setRapportNameInput] = useState("");
   const [editingSymbolId, setEditingSymbolId] = useState<string | null>(null);
+  const symbolNameInputRef = useRef<HTMLInputElement>(null);
+  const symbolDescInputRef = useRef<HTMLInputElement>(null);
 
   // Tag management
   const [tags, setTags] = useState<string[]>(initialTags ?? []);
@@ -155,24 +157,26 @@ export function PatternEditor({ patternId, initialPattern, title, description, i
     setTagLoading(false);
   }, [patternId]);
 
-  const handleRenameSymbol = useCallback(
-    async (id: string, rawName: string) => {
+  const handleEditSymbol = useCallback(
+    async (id: string, rawName: string, rawDescription: string) => {
       setEditingSymbolId(null);
       const name = rawName.trim();
+      const description = rawDescription.trim();
       const current = availableSymbols.find((s) => s.id === id);
-      if (!name || !current || name === current.label) return;
+      if (!name || !current) return;
+      if (name === current.label && description === (current.description ?? "")) return;
 
       const before = availableSymbols;
-      const updated = before.map((s) => (s.id === id ? { ...s, label: name } : s));
+      const updated = before.map((s) => (s.id === id ? { ...s, label: name, description } : s));
       setAvailableSymbols(updated);
       setSymbols(updated);
       try {
         const res = await fetch(`/api/symbols/${id}`, {
           method: "PATCH",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ name })
+          body: JSON.stringify({ name, description })
         });
-        if (!res.ok) throw new Error("rename failed");
+        if (!res.ok) throw new Error("symbol update failed");
       } catch {
         setAvailableSymbols(before);
         setSymbols(before);
@@ -435,22 +439,51 @@ export function PatternEditor({ patternId, initialPattern, title, description, i
         <div className="space-y-2">
           <div className="flex max-h-56 lg:max-h-80 flex-wrap gap-1.5 overflow-auto">
             {availableSymbols.map((symbol) => {
-              const isUser = symbol.source === "user" || symbol.id.startsWith("user-");
+              const isUser = symbol.id.startsWith("user-");
               const isUnknown = isUser && /^unknown/i.test(symbol.label);
 
               if (editingSymbolId === symbol.id) {
                 return (
-                  <div key={symbol.id} className="rounded-lg border border-yarn-terracotta bg-white px-2.5 py-1.5">
+                  <div key={symbol.id} className="rounded-lg border border-yarn-terracotta bg-white p-2 space-y-2">
                     <input
+                      ref={symbolNameInputRef}
                       autoFocus
                       defaultValue={symbol.label}
-                      onBlur={(e) => void handleRenameSymbol(symbol.id, e.target.value)}
+                      maxLength={80}
+                      placeholder={t("editor.symbolNamePlaceholder")}
                       onKeyDown={(e) => {
-                        if (e.key === "Enter") e.currentTarget.blur();
                         if (e.key === "Escape") setEditingSymbolId(null);
                       }}
-                      className="w-24 bg-transparent text-xs text-yarn-charcoal outline-none"
+                      className="w-full rounded-lg border border-yarn-sand bg-white px-2 py-1.5 text-xs text-yarn-charcoal placeholder:text-yarn-warm-gray/60 focus:outline-none focus:border-yarn-terracotta"
                     />
+                    <input
+                      ref={symbolDescInputRef}
+                      defaultValue={symbol.description ?? ""}
+                      maxLength={300}
+                      placeholder={t("editor.symbolDescPlaceholder")}
+                      onKeyDown={(e) => {
+                        if (e.key === "Escape") setEditingSymbolId(null);
+                      }}
+                      className="w-full rounded-lg border border-yarn-sand bg-white px-2 py-1.5 text-xs text-yarn-charcoal placeholder:text-yarn-warm-gray/60 focus:outline-none focus:border-yarn-terracotta"
+                    />
+                    <div className="flex gap-2">
+                      <button
+                        type="button"
+                        onClick={() =>
+                          void handleEditSymbol(
+                            symbol.id,
+                            symbolNameInputRef.current?.value ?? "",
+                            symbolDescInputRef.current?.value ?? ""
+                          )
+                        }
+                        className="flex-1 rounded-lg bg-yarn-terracotta text-white text-xs font-semibold py-1.5 hover:bg-yarn-terracotta-hover transition-colors">
+                        {t("editor.save")}
+                      </button>
+                      <button type="button" onClick={() => setEditingSymbolId(null)}
+                        className="flex-1 rounded-lg bg-yarn-sand/60 text-yarn-charcoal text-xs font-semibold py-1.5 hover:bg-yarn-sand transition-colors">
+                        {t("editor.cancelEdit")}
+                      </button>
+                    </div>
                   </div>
                 );
               }

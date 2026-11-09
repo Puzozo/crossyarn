@@ -3,7 +3,7 @@ import { notFound } from "next/navigation";
 import { db } from "@/lib/db";
 import { requireUserPage } from "@/lib/auth/guards";
 import { PatternDocument } from "@/lib/patterns/model";
-import { hydrateBuiltinSymbols } from "@/lib/patterns/normalize-symbols";
+import { hydrateBuiltinSymbols, hydrateUserSymbolLabels } from "@/lib/patterns/normalize-symbols";
 import { EditorPageContent } from "@/components/editor/editor-page-content";
 import { parseTags } from "@/lib/utils";
 
@@ -47,13 +47,14 @@ export default async function EditorPage({
   }
 
   const document = hydrateBuiltinSymbols(pattern.patternData as unknown as PatternDocument);
+  const hydratedDocument = await hydrateUserSymbolLabels(document, session.userId);
 
   return (
     <EditorPageContent
       patternId={pattern.id}
       title={pattern.title}
       description={pattern.description}
-      initialPattern={document}
+      initialPattern={hydratedDocument}
       initialTags={parseTags(pattern.tags) ?? []}
     />
   );

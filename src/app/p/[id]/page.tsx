@@ -3,7 +3,7 @@ import { notFound } from "next/navigation";
 import { db } from "@/lib/db";
 import { getSession } from "@/lib/auth/session";
 import { PatternDocument, PatternSymbol } from "@/lib/patterns/model";
-import { hydrateBuiltinSymbols } from "@/lib/patterns/normalize-symbols";
+import { hydrateBuiltinSymbols, hydrateUserSymbolLabels } from "@/lib/patterns/normalize-symbols";
 import { PublicPatternContent } from "@/components/patterns/public-pattern-content";
 import { PrivatePatternContent } from "@/components/patterns/private-pattern-content";
 
@@ -85,16 +85,17 @@ export default async function PublicPatternPage({
   ]);
 
   const document = hydrateBuiltinSymbols(pattern.patternData as unknown as PatternDocument);
+  const hydratedDocument = await hydrateUserSymbolLabels(document, pattern.userId);
 
   const usedSymbolIds = new Set<string>();
-  for (const row of document.cells) {
+  for (const row of hydratedDocument.cells) {
     for (const cell of row) {
       if (cell.occupiedByAnchor) continue;
       usedSymbolIds.add(cell.symbolId);
     }
   }
   usedSymbolIds.delete("empty");
-  const usedSymbols: PatternSymbol[] = document.symbols.filter((s) => usedSymbolIds.has(s.id));
+  const usedSymbols: PatternSymbol[] = hydratedDocument.symbols.filter((s) => usedSymbolIds.has(s.id));
 
   const author =
     pattern.user.profilePublic && pattern.user.username
@@ -110,7 +111,7 @@ export default async function PublicPatternPage({
         width: pattern.width,
         height: pattern.height
       }}
-      document={document}
+      document={hydratedDocument}
       usedSymbols={usedSymbols}
       author={author}
       likeCount={likeCount}

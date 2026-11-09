@@ -330,6 +330,10 @@ export const translations = {
     "symbols.imageSizeError": "Файл занадто великий (макс. 300 KB)",
     "symbols.addError": "Не вдалося додати позначку",
     "symbols.deleteError": "Не вдалося видалити позначку",
+    "symbols.editBtn": "Редагувати",
+    "symbols.editError": "Не вдалося оновити значок",
+    "symbols.saveBtn": "Зберегти",
+    "symbols.cancelBtn": "Скасувати",
 
     // Import
     "import.error": "Не вдалося імпортувати зображення",
@@ -399,6 +403,9 @@ export const translations = {
     // Editor — symbol rename
     "editor.renameSymbol": "Перейменувати позначку",
     "editor.renameError": "Не вдалося перейменувати",
+    "editor.symbolNamePlaceholder": "Назва",
+    "editor.symbolDescPlaceholder": "Опис",
+    "editor.save": "Зберегти",
 
     // Toast
     "toast.notEnoughSpace": "Недостатньо місця — потрібно {needed} клітинок, доступно {available}",
@@ -841,6 +848,10 @@ export const translations = {
     "symbols.imageSizeError": "File too large (max 300 KB)",
     "symbols.addError": "Failed to add symbol",
     "symbols.deleteError": "Failed to delete symbol",
+    "symbols.editBtn": "Edit",
+    "symbols.editError": "Failed to update symbol",
+    "symbols.saveBtn": "Save",
+    "symbols.cancelBtn": "Cancel",
 
     // Import
     "import.error": "Failed to import image",
@@ -910,6 +921,9 @@ export const translations = {
     // Editor — symbol rename
     "editor.renameSymbol": "Rename symbol",
     "editor.renameError": "Failed to rename",
+    "editor.symbolNamePlaceholder": "Name",
+    "editor.symbolDescPlaceholder": "Description",
+    "editor.save": "Save",
 
     // Toast
     "toast.notEnoughSpace": "Not enough space \u2014 need {needed} cells, {available} available",

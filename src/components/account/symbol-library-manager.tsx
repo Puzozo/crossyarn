@@ -23,6 +23,10 @@ export function SymbolLibraryManager({ initialSymbols }: Props) {
   const [height, setHeight] = useState(1);
   const [error, setError] = useState<string | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<string | null>(null);
+  const [editTarget, setEditTarget] = useState<string | null>(null);
+  const [editName, setEditName] = useState("");
+  const [editDescription, setEditDescription] = useState("");
+  const [editError, setEditError] = useState<string | null>(null);
   const customSymbols = useMemo(() => symbols.filter((item) => item.source === "user"), [symbols]);
 
   async function handleFile(event: ChangeEvent<HTMLInputElement>) {
@@ -82,6 +86,28 @@ export function SymbolLibraryManager({ initialSymbols }: Props) {
       return;
     }
     setSymbols((current) => current.filter((item) => item.id !== symbolId));
+  }
+
+  async function handleEditSave(symbolId: string) {
+    const rawId = symbolId.replace("user-", "");
+    setEditError(null);
+    const response = await fetch(`/api/symbols/${rawId}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ name: editName.trim(), description: editDescription.trim() })
+    });
+    if (!response.ok) {
+      setEditError(t("symbols.editError"));
+      return;
+    }
+    setSymbols((current) =>
+      current.map((item) =>
+        item.id === symbolId
+          ? { ...item, label: editName.trim(), description: editDescription.trim() }
+          : item
+      )
+    );
+    setEditTarget(null);
   }
 
   return (
@@ -175,14 +201,62 @@ export function SymbolLibraryManager({ initialSymbols }: Props) {
                       {symbol.width ?? 1}×{symbol.height ?? 1} {t("symbols.cells")}
                     </span>
                   )}
-                  <Button
-                    className="mt-2"
-                    variant="danger"
-                    size="sm"
-                    onClick={() => setDeleteTarget(symbol.id)}
-                  >
-                    {t("symbols.deleteBtn")}
-                  </Button>
+                  {editTarget === symbol.id ? (
+                    <form
+                      className="mt-2 space-y-2"
+                      onSubmit={(event) => {
+                        event.preventDefault();
+                        void handleEditSave(symbol.id);
+                      }}
+                    >
+                      <div className="space-y-1.5">
+                        <label className="block text-sm font-medium text-yarn-charcoal">{t("symbols.nameLabel")}</label>
+                        <Input
+                          value={editName}
+                          onChange={(event) => setEditName(event.target.value)}
+                          required
+                        />
+                      </div>
+                      <div className="space-y-1.5">
+                        <label className="block text-sm font-medium text-yarn-charcoal">{t("symbols.descLabel")}</label>
+                        <Input
+                          value={editDescription}
+                          onChange={(event) => setEditDescription(event.target.value)}
+                        />
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Button type="submit" size="sm">{t("symbols.saveBtn")}</Button>
+                        <Button type="button" variant="secondary" size="sm" onClick={() => setEditTarget(null)}>
+                          {t("symbols.cancelBtn")}
+                        </Button>
+                        {editError ? (
+                          <span className="text-sm text-red-600">{editError}</span>
+                        ) : null}
+                      </div>
+                    </form>
+                  ) : (
+                    <div className="mt-2 flex items-center gap-2">
+                      <Button
+                        variant="secondary"
+                        size="sm"
+                        onClick={() => {
+                          setEditTarget(symbol.id);
+                          setEditName(symbol.label);
+                          setEditDescription(symbol.description ?? "");
+                          setEditError(null);
+                        }}
+                      >
+                        {t("symbols.editBtn")}
+                      </Button>
+                      <Button
+                        variant="danger"
+                        size="sm"
+                        onClick={() => setDeleteTarget(symbol.id)}
+                      >
+                        {t("symbols.deleteBtn")}
+                      </Button>
+                    </div>
+                  )}
                 </div>
               </div>
             ))}
