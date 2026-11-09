@@ -39,6 +39,19 @@ export function patternToSvg(pattern: PatternDocument, title: string) {
   const visibleRowIndexes = Array.from({ length: pattern.height }, (_, i) => i)
     .filter((i) => !skipPurl || (pattern.height - i) % 2 === 1);
 
+  const rapportMarks = pattern.rapportMarks ?? [];
+  const RAPPORT_COLOR = "#d9480f";
+  function mapMarkToDisplayRows(mark: { row: number; height: number }): { rowStart: number; rowSpan: number } | null {
+    const rows: number[] = [];
+    for (let r = mark.row; r < mark.row + mark.height; r++) {
+      const idx = visibleRowIndexes.indexOf(r);
+      if (idx !== -1) rows.push(idx);
+    }
+    if (rows.length === 0) return null;
+    const rowStart = Math.min(...rows);
+    return { rowStart, rowSpan: Math.max(...rows) - rowStart + 1 };
+  }
+
   const gridWidth = pattern.width * cellSize;
   const gridHeight = visibleRowIndexes.length * cellSize;
   const width = Math.max(gridWidth + rightGutter, MIN_LEGEND_WIDTH);
@@ -96,7 +109,14 @@ export function patternToSvg(pattern: PatternDocument, title: string) {
     columnY[col] += rowHeight;
     return { symbol, col, y, lines };
   });
-  const legendHeight = usedSymbols.length > 0 ? Math.max(...columnY) - legendTop - 24 + 16 : 0;
+  const hasRapportMarks = rapportMarks.length > 0;
+  let rapportLegendEntry: { col: number; y: number } | null = null;
+  if (hasRapportMarks) {
+    const col = usedSymbols.length % legendColumns;
+    rapportLegendEntry = { col, y: columnY[col] };
+    columnY[col] += 28;
+  }
+  const legendHeight = (usedSymbols.length > 0 || hasRapportMarks) ? Math.max(...columnY) - legendTop - 24 + 16 : 0;
 
   const totalHeight = legendTop + legendHeight;
 
@@ -112,6 +132,30 @@ export function patternToSvg(pattern: PatternDocument, title: string) {
     const y = displayIdx * cellSize + 16;
     const x = gridWidth + 16;
     return `<text x="${x}" y="${y}" text-anchor="middle" font-size="11" fill="#475569">${pattern.height - rowIndex}</text>`;
+  }).join("");
+
+  const rapportFrames = rapportMarks.map((mark) => {
+    const mapped = mapMarkToDisplayRows(mark);
+    if (!mapped) return "";
+    const x = mark.col * cellSize;
+    const y = mapped.rowStart * cellSize;
+    const w = mark.width * cellSize;
+    const h = mapped.rowSpan * cellSize;
+    return `<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="none" stroke="${RAPPORT_COLOR}" stroke-width="2" />`;
+  }).join("");
+  const rapportRowBrackets = rapportMarks.map((mark) => {
+    const mapped = mapMarkToDisplayRows(mark);
+    if (!mapped) return "";
+    const x = gridWidth + 4;
+    const y1 = mapped.rowStart * cellSize;
+    const y2 = y1 + mapped.rowSpan * cellSize;
+    return `<path d="M ${x} ${y1} h6 M ${x} ${y1} V ${y2} M ${x} ${y2} h6" stroke="${RAPPORT_COLOR}" stroke-width="2" fill="none" />`;
+  }).join("");
+  const rapportColBrackets = rapportMarks.map((mark) => {
+    const x1 = mark.col * cellSize;
+    const x2 = x1 + mark.width * cellSize;
+    const y = gridBottom + 2;
+    return `<path d="M ${x1} ${y} v6 M ${x1} ${y} H ${x2} M ${x2} ${y} v6" stroke="${RAPPORT_COLOR}" stroke-width="2" fill="none" />`;
   }).join("");
 
   const cells = visibleRowIndexes
@@ -158,7 +202,7 @@ export function patternToSvg(pattern: PatternDocument, title: string) {
 
   // Legend markup
   let legendMarkup = "";
-  if (usedSymbols.length > 0) {
+  if (usedSymbols.length > 0 || hasRapportMarks) {
     const legendTitleY = legendTop + 14;
     legendMarkup += `<text x="0" y="${legendTitleY}" font-size="14" font-family="Arial" font-weight="bold" fill="#1e293b">Легенда</text>`;
 
@@ -177,6 +221,14 @@ export function patternToSvg(pattern: PatternDocument, title: string) {
         <text x="${x + 28}" y="${y + 15}" font-size="11" font-family="Arial" fill="#334155">${tspans}</text>
       `;
     });
+    if (rapportLegendEntry) {
+      const x = rapportLegendEntry.col * legendColWidth;
+      const y = rapportLegendEntry.y;
+      legendMarkup += `
+        <rect x="${x + 2}" y="${y + 2}" width="16" height="16" fill="none" stroke="${RAPPORT_COLOR}" stroke-width="2" />
+        <text x="${x + 28}" y="${y + 15}" font-size="11" font-family="Arial" fill="#334155">Рапорт</text>
+      `;
+    }
   }
 
   return `
@@ -187,6 +239,7 @@ export function patternToSvg(pattern: PatternDocument, title: string) {
       ${columnNumbers}
       ${rowNumbers}
       ${cells}
+      ${rapportFrames}${rapportRowBrackets}${rapportColBrackets}
       ${legendMarkup}
     </svg>
   `.trim();

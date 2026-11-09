@@ -121,6 +121,10 @@ export const translations = {
     "editor.mirrorHV": "↔↕ Обидва",
     "editor.rapportInsertHint": "Клікніть на схемі щоб вставити. Якщо не вміщується — автоматично обріжеться по межі.",
     "editor.rapportEmptyHint": "Натисніть «Виділити», обведіть ділянку на схемі та збережіть як рапорт.",
+    "editor.rapportMarkOnly": "Позначити виділення як рапорт",
+    "editor.rapportMarksListTitle": "Позначки на схемі",
+    "editor.rapportMarkItem": "Позначка {w}×{h}",
+    "editor.rapportMarkRemove": "Прибрати позначку",
     "editor.zoomOut": "Зменшити (−)",
     "editor.zoomReset": "Скинути масштаб",
     "editor.zoomIn": "Збільшити (+)",
@@ -155,6 +159,7 @@ export const translations = {
     "print.breadcrumb": "Схеми",
     "print.printBtn": "Друкувати",
     "print.legend": "Легенда позначок",
+    "print.legendRapport": "Рапорт",
     "print.print": "Друк",
 
     // PDF
@@ -639,6 +644,10 @@ export const translations = {
     "editor.mirrorHV": "↔↕ Both",
     "editor.rapportInsertHint": "Click the chart to insert. If it doesn't fit, it's clipped to the edge automatically.",
     "editor.rapportEmptyHint": "Click \"Select\", drag over an area on the chart, and save it as a rapport.",
+    "editor.rapportMarkOnly": "Mark selection as rapport",
+    "editor.rapportMarksListTitle": "Marks on the chart",
+    "editor.rapportMarkItem": "Mark {w}×{h}",
+    "editor.rapportMarkRemove": "Remove mark",
     "editor.zoomOut": "Zoom out (−)",
     "editor.zoomReset": "Reset zoom",
     "editor.zoomIn": "Zoom in (+)",
@@ -673,6 +682,7 @@ export const translations = {
     "print.breadcrumb": "Patterns",
     "print.printBtn": "Print",
     "print.legend": "Symbol Legend",
+    "print.legendRapport": "Rapport",
     "print.print": "Print",
 
     // PDF

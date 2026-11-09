@@ -5,9 +5,15 @@ import { useTranslation } from "@/lib/i18n/context";
 import { PatternSymbol } from "@/lib/patterns/model";
 
 /** Legend of the symbols actually used in a pattern. Shared by print + public views. */
-export function PatternLegend({ usedSymbols }: { usedSymbols: PatternSymbol[] }) {
+export function PatternLegend({
+  usedSymbols,
+  hasRapportMarks,
+}: {
+  usedSymbols: PatternSymbol[];
+  hasRapportMarks?: boolean;
+}) {
   const { t } = useTranslation();
-  if (usedSymbols.length === 0) return null;
+  if (usedSymbols.length === 0 && !hasRapportMarks) return null;
 
   return (
     <div
@@ -39,6 +45,12 @@ export function PatternLegend({ usedSymbols }: { usedSymbols: PatternSymbol[] })
             </span>
           </div>
         ))}
+        {hasRapportMarks && (
+          <div className="flex items-center gap-3 min-w-0">
+            <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg border-2 bg-white" style={{ borderColor: "#d9480f" }} />
+            <span className="text-yarn-charcoal min-w-0 break-words font-medium">{t("print.legendRapport")}</span>
+          </div>
+        )}
       </div>
     </div>
   );

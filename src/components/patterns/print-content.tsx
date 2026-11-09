@@ -59,7 +59,7 @@ export function PrintContent({ pattern, document, usedSymbols }: Props) {
           <PatternGrid document={document} />
         </div>
 
-        <PatternLegend usedSymbols={usedSymbols} />
+        <PatternLegend usedSymbols={usedSymbols} hasRapportMarks={(document.rapportMarks?.length ?? 0) > 0} />
       </div>
     </section>
   );

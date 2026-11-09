@@ -62,6 +62,8 @@ export function PatternEditor({ patternId, initialPattern, title, description, i
     endSelection,
     saveSelectionAsRapport,
     deleteRapport,
+    markSelectionAsRapport,
+    removeRapportMark,
     startRapportInsert,
     cancelRapportInsert,
     insertRapport,
@@ -646,6 +648,10 @@ export function PatternEditor({ patternId, initialPattern, title, description, i
                   {t("editor.rapportSave")}
                 </button>
               </div>
+              <button type="button" onClick={markSelectionAsRapport}
+                className="w-full rounded px-2 py-1 text-xs font-medium border border-blue-300 text-blue-700 bg-white hover:bg-blue-50 transition-colors">
+                {t("editor.rapportMarkOnly")}
+              </button>
             </div>
           )}
 
@@ -709,6 +715,22 @@ export function PatternEditor({ patternId, initialPattern, title, description, i
                   <button type="button" onClick={() => deleteRapport(rapport.id)}
                     title={t("editor.rapportDelete")}
                     aria-label={t("editor.rapportDelete")}
+                    className="relative text-yarn-warm-gray/40 hover:text-red-400 transition-colors text-sm leading-none shrink-0 before:absolute before:-inset-2 before:content-['']">
+                    ×
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
+
+          {(pattern.rapportMarks ?? []).length > 0 && (
+            <div className="space-y-1">
+              <p className="text-[10px] font-medium text-yarn-warm-gray uppercase tracking-wide">{t("editor.rapportMarksListTitle")}</p>
+              {(pattern.rapportMarks ?? []).map((mark) => (
+                <div key={mark.id} className="flex items-center gap-2 rounded-lg border border-yarn-sand/60 bg-white px-2.5 py-1.5">
+                  <span className="flex-1 text-xs text-yarn-charcoal">{t("editor.rapportMarkItem", { w: mark.width, h: mark.height })}</span>
+                  <button type="button" onClick={() => removeRapportMark(mark.id)}
+                    title={t("editor.rapportMarkRemove")} aria-label={t("editor.rapportMarkRemove")}
                     className="relative text-yarn-warm-gray/40 hover:text-red-400 transition-colors text-sm leading-none shrink-0 before:absolute before:-inset-2 before:content-['']">
                     ×
                   </button>
@@ -908,6 +930,21 @@ export function PatternEditor({ patternId, initialPattern, title, description, i
                 {pattern.width - columnIndex}
               </div>
             ))}
+            {(pattern.rapportMarks ?? []).map((mark) => {
+              const displayRows: number[] = [];
+              for (let r = mark.row; r < mark.row + mark.height; r++) {
+                const idx = visibleRowIndexes.indexOf(r);
+                if (idx !== -1) displayRows.push(idx);
+              }
+              if (displayRows.length === 0) return null;
+              const rowStart = Math.min(...displayRows);
+              const rowSpan = Math.max(...displayRows) - rowStart + 1;
+              return (
+                <div key={`rapport-frame-${mark.id}`} aria-hidden="true" className="pointer-events-none z-20"
+                  style={{ gridRow: `${rowStart + 1} / span ${rowSpan}`, gridColumn: `${mark.col + 1} / span ${mark.width}`, border: "2px solid #d9480f", boxSizing: "border-box" }}
+                />
+              );
+            })}
             <div className="bg-yarn-oatmeal rounded-br border-l border-t border-yarn-sand/60" style={{ gridRow: visibleRowIndexes.length + 1, gridColumn: pattern.width + 1 }} />
           </div>
 

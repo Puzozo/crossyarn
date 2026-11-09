@@ -48,6 +48,18 @@ export function PatternGrid({
     (i) => !skipPurl || (document.height - i) % 2 === 1
   );
 
+  function mapMarkRows(mark: { row: number; height: number }): { rowStart: number; rowSpan: number } | null {
+    const rows: number[] = [];
+    for (let r = mark.row; r < mark.row + mark.height; r++) {
+      const idx = visibleRowIndexes.indexOf(r);
+      if (idx !== -1) rows.push(idx);
+    }
+    if (rows.length === 0) return null;
+    const rowStart = Math.min(...rows);
+    return { rowStart, rowSpan: Math.max(...rows) - rowStart + 1 };
+  }
+  const rapportMarks = document.rapportMarks ?? [];
+
   return (
     <div
       className="grid"
@@ -150,6 +162,33 @@ export function PatternGrid({
           style={{ gridColumn: columnIndex + 1, gridRow: visibleRowIndexes.length + 1 }}
         >
           {document.width - columnIndex}
+        </div>
+      ))}
+      {rapportMarks.map((mark) => {
+        const mapped = mapMarkRows(mark);
+        if (!mapped) return null;
+        return (
+          <div key={`rapport-frame-${mark.id}`} aria-hidden="true" className="pointer-events-none print:border-[#d9480f]"
+            style={{ gridRow: `${mapped.rowStart + 1} / span ${mapped.rowSpan}`, gridColumn: `${mark.col + 1} / span ${mark.width}`, border: "2px solid #d9480f", boxSizing: "border-box", zIndex: 5 }}
+          />
+        );
+      })}
+      {rapportMarks.map((mark) => {
+        const mapped = mapMarkRows(mark);
+        if (!mapped) return null;
+        return (
+          <div key={`rapport-row-bracket-${mark.id}`} aria-hidden="true" className="pointer-events-none"
+            style={{ gridRow: `${mapped.rowStart + 1} / span ${mapped.rowSpan}`, gridColumn: document.width + 1, position: "relative" }}
+          >
+            <div style={{ position: "absolute", top: 0, bottom: 0, left: 0, width: 6, borderLeft: "2px solid #d9480f", borderTop: "2px solid #d9480f", borderBottom: "2px solid #d9480f" }} />
+          </div>
+        );
+      })}
+      {rapportMarks.map((mark) => (
+        <div key={`rapport-col-bracket-${mark.id}`} aria-hidden="true" className="pointer-events-none"
+          style={{ gridRow: visibleRowIndexes.length + 1, gridColumn: `${mark.col + 1} / span ${mark.width}`, position: "relative" }}
+        >
+          <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 6, borderTop: "2px solid #d9480f", borderLeft: "2px solid #d9480f", borderRight: "2px solid #d9480f" }} />
         </div>
       ))}
       <div

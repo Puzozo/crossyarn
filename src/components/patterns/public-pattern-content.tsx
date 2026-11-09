@@ -125,7 +125,7 @@ export function PublicPatternContent({
           highlightRow={knitting.active ? knitting.row : undefined}
           onRowClick={knitting.active ? knitting.goTo : undefined}
         />
-        <PatternLegend usedSymbols={usedSymbols} />
+        <PatternLegend usedSymbols={usedSymbols} hasRapportMarks={(document.rapportMarks?.length ?? 0) > 0} />
       </div>
     </section>
   );
