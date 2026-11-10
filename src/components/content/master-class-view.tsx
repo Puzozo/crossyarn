@@ -95,6 +95,7 @@ export async function MasterClassView({
   // Protected (Bunny) video access: admin preview sees it; otherwise free → any signed-in
   // user, paid → author/admin only. Guests get a sign-in placeholder, no GUID in the HTML.
   const protectedVideoAccess = {
+    masterClassId: mc.id,
     signedIn: preview ? true : Boolean(session),
     canView:
       preview ||

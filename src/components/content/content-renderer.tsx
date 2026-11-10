@@ -8,7 +8,7 @@ import type { ContentDoc, TopLevelBlock, InlineNode, TextNode, TextMark } from "
 
 // Access context for the protected-video (Bunny) block. Defaults to a signed-out
 // guest so an unset caller never leaks a signed URL — only a sign-in placeholder.
-type ProtectedVideoAccess = { signedIn: boolean; canView: boolean };
+type ProtectedVideoAccess = { signedIn: boolean; canView: boolean; masterClassId: string | null };
 
 type ContentRendererProps = { doc: ContentDoc; lang: Language; protectedVideo?: ProtectedVideoAccess };
 
@@ -42,7 +42,7 @@ export async function ContentRenderer({ doc, lang, protectedVideo }: ContentRend
     lang,
     patternById,
     nextStepNumber: () => ++stepCounter,
-    protectedVideo: protectedVideo ?? { signedIn: false, canView: false },
+    protectedVideo: protectedVideo ?? { signedIn: false, canView: false, masterClassId: null },
   };
 
   return (
@@ -151,6 +151,7 @@ function renderBlock(block: TopLevelBlock, key: React.Key, ctx: RenderContext): 
           lang={ctx.lang}
           signedIn={ctx.protectedVideo.signedIn}
           canView={ctx.protectedVideo.canView}
+          masterClassId={ctx.protectedVideo.masterClassId}
         />
       );
     default:

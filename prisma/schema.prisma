@@ -222,6 +222,23 @@ model SiteSettings {
   updatedAt          DateTime @updatedAt
 }
 
+// Concurrent-device limit for protected (Bunny) video. deviceId is a random id in
+// the httpOnly cy_dev cookie; a row is a device actively watching a master class.
+// "Active" = lastSeenAt within the last 90s; ≥2 other active devices block a third.
+// No FK (plain scalars, like the other content models); stale rows (>1d) are pruned
+// opportunistically on embed.
+model VideoViewSession {
+  id            String   @id @default(cuid())
+  userId        String
+  deviceId      String
+  masterClassId String
+  lastSeenAt    DateTime @default(now())
+  createdAt     DateTime @default(now())
+
+  @@unique([userId, deviceId])
+  @@index([userId, lastSeenAt])
+}
+
 enum PatternVisibility {
   PRIVATE
   UNLISTED

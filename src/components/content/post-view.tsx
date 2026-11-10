@@ -22,7 +22,7 @@ export async function PostView({ post, preview = false }: { post: PostViewData; 
   // Blog posts are free: a protected-video block (if any) shows to any signed-in user;
   // admin preview always shows it. Guests see the sign-in placeholder.
   const signedIn = preview ? true : Boolean(await getSession());
-  const protectedVideoAccess = { signedIn, canView: signedIn };
+  const protectedVideoAccess = { signedIn, canView: signedIn, masterClassId: null };
 
   const jsonLd = {
     "@context": "https://schema.org",

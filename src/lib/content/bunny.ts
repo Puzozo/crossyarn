@@ -8,7 +8,7 @@ import { createHash } from "crypto";
 // The token key is secret and must never leave the server, so the public HTML only
 // ever carries a short-lived token+expires — never a permanent/unsigned embed link.
 const BUNNY_EMBED_HOST = "https://player.mediadelivery.net";
-const DEFAULT_TTL_SEC = 15 * 60;
+export const DEFAULT_TTL_SEC = 15 * 60;
 
 export function isBunnyConfigured(): boolean {
   return Boolean(process.env.BUNNY_STREAM_LIBRARY_ID && process.env.BUNNY_STREAM_TOKEN_KEY);
