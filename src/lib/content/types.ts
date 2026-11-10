@@ -25,6 +25,10 @@ export type StepNode = { type: "step"; attrs: { title: string }; content: StepCo
 
 export type PatternEmbedNode = { type: "patternEmbed"; attrs: { patternId: string } };
 export type VideoNode = { type: "video"; attrs: { provider: "youtube"; videoId: string; title?: string } };
+export type ProtectedVideoNode = {
+  type: "protectedVideo";
+  attrs: { provider: "bunny"; videoId: string; title?: string };
+};
 
 export type TopLevelBlock =
   | ParagraphNode
@@ -37,6 +41,7 @@ export type TopLevelBlock =
   | GalleryNode
   | StepNode
   | PatternEmbedNode
-  | VideoNode;
+  | VideoNode
+  | ProtectedVideoNode;
 
 export type ContentDoc = { type: "doc"; content: TopLevelBlock[] };

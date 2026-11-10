@@ -11,6 +11,7 @@ import { GalleryNode } from "./nodes/gallery-node";
 import { StepNode } from "./nodes/step-node";
 import { PatternEmbedNode } from "./nodes/pattern-embed-node";
 import { VideoNode } from "./nodes/video-node";
+import { ProtectedVideoNode, GUID_RE } from "./nodes/protected-video-node";
 import { ImageUploadDialog } from "./image-upload-dialog";
 import { PatternPickerDialog } from "./pattern-picker-dialog";
 import { parseYouTubeId } from "@/lib/content/youtube";
@@ -36,7 +37,7 @@ function dropNullOptionalAttrs(json: unknown): unknown {
     if ((node.type === "image" || node.type === "patternImage" || node.type === "video") && attrs.caption === null) {
       delete attrs.caption;
     }
-    if (node.type === "video" && attrs.title === null) {
+    if ((node.type === "video" || node.type === "protectedVideo") && attrs.title === null) {
       delete attrs.title;
     }
     if (node.type === "gallery" && Array.isArray(attrs.items)) {
@@ -61,7 +62,7 @@ const TOOLBAR_BUTTON =
   "px-2.5 py-1.5 rounded-lg text-xs font-medium transition-colors text-gray-300 hover:bg-gray-700 data-[active=true]:bg-indigo-600 data-[active=true]:text-white";
 const MENU_BUTTON = "block w-full rounded-lg px-3 py-2 text-left text-sm text-gray-200 hover:bg-gray-700";
 
-type BlockType = "image" | "patternImage" | "gallery" | "step" | "patternEmbed" | "video";
+type BlockType = "image" | "patternImage" | "gallery" | "step" | "patternEmbed" | "video" | "protectedVideo";
 
 const BLOCK_MENU_ITEMS: { type: BlockType; label: string }[] = [
   { type: "image", label: "Зображення" },
@@ -69,7 +70,8 @@ const BLOCK_MENU_ITEMS: { type: BlockType; label: string }[] = [
   { type: "step", label: "Крок" },
   { type: "patternEmbed", label: "Схема Crossyarn" },
   { type: "patternImage", label: "Зображення схеми" },
-  { type: "video", label: "YouTube" }
+  { type: "video", label: "YouTube" },
+  { type: "protectedVideo", label: "Захищене відео (Bunny)" }
 ];
 
 type Props = { value: string; onChange: (json: unknown) => void };
@@ -79,6 +81,8 @@ export function BlockEditor({ value, onChange }: Props) {
   const [pendingBlock, setPendingBlock] = useState<BlockType | null>(null);
   const [videoUrl, setVideoUrl] = useState("");
   const [videoError, setVideoError] = useState<string | null>(null);
+  const [bunnyGuid, setBunnyGuid] = useState("");
+  const [bunnyError, setBunnyError] = useState<string | null>(null);
 
   let initialContent: JSONContent = { type: "doc", content: [] };
   try {
@@ -117,7 +121,8 @@ export function BlockEditor({ value, onChange }: Props) {
       GalleryNode,
       StepNode,
       PatternEmbedNode,
-      VideoNode
+      VideoNode,
+      ProtectedVideoNode
     ],
     onUpdate: ({ editor }) => onChange(dropNullOptionalAttrs(editor.getJSON()))
   });
@@ -175,6 +180,10 @@ export function BlockEditor({ value, onChange }: Props) {
       setVideoUrl("");
       setVideoError(null);
     }
+    if (type === "protectedVideo") {
+      setBunnyGuid("");
+      setBunnyError(null);
+    }
     // image/patternImage/gallery/patternEmbed all need a value gathered from a dialog
     // BEFORE insertion — never insert a placeholder node, or the next autosave's
     // validateContentDoc (src/lib/content/repo-shared.ts) 422s the whole save.
@@ -189,6 +198,17 @@ export function BlockEditor({ value, onChange }: Props) {
       return;
     }
     insertBlock({ type: "video", attrs: { provider: "youtube", videoId: id, title: undefined } });
+    setPendingBlock(null);
+  };
+
+  // Resolved before insertion so an invalid/empty Bunny GUID is never committed to the doc.
+  const insertProtectedVideo = () => {
+    const trimmed = bunnyGuid.trim();
+    if (!GUID_RE.test(trimmed)) {
+      setBunnyError("Невалідний GUID відео (формат: xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx)");
+      return;
+    }
+    insertBlock({ type: "protectedVideo", attrs: { provider: "bunny", videoId: trimmed, title: undefined } });
     setPendingBlock(null);
   };
 
@@ -308,6 +328,44 @@ export function BlockEditor({ value, onChange }: Props) {
             </button>
           </div>
           {videoError && <p className="text-xs text-red-400">{videoError}</p>}
+        </div>
+      )}
+
+      {pendingBlock === "protectedVideo" && (
+        <div className="space-y-2 rounded-lg border border-gray-700 bg-gray-900 p-3">
+          <div className="flex gap-2">
+            <input
+              autoFocus
+              value={bunnyGuid}
+              onChange={(e) => setBunnyGuid(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  e.preventDefault();
+                  insertProtectedVideo();
+                }
+                if (e.key === "Escape") setPendingBlock(null);
+              }}
+              placeholder="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+              aria-label="GUID відео з бібліотеки Bunny Stream"
+              aria-invalid={bunnyError ? true : undefined}
+              className="w-full rounded-lg border border-gray-700 bg-gray-800 px-2 py-1 text-xs text-white focus:border-indigo-500 focus:outline-none"
+            />
+            <button
+              type="button"
+              onClick={insertProtectedVideo}
+              className="rounded-lg bg-indigo-600 px-3 py-1 text-xs font-medium text-white hover:bg-indigo-500"
+            >
+              Додати
+            </button>
+            <button
+              type="button"
+              onClick={() => setPendingBlock(null)}
+              className="rounded-lg bg-gray-800 px-3 py-1 text-xs font-medium text-gray-300 hover:bg-gray-700"
+            >
+              Скасувати
+            </button>
+          </div>
+          {bunnyError && <p className="text-xs text-red-400">{bunnyError}</p>}
         </div>
       )}
 

@@ -3,9 +3,14 @@ import { Language, translate } from "@/lib/i18n/translations";
 import { MediaImage } from "@/components/content/media-image";
 import { YouTubeFacade } from "@/components/content/youtube-facade";
 import { GalleryGrid } from "@/components/content/gallery-grid";
+import { ProtectedVideoEmbed } from "@/components/content/protected-video-embed";
 import type { ContentDoc, TopLevelBlock, InlineNode, TextNode, TextMark } from "@/lib/content/types";
 
-type ContentRendererProps = { doc: ContentDoc; lang: Language };
+// Access context for the protected-video (Bunny) block. Defaults to a signed-out
+// guest so an unset caller never leaks a signed URL — only a sign-in placeholder.
+type ProtectedVideoAccess = { signedIn: boolean; canView: boolean };
+
+type ContentRendererProps = { doc: ContentDoc; lang: Language; protectedVideo?: ProtectedVideoAccess };
 
 type PatternSummary = { id: string; title: string };
 
@@ -13,9 +18,10 @@ type RenderContext = {
   lang: Language;
   patternById: Map<string, PatternSummary>;
   nextStepNumber: () => number;
+  protectedVideo: ProtectedVideoAccess;
 };
 
-export async function ContentRenderer({ doc, lang }: ContentRendererProps) {
+export async function ContentRenderer({ doc, lang, protectedVideo }: ContentRendererProps) {
   const patternIds = [
     ...new Set(
       doc.content
@@ -32,7 +38,12 @@ export async function ContentRenderer({ doc, lang }: ContentRendererProps) {
   const patternById = new Map(patterns.map((p) => [p.id, p]));
 
   let stepCounter = 0;
-  const ctx: RenderContext = { lang, patternById, nextStepNumber: () => ++stepCounter };
+  const ctx: RenderContext = {
+    lang,
+    patternById,
+    nextStepNumber: () => ++stepCounter,
+    protectedVideo: protectedVideo ?? { signedIn: false, canView: false },
+  };
 
   return (
     <div className="blog-prose">
@@ -131,6 +142,17 @@ function renderBlock(block: TopLevelBlock, key: React.Key, ctx: RenderContext): 
     }
     case "video":
       return <YouTubeFacade key={key} videoId={block.attrs.videoId} title={block.attrs.title} lang={ctx.lang} />;
+    case "protectedVideo":
+      return (
+        <ProtectedVideoEmbed
+          key={key}
+          videoId={block.attrs.videoId}
+          title={block.attrs.title}
+          lang={ctx.lang}
+          signedIn={ctx.protectedVideo.signedIn}
+          canView={ctx.protectedVideo.canView}
+        />
+      );
     default:
       return null;
   }

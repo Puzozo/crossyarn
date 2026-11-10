@@ -5,6 +5,23 @@ export function canAccessMasterClass(priceUah: number | null, isAdmin: boolean):
   return priceUah == null || isAdmin;
 }
 
+/**
+ * Хто бачить захищене відео (Bunny) у блоці protectedVideo.
+ * Гість — ніколи (лише заглушка входу). Безкоштовний контент — будь-який авторизований.
+ * Платний (priceUah != null) — лише автор або admin; купівель ще немає, майбутній
+ * маркетплейс додасть сюди перевірку покупки за userId.
+ */
+export function hasProtectedVideoAccess(opts: {
+  userId: string | null;
+  isAdmin: boolean;
+  priceUah: number | null;
+  authorId: string | null;
+}): boolean {
+  if (!opts.userId) return false;
+  if (opts.priceUah == null) return true;
+  return opts.isAdmin || opts.userId === opts.authorId;
+}
+
 export function gateContent(
   doc: ContentDoc,
   meta: { priceUah: number | null; previewBlockCount: number },

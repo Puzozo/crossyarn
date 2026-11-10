@@ -1,4 +1,5 @@
 import { SITE_URL } from "@/lib/site";
+import { getSession } from "@/lib/auth/session";
 import { translate, type Language } from "@/lib/i18n/translations";
 import { parseStoredContent } from "@/lib/content/repo-shared";
 import { ContentRenderer } from "@/components/content/content-renderer";
@@ -14,10 +15,14 @@ export type PostViewData = {
   updatedAt: Date;
 };
 
-export function PostView({ post, preview = false }: { post: PostViewData; preview?: boolean }) {
+export async function PostView({ post, preview = false }: { post: PostViewData; preview?: boolean }) {
   const lang = post.lang as Language;
   const doc = parseStoredContent(post.content);
   const publishedDate = post.publishedAt ?? post.updatedAt;
+  // Blog posts are free: a protected-video block (if any) shows to any signed-in user;
+  // admin preview always shows it. Guests see the sign-in placeholder.
+  const signedIn = preview ? true : Boolean(await getSession());
+  const protectedVideoAccess = { signedIn, canView: signedIn };
 
   const jsonLd = {
     "@context": "https://schema.org",
@@ -69,7 +74,7 @@ export function PostView({ post, preview = false }: { post: PostViewData; previe
         })}
       </time>
       <div className="mt-6">
-        <ContentRenderer doc={doc} lang={lang} />
+        <ContentRenderer doc={doc} lang={lang} protectedVideo={protectedVideoAccess} />
       </div>
     </article>
   );

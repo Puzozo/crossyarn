@@ -89,6 +89,19 @@ const videoSchema = z
   })
   .strict();
 
+const protectedVideoSchema = z
+  .object({
+    type: z.literal("protectedVideo"),
+    attrs: z
+      .object({
+        provider: z.literal("bunny"),
+        videoId: z.string().regex(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i),
+        title: z.string().max(200).optional()
+      })
+      .strict()
+  })
+  .strict();
+
 const topLevelBlockSchema = z.discriminatedUnion("type", [
   paragraphSchema,
   headingSchema,
@@ -100,7 +113,8 @@ const topLevelBlockSchema = z.discriminatedUnion("type", [
   gallerySchema,
   stepSchema,
   patternEmbedSchema,
-  videoSchema
+  videoSchema,
+  protectedVideoSchema
 ]);
 
 export const contentDocSchema = z

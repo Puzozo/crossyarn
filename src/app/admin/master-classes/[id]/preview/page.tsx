@@ -36,6 +36,7 @@ export default async function MasterClassPreviewPage({
         mc={{
           id: mc.id,
           slug: mc.slug,
+          authorId: mc.authorId,
           lang: mc.lang,
           title: mc.title,
           summary: mc.summary,

@@ -11,7 +11,8 @@ const csp = [
   "script-src 'self' 'unsafe-inline' 'unsafe-eval'",
   "connect-src 'self'",
   "font-src 'self' data:",
-  "frame-src 'self' https://www.youtube-nocookie.com",
+  // player.mediadelivery.net: Bunny Stream protected-video embed (signed token URLs).
+  "frame-src 'self' https://www.youtube-nocookie.com https://player.mediadelivery.net",
   "frame-ancestors 'none'",
   "object-src 'none'",
   "base-uri 'self'",

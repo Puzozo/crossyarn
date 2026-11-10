@@ -5,7 +5,7 @@ import { getSession } from "@/lib/auth/session";
 import { SITE_URL } from "@/lib/site";
 import { parseTags } from "@/lib/utils";
 import { Language, TranslationKey, translate } from "@/lib/i18n/translations";
-import { canAccessMasterClass, gateContent } from "@/lib/content/gate";
+import { canAccessMasterClass, gateContent, hasProtectedVideoAccess } from "@/lib/content/gate";
 import { parseStoredContent } from "@/lib/content/repo-shared";
 import { materialsSchema, DEFAULT_MATERIALS, type Materials } from "@/lib/content/materials";
 import { gallerySchema, type GalleryItem } from "@/lib/content/gallery";
@@ -17,6 +17,7 @@ import { Button } from "@/components/ui/button";
 export type MasterClassViewData = {
   id: string;
   slug: string;
+  authorId: string;
   lang: string;
   title: string;
   summary: string;
@@ -91,6 +92,19 @@ export async function MasterClassView({
     : false;
 
   const hasAccess = preview || canAccessMasterClass(mc.priceUah, isAdmin);
+  // Protected (Bunny) video access: admin preview sees it; otherwise free → any signed-in
+  // user, paid → author/admin only. Guests get a sign-in placeholder, no GUID in the HTML.
+  const protectedVideoAccess = {
+    signedIn: preview ? true : Boolean(session),
+    canView:
+      preview ||
+      hasProtectedVideoAccess({
+        userId: session?.userId ?? null,
+        isAdmin,
+        priceUah: mc.priceUah,
+        authorId: mc.authorId,
+      }),
+  };
   const fullDoc = parseStoredContent(mc.content);
   const { doc, locked } = gateContent(fullDoc, { priceUah: mc.priceUah, previewBlockCount: mc.previewBlockCount }, hasAccess);
 
@@ -282,7 +296,7 @@ export async function MasterClassView({
         )}
       </div>
 
-      <ContentRenderer doc={doc} lang={lang} />
+      <ContentRenderer doc={doc} lang={lang} protectedVideo={protectedVideoAccess} />
 
       {locked ? <LockedContentCta lang={lang} /> : null}
 
