@@ -1,4 +1,5 @@
 import { PatternDocument } from "@/lib/patterns/model";
+import { Language, translate } from "@/lib/i18n/translations";
 
 function escapeXml(str: string): string {
   return str
@@ -31,7 +32,8 @@ function wrapLabel(text: string, maxWidth: number, charWidth = 6.2): string[] {
 export function patternToSvg(
   pattern: PatternDocument,
   title: string,
-  photo?: { dataUri: string; width: number; height: number }
+  photo?: { dataUri: string; width: number; height: number },
+  lang: Language = "uk"
 ) {
   const cellSize = 24;
   const rightGutter = 32;
@@ -221,7 +223,7 @@ export function patternToSvg(
   let legendMarkup = "";
   if (usedSymbols.length > 0 || hasRapportMarks) {
     const legendTitleY = legendTop + 14;
-    legendMarkup += `<text x="0" y="${legendTitleY}" font-size="14" font-family="Arial" font-weight="bold" fill="#1e293b">Легенда</text>`;
+    legendMarkup += `<text x="0" y="${legendTitleY}" font-size="14" font-family="Arial" font-weight="bold" fill="#1e293b">${escapeXml(translate(lang, "print.legend"))}</text>`;
 
     legendEntries.forEach(({ symbol, col, y, lines }) => {
       const x = col * legendColWidth;
@@ -243,7 +245,7 @@ export function patternToSvg(
       const y = rapportLegendEntry.y;
       legendMarkup += `
         <rect x="${x + 2}" y="${y + 2}" width="16" height="16" fill="none" stroke="${RAPPORT_COLOR}" stroke-width="2" />
-        <text x="${x + 28}" y="${y + 15}" font-size="11" font-family="Arial" fill="#334155">Рапорт</text>
+        <text x="${x + 28}" y="${y + 15}" font-size="11" font-family="Arial" fill="#334155">${escapeXml(translate(lang, "print.legendRapport"))}</text>
       `;
     }
   }

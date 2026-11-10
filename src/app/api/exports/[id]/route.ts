@@ -5,6 +5,7 @@ import { patternToSvg } from "@/lib/export/pattern-export";
 import { PatternDocument } from "@/lib/patterns/model";
 import { hydrateBuiltinSymbols } from "@/lib/patterns/normalize-symbols";
 import { readMediaVariant } from "@/lib/content/media";
+import { Language } from "@/lib/i18n/translations";
 
 /**
  * HTTP headers only allow Latin-1, so non-ASCII titles (e.g. Cyrillic) must be
@@ -17,7 +18,7 @@ function inlineDisposition(filename: string) {
   return `inline; filename="${fallback}"; filename*=UTF-8''${encoded}`;
 }
 
-export async function GET(_: Request, { params }: { params: Promise<{ id: string }> }) {
+export async function GET(request: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
     const session = await requireSession();
     const { id } = await params;
@@ -53,7 +54,8 @@ export async function GET(_: Request, { params }: { params: Promise<{ id: string
       }
     }
 
-    const svg = patternToSvg(hydrateBuiltinSymbols(pattern.patternData as unknown as PatternDocument), pattern.title, photo);
+    const lang: Language = new URL(request.url).searchParams.get("lang") === "en" ? "en" : "uk";
+    const svg = patternToSvg(hydrateBuiltinSymbols(pattern.patternData as unknown as PatternDocument), pattern.title, photo, lang);
 
     return new NextResponse(svg, {
       headers: {

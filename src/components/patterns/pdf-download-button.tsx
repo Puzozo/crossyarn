@@ -11,13 +11,13 @@ type Props = {
 };
 
 export function PdfDownloadButton({ patternId, title }: Props) {
-  const { t } = useTranslation();
+  const { t, lang } = useTranslation();
   const [loading, setLoading] = useState(false);
 
   async function handleClick() {
     setLoading(true);
     try {
-      await downloadPatternAsPdf(patternId, title);
+      await downloadPatternAsPdf(patternId, title, lang);
     } catch {
       // silently ignore — user can use print as fallback
     } finally {

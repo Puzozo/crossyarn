@@ -19,7 +19,7 @@ type Props = {
 };
 
 export function PatternDetailContent({ pattern }: Props) {
-  const { t } = useTranslation();
+  const { t, lang } = useTranslation();
 
   return (
     <section className="space-y-6">
@@ -50,7 +50,7 @@ export function PatternDetailContent({ pattern }: Props) {
               <Button variant="secondary">{t("patternDetail.print")}</Button>
             </Link>
             <PdfDownloadButton patternId={pattern.id} title={pattern.title} />
-            <a href={`/api/exports/${pattern.id}`} target="_blank">
+            <a href={`/api/exports/${pattern.id}?lang=${lang}`} target="_blank">
               <Button variant="secondary">{t("patternDetail.svg")}</Button>
             </a>
           </div>

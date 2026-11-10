@@ -15,8 +15,8 @@ function loadImage(src: string): Promise<HTMLImageElement> {
  * so any language renders correctly without embedding a font. The chart is mostly
  * image-based symbols anyway, so the quality trade-off is negligible.
  */
-export async function downloadPatternAsPdf(patternId: string, title: string) {
-  const res = await fetch(`/api/exports/${patternId}`);
+export async function downloadPatternAsPdf(patternId: string, title: string, lang: "uk" | "en") {
+  const res = await fetch(`/api/exports/${patternId}?lang=${lang}`);
   if (!res.ok) throw new Error("Failed to fetch pattern SVG");
   const svgText = await res.text();
 
