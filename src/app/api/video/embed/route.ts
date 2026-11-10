@@ -1,3 +1,4 @@
+import { createHash } from "node:crypto";
 import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
 import { z } from "zod";
@@ -110,7 +111,12 @@ export async function POST(request: Request) {
     update: { masterClassId, lastSeenAt: new Date() }
   });
 
-  const response = NextResponse.json({ url: src, expiresAt: now + DEFAULT_TTL_SEC * 1000 });
+  const [local, domain] = session.email.split("@");
+  const masked = local.length <= 1 ? local + "***" : local[0] + "***" + local[local.length - 1];
+  const maskedEmail = `${masked}@${domain}`;
+  const shortId = createHash("sha256").update(session.userId).digest("hex").slice(0, 6);
+  const watermarkLabel = `${maskedEmail} · #${shortId}`;
+  const response = NextResponse.json({ url: src, expiresAt: now + DEFAULT_TTL_SEC * 1000, watermarkLabel });
   if (!existingDevice) {
     response.cookies.set(DEVICE_COOKIE, deviceId, {
       httpOnly: true,

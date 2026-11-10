@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Language, translate } from "@/lib/i18n/translations";
 
 // Client component: the signed Bunny URL is fetched via POST /api/video/embed
@@ -19,9 +19,57 @@ type ProtectedVideoEmbedProps = {
 type LoadState =
   | { status: "loading" }
   | { status: "error"; reason: "tooManyDevices" | "unavailable" }
-  | { status: "ready"; url: string };
+  | { status: "ready"; url: string; watermarkLabel: string };
 
 const HEARTBEAT_INTERVAL_MS = 30000;
+
+function randomBetween(min: number, max: number) {
+  return min + Math.random() * (max - min);
+}
+
+// A translucent, slowly drifting watermark with the viewer's attribution.
+// The position is randomized within the upper ~80% of the player area every
+// 20–40 seconds (self-rescheduling timeout, not a fixed interval) and the move
+// is eased by a CSS transition.
+function Watermark({ label }: { label: string }) {
+  const [pos, setPos] = useState<{ top: number; left: number }>(() => ({
+    top: randomBetween(5, 65),
+    left: randomBetween(5, 60),
+  }));
+
+  useEffect(() => {
+    let timer: ReturnType<typeof setTimeout> | null = null;
+    const schedule = () => {
+      const delay = randomBetween(20000, 40000);
+      timer = setTimeout(() => {
+        setPos({ top: randomBetween(5, 65), left: randomBetween(5, 60) });
+        schedule();
+      }, delay);
+    };
+    schedule();
+    return () => {
+      if (timer !== null) clearTimeout(timer);
+    };
+  }, []);
+
+  return (
+    <div
+      aria-hidden
+      className="pointer-events-none select-none absolute text-white"
+      style={{
+        top: `${pos.top}%`,
+        left: `${pos.left}%`,
+        opacity: 0.35,
+        fontSize: "13px",
+        transition: "top 1.5s ease, left 1.5s ease",
+        textShadow: "0 1px 2px rgba(0,0,0,0.8)",
+        whiteSpace: "nowrap",
+      }}
+    >
+      {label}
+    </div>
+  );
+}
 
 function Placeholder({ message, cta }: { message: string; cta?: React.ReactNode }) {
   return (
@@ -42,6 +90,10 @@ export function ProtectedVideoEmbed({
   canView,
   masterClassId,
 }: ProtectedVideoEmbedProps) {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [canFullscreen] = useState(
+    () => typeof document !== "undefined" && typeof document.documentElement.requestFullscreen === "function"
+  );
   const [load, setLoad] = useState<LoadState>({ status: "loading" });
 
   useEffect(() => {
@@ -95,18 +147,18 @@ export function ProtectedVideoEmbed({
       } else if (!res.ok) {
         setLoad({ status: "error", reason: "unavailable" });
       } else {
-        let url: string | undefined;
+        let data: { url?: string; watermarkLabel?: string } | undefined;
         try {
-          const data = (await res.json()) as { url?: string };
-          url = data.url;
+          data = (await res.json()) as { url?: string; watermarkLabel?: string };
         } catch {
-          url = undefined;
+          data = undefined;
         }
+        const url = data?.url;
         if (!url) {
           setLoad({ status: "error", reason: "unavailable" });
           return;
         }
-        setLoad({ status: "ready", url });
+        setLoad({ status: "ready", url, watermarkLabel: data?.watermarkLabel ?? "" });
         timer = setInterval(() => {
           void sendHeartbeat();
         }, HEARTBEAT_INTERVAL_MS);
@@ -161,15 +213,40 @@ export function ProtectedVideoEmbed({
 
   return (
     <figure className="my-6">
-      <div className="relative aspect-video w-full overflow-hidden rounded-lg border border-yarn-sand/50 bg-black">
+      <div ref={containerRef} className="relative aspect-video w-full overflow-hidden rounded-lg border border-yarn-sand/50 bg-black">
         <iframe
           src={load.url}
           title={title ?? translate(lang, "masterClass.protectedVideo.title")}
           loading="lazy"
           allow="accelerometer; gyroscope; autoplay; encrypted-media; picture-in-picture;"
-          allowFullScreen
           className="absolute inset-0 h-full w-full border-0"
         />
+        {load.watermarkLabel ? <Watermark label={load.watermarkLabel} /> : null}
+        {canFullscreen ? (
+          <button
+            type="button"
+            onClick={() => containerRef.current?.requestFullscreen()}
+            className="absolute bottom-2 right-2 z-10 rounded bg-black/60 p-2 text-white hover:bg-black/80"
+            aria-label={translate(lang, "masterClass.protectedVideo.fullscreenEnter")}
+          >
+            <svg
+              aria-hidden
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <path d="M8 3H5a2 2 0 0 0-2 2v3" />
+              <path d="M16 3h3a2 2 0 0 1 2 2v3" />
+              <path d="M8 21H5a2 2 0 0 1-2-2v-3" />
+              <path d="M16 21h3a2 2 0 0 0 2-2v-3" />
+            </svg>
+          </button>
+        ) : null}
       </div>
     </figure>
   );
