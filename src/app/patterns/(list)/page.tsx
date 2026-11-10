@@ -26,7 +26,8 @@ export default async function PatternsPage() {
     width: p.width,
     height: p.height,
     visibility: p.visibility,
-    updatedAt: p.updatedAt.toISOString()
+    updatedAt: p.updatedAt.toISOString(),
+    photos: JSON.parse(p.photos || "[]") as { assetId: string; alt: string }[]
   }));
 
   return <PatternsContent patterns={serialized} isPremium={isPremium} />;

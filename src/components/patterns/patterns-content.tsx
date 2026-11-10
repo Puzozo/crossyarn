@@ -14,6 +14,7 @@ type PatternData = {
   height: number;
   visibility: string;
   updatedAt: string;
+  photos: { assetId: string; alt: string }[];
 };
 
 export function PatternsContent({ patterns, isPremium }: { patterns: PatternData[]; isPremium: boolean }) {

@@ -36,6 +36,7 @@ export default async function PatternPrintPage({
   }
   usedSymbolIds.delete("empty");
   const usedSymbols = hydratedDocument.symbols.filter((s) => usedSymbolIds.has(s.id));
+  const photos = JSON.parse(pattern.photos || "[]") as { assetId: string; alt: string }[];
 
   return (
     <PrintContent
@@ -48,6 +49,7 @@ export default async function PatternPrintPage({
       }}
       document={hydratedDocument}
       usedSymbols={usedSymbols}
+      photos={photos}
     />
   );
 }

@@ -9,6 +9,7 @@ import { useTranslation } from "@/lib/i18n/context";
 import { PatternDocument, PatternSymbol } from "@/lib/patterns/model";
 import { KnittingModeBar } from "@/components/patterns/knitting-mode-bar";
 import { useKnittingProgress } from "@/lib/patterns/knitting-progress";
+import { GalleryGrid } from "@/components/content/gallery-grid";
 
 type Author = { name: string | null; username: string } | null;
 
@@ -20,6 +21,7 @@ type Props = {
     width: number;
     height: number;
   };
+  photos: { assetId: string; alt: string }[];
   document: PatternDocument;
   usedSymbols: PatternSymbol[];
   author: Author;
@@ -31,6 +33,7 @@ type Props = {
 
 export function PublicPatternContent({
   pattern,
+  photos,
   document,
   usedSymbols,
   author,
@@ -39,7 +42,7 @@ export function PublicPatternContent({
   isAuthenticated,
   relatedMasterClass
 }: Props) {
-  const { t } = useTranslation();
+  const { t, lang } = useTranslation();
   const knitting = useKnittingProgress(
     pattern.id,
     document.height,
@@ -102,6 +105,18 @@ export function PublicPatternContent({
           </p>
         ) : null}
       </div>
+
+      {photos.length > 0 ? (
+        <div className="rounded-2xl bg-white/70 border border-yarn-sand/50 p-6 shadow-warm-sm">
+          <h2 className="mb-3 font-display text-lg font-semibold text-yarn-charcoal">{t("publicPattern.photosTitle")}</h2>
+          <GalleryGrid
+            items={photos.map((p) => ({ assetId: p.assetId, alt: p.alt || pattern.title }))}
+            lang={lang}
+            className="grid grid-cols-3 gap-3 sm:grid-cols-5"
+            thumbClassName="relative aspect-square overflow-hidden rounded-lg border border-yarn-sand/40 bg-white cursor-pointer"
+          />
+        </div>
+      ) : null}
 
       {relatedMasterClass ? (
         <Link

@@ -7,6 +7,8 @@ import { hydrateBuiltinSymbols, hydrateUserSymbolLabels } from "@/lib/patterns/n
 import { EditorPageContent } from "@/components/editor/editor-page-content";
 import { parseTags } from "@/lib/utils";
 
+type PatternPhoto = { assetId: string; alt: string };
+
 export const dynamic = "force-dynamic";
 
 export async function generateMetadata({
@@ -49,6 +51,13 @@ export default async function EditorPage({
   const document = hydrateBuiltinSymbols(pattern.patternData as unknown as PatternDocument);
   const hydratedDocument = await hydrateUserSymbolLabels(document, session.userId);
 
+  let initialPhotos: PatternPhoto[] = [];
+  try {
+    initialPhotos = JSON.parse(pattern.photos || "[]") as PatternPhoto[];
+  } catch {
+    initialPhotos = [];
+  }
+
   return (
     <EditorPageContent
       patternId={pattern.id}
@@ -56,6 +65,7 @@ export default async function EditorPage({
       description={pattern.description}
       initialPattern={hydratedDocument}
       initialTags={parseTags(pattern.tags) ?? []}
+      initialPhotos={initialPhotos}
     />
   );
 }

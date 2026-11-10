@@ -85,6 +85,7 @@ export default async function PublicPatternPage({
   ]);
 
   const document = hydrateBuiltinSymbols(pattern.patternData as unknown as PatternDocument);
+  const photos = JSON.parse(pattern.photos || "[]") as { assetId: string; alt: string }[];
   const hydratedDocument = await hydrateUserSymbolLabels(document, pattern.userId);
 
   const usedSymbolIds = new Set<string>();
@@ -111,6 +112,7 @@ export default async function PublicPatternPage({
         width: pattern.width,
         height: pattern.height
       }}
+      photos={photos}
       document={hydratedDocument}
       usedSymbols={usedSymbols}
       author={author}

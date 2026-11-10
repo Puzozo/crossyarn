@@ -7,6 +7,7 @@ import { PatternDocument } from "@/lib/patterns/model";
 import { useTranslation } from "@/lib/i18n/context";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { PatternPhotoManager } from "@/components/editor/pattern-photo-manager";
 
 type Props = {
   patternId: string;
@@ -14,9 +15,10 @@ type Props = {
   description: string | null;
   initialPattern: PatternDocument;
   initialTags: string[];
+  initialPhotos: { assetId: string; alt: string }[];
 };
 
-export function EditorPageContent({ patternId, title: initialTitle, description: initialDescription, initialPattern, initialTags }: Props) {
+export function EditorPageContent({ patternId, title: initialTitle, description: initialDescription, initialPattern, initialTags, initialPhotos }: Props) {
   const { t } = useTranslation();
   const [title, setTitle] = useState(initialTitle);
   const [description, setDescription] = useState(initialDescription ?? "");
@@ -130,6 +132,13 @@ export function EditorPageContent({ patternId, title: initialTitle, description:
           </button>
         </div>
       )}
+
+      <PatternPhotoManager
+        patternId={patternId}
+        title={title}
+        description={description}
+        initialPhotos={initialPhotos}
+      />
 
       <PatternEditor
         patternId={patternId}

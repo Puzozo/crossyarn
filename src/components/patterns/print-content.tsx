@@ -18,9 +18,10 @@ type Props = {
   };
   document: PatternDocument;
   usedSymbols: PatternSymbol[];
+  photos: { assetId: string; alt: string }[];
 };
 
-export function PrintContent({ pattern, document, usedSymbols }: Props) {
+export function PrintContent({ pattern, document, usedSymbols, photos }: Props) {
   const { t } = useTranslation();
 
   return (
@@ -55,6 +56,14 @@ export function PrintContent({ pattern, document, usedSymbols }: Props) {
           {pattern.width} × {pattern.height} —{" "}
           {new Date(pattern.updatedAt).toLocaleDateString("uk-UA")}
         </p>
+        {photos[0] ? (
+          // eslint-disable-next-line @next/next/no-img-element -- pre-generated WebP variant served from /api/media; print page, no next/image optimization needed
+          <img
+            src={`/api/media/${photos[0].assetId}/960`}
+            alt={photos[0].alt || pattern.title}
+            className="mx-auto mt-4 block max-h-[320px] w-auto object-contain"
+          />
+        ) : null}
         <div className="mt-6">
           <PatternGrid document={document} />
         </div>

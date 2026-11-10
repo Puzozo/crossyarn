@@ -28,11 +28,28 @@ function wrapLabel(text: string, maxWidth: number, charWidth = 6.2): string[] {
   return lines;
 }
 
-export function patternToSvg(pattern: PatternDocument, title: string) {
+export function patternToSvg(
+  pattern: PatternDocument,
+  title: string,
+  photo?: { dataUri: string; width: number; height: number }
+) {
   const cellSize = 24;
   const rightGutter = 32;
   const bottomGutter = 32;
   const MIN_LEGEND_WIDTH = 520;
+  const PHOTO_MAX_WIDTH = 360;
+  const PHOTO_MAX_HEIGHT = 240;
+  const PHOTO_TOP = 40;
+  const PHOTO_GAP = 16;
+  let photoMarkup = "";
+  let topOffset = 0;
+  if (photo && photo.width > 0 && photo.height > 0) {
+    const scale = Math.min(PHOTO_MAX_WIDTH / photo.width, PHOTO_MAX_HEIGHT / photo.height, 1);
+    const pw = Math.round(photo.width * scale);
+    const ph = Math.round(photo.height * scale);
+    photoMarkup = `<image href="${escapeXml(photo.dataUri)}" x="0" y="${PHOTO_TOP}" width="${pw}" height="${ph}" preserveAspectRatio="xMidYMid meet" />`;
+    topOffset = PHOTO_TOP + ph + PHOTO_GAP;
+  }
 
   // When skipPurlRows is on, only odd-numbered rows are rendered (row number = height - rowIndex)
   const skipPurl = pattern.view.skipPurlRows ?? false;
@@ -55,7 +72,7 @@ export function patternToSvg(pattern: PatternDocument, title: string) {
   const gridWidth = pattern.width * cellSize;
   const gridHeight = visibleRowIndexes.length * cellSize;
   const width = Math.max(gridWidth + rightGutter, MIN_LEGEND_WIDTH);
-  const gridBottom = gridHeight;
+  const gridBottom = topOffset + gridHeight;
 
   // Collect unique used symbols for legend (skip occupied cells and the background "empty")
   const usedIds = new Set<string>();
@@ -129,7 +146,7 @@ export function patternToSvg(pattern: PatternDocument, title: string) {
 
   // Row numbers on the right side, counting bottom-to-top (row 0 shows N, row N-1 shows 1)
   const rowNumbers = visibleRowIndexes.map((rowIndex, displayIdx) => {
-    const y = displayIdx * cellSize + 16;
+    const y = topOffset + displayIdx * cellSize + 16;
     const x = gridWidth + 16;
     return `<text x="${x}" y="${y}" text-anchor="middle" font-size="11" fill="#475569">${pattern.height - rowIndex}</text>`;
   }).join("");
@@ -138,7 +155,7 @@ export function patternToSvg(pattern: PatternDocument, title: string) {
     const mapped = mapMarkToDisplayRows(mark);
     if (!mapped) return "";
     const x = mark.col * cellSize;
-    const y = mapped.rowStart * cellSize;
+    const y = topOffset + mapped.rowStart * cellSize;
     const w = mark.width * cellSize;
     const h = mapped.rowSpan * cellSize;
     return `<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="none" stroke="${RAPPORT_COLOR}" stroke-width="2" />`;
@@ -147,7 +164,7 @@ export function patternToSvg(pattern: PatternDocument, title: string) {
     const mapped = mapMarkToDisplayRows(mark);
     if (!mapped) return "";
     const x = gridWidth + 4;
-    const y1 = mapped.rowStart * cellSize;
+    const y1 = topOffset + mapped.rowStart * cellSize;
     const y2 = y1 + mapped.rowSpan * cellSize;
     return `<path d="M ${x} ${y1} h6 M ${x} ${y1} V ${y2} M ${x} ${y2} h6" stroke="${RAPPORT_COLOR}" stroke-width="2" fill="none" />`;
   }).join("");
@@ -185,7 +202,7 @@ export function patternToSvg(pattern: PatternDocument, title: string) {
         const symbolWidth = symbol?.width ?? 1;
         const glyph = symbol?.glyph ?? "\u00B7";
         const x = columnIndex * cellSize;
-        const y = displayIdx * cellSize;
+        const y = topOffset + displayIdx * cellSize;
         const spanWidth = cellSize * symbolWidth;
         const symbolMarkup = symbol?.imageData
           ? `<use href="#${symbolDefIds.get(symbol.id)}" x="${x + 4}" y="${y + 4}" width="${spanWidth - 8}" height="${cellSize - 8}" />`
@@ -236,6 +253,7 @@ export function patternToSvg(pattern: PatternDocument, title: string) {
       ${defsMarkup}
       <rect width="100%" height="100%" fill="#ffffff" />
       <text x="0" y="24" font-size="20" font-family="Arial" fill="#111827">${escapeXml(title)}</text>
+      ${photoMarkup}
       ${columnNumbers}
       ${rowNumbers}
       ${cells}

@@ -22,6 +22,7 @@ type PatternData = {
   height: number;
   visibility: string;
   updatedAt: string;
+  photos: { assetId: string; alt: string }[];
 };
 
 export function PatternCard({ pattern }: { pattern: PatternData }) {
@@ -53,17 +54,28 @@ export function PatternCard({ pattern }: { pattern: PatternData }) {
     }
   }
 
+  const coverPhoto = pattern.photos[0];
+
   return (
     <article className="group rounded-2xl bg-white/70 border border-yarn-sand/50 shadow-warm-sm hover:shadow-warm transition-all duration-300 hover:-translate-y-0.5 overflow-hidden">
-      <Link href={`/editor/${pattern.id}`} className="relative block aspect-[4/3] border-b border-yarn-sand/40 bg-white">
-        <Image
-          src={`/api/patterns/${pattern.id}/thumbnail?v=${Date.parse(pattern.updatedAt)}`}
-          alt={pattern.title}
-          fill
-          unoptimized
-          loading="lazy"
-          className="object-contain p-3"
-        />
+      <Link href={`/editor/${pattern.id}`} className="relative block aspect-[4/3] border-b border-yarn-sand/40 bg-white overflow-hidden">
+        {coverPhoto ? (
+          // eslint-disable-next-line @next/next/no-img-element -- pre-generated WebP variant served from /api/media
+          <img
+            src={`/api/media/${coverPhoto.assetId}/480`}
+            alt={coverPhoto.alt || pattern.title}
+            className="absolute inset-0 h-full w-full object-cover"
+          />
+        ) : (
+          <Image
+            src={`/api/patterns/${pattern.id}/thumbnail?v=${Date.parse(pattern.updatedAt)}`}
+            alt={pattern.title}
+            fill
+            unoptimized
+            loading="lazy"
+            className="object-contain p-3"
+          />
+        )}
       </Link>
       <div className="p-6">
       <div className="flex items-start justify-between gap-4">

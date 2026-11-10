@@ -4,6 +4,7 @@ import { requireSession } from "@/lib/auth/session";
 import { patternToSvg } from "@/lib/export/pattern-export";
 import { PatternDocument } from "@/lib/patterns/model";
 import { hydrateBuiltinSymbols } from "@/lib/patterns/normalize-symbols";
+import { readMediaVariant } from "@/lib/content/media";
 
 /**
  * HTTP headers only allow Latin-1, so non-ASCII titles (e.g. Cyrillic) must be
@@ -31,7 +32,28 @@ export async function GET(_: Request, { params }: { params: Promise<{ id: string
       return NextResponse.json({ error: "Not found" }, { status: 404 });
     }
 
-    const svg = patternToSvg(hydrateBuiltinSymbols(pattern.patternData as unknown as PatternDocument), pattern.title);
+    const photosRaw = JSON.parse(pattern.photos || "[]") as { assetId: string; alt: string }[];
+    let photo: { dataUri: string; width: number; height: number } | undefined;
+    if (photosRaw[0]) {
+      const asset = await db.mediaAsset.findUnique({
+        where: { id: photosRaw[0].assetId },
+        select: { width: true, height: true, variants: true }
+      });
+      if (asset) {
+        let filename: string | undefined;
+        try {
+          filename = (JSON.parse(asset.variants) as Record<string, string>)["480"];
+        } catch {
+          filename = undefined;
+        }
+        const buf = filename ? await readMediaVariant(filename) : null;
+        if (buf) {
+          photo = { dataUri: `data:image/webp;base64,${buf.toString("base64")}`, width: asset.width, height: asset.height };
+        }
+      }
+    }
+
+    const svg = patternToSvg(hydrateBuiltinSymbols(pattern.patternData as unknown as PatternDocument), pattern.title, photo);
 
     return new NextResponse(svg, {
       headers: {
