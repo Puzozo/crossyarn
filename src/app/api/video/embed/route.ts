@@ -10,7 +10,6 @@ import { hasProtectedVideoAccess } from "@/lib/content/gate";
 import { parseStoredContent } from "@/lib/content/repo-shared";
 import { signEmbedUrl, DEFAULT_TTL_SEC } from "@/lib/content/bunny";
 import { DEVICE_COOKIE, getOrCreateDeviceId } from "@/lib/video/device";
-import { videoViewSession } from "@/lib/video/session-store";
 
 // Hands the client a short-lived signed Bunny embed URL — but only after enforcing
 // access (free→any signed-in user, paid→author/admin) AND the concurrent-device
@@ -87,9 +86,9 @@ export async function POST(request: Request) {
 
   const now = Date.now();
   // Opportunistic cleanup of long-abandoned sessions (keeps the table bounded).
-  await videoViewSession.deleteMany({ where: { lastSeenAt: { lt: new Date(now - STALE_MS) } } });
+  await db.videoViewSession.deleteMany({ where: { lastSeenAt: { lt: new Date(now - STALE_MS) } } });
 
-  const otherActive = await videoViewSession.count({
+  const otherActive = await db.videoViewSession.count({
     where: {
       userId: session.userId,
       deviceId: { not: deviceId },
@@ -105,7 +104,7 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "UNAVAILABLE" }, { status: 503 });
   }
 
-  await videoViewSession.upsert({
+  await db.videoViewSession.upsert({
     where: { userId_deviceId: { userId: session.userId, deviceId } },
     create: { userId: session.userId, deviceId, masterClassId },
     update: { masterClassId, lastSeenAt: new Date() }

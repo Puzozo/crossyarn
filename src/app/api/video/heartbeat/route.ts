@@ -1,10 +1,10 @@
+import { db } from "@/lib/db";
 import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
 import { requireSession } from "@/lib/auth/session";
 import { isSameOriginRequest } from "@/lib/auth/same-origin";
 import { limitWrite } from "@/lib/auth/rate-limit";
 import { DEVICE_COOKIE } from "@/lib/video/device";
-import { videoViewSession } from "@/lib/video/session-store";
 
 // Keeps this device's VideoViewSession alive while the player is visible. If two
 // OTHER devices of the same user became active meanwhile, this device is evicted
@@ -32,7 +32,7 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "NO_DEVICE" }, { status: 400 });
   }
 
-  const own = await videoViewSession.findUnique({
+  const own = await db.videoViewSession.findUnique({
     where: { userId_deviceId: { userId: session.userId, deviceId } },
     select: { id: true }
   });
@@ -40,7 +40,7 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "NOT_FOUND" }, { status: 404 });
   }
 
-  const otherActive = await videoViewSession.count({
+  const otherActive = await db.videoViewSession.count({
     where: {
       userId: session.userId,
       deviceId: { not: deviceId },
@@ -48,13 +48,13 @@ export async function POST(request: Request) {
     }
   });
   if (otherActive >= 2) {
-    await videoViewSession.delete({
+    await db.videoViewSession.delete({
       where: { userId_deviceId: { userId: session.userId, deviceId } }
     });
     return NextResponse.json({ error: "TOO_MANY_DEVICES" }, { status: 409 });
   }
 
-  await videoViewSession.update({
+  await db.videoViewSession.update({
     where: { userId_deviceId: { userId: session.userId, deviceId } },
     data: { lastSeenAt: new Date() }
   });
