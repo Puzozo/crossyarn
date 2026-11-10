@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { notFound } from "next/navigation";
+import { notFound, permanentRedirect } from "next/navigation";
 import { db } from "@/lib/db";
 import { Language } from "@/lib/i18n/translations";
 import { buildContentMetadata } from "@/lib/seo/content-metadata";
@@ -57,6 +57,7 @@ export default async function MasterClassPage({
   const { slug } = await params;
   const mc = await loadMasterClass(slug);
   if (!mc) notFound();
+  if (mc.kind !== "MASTER_CLASS") permanentRedirect(`/video-lessons/${mc.slug}`);
 
   return <MasterClassView mc={mc} />;
 }

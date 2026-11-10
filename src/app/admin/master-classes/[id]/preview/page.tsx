@@ -43,6 +43,7 @@ export default async function MasterClassPreviewPage({
           coverAlt: mc.coverAlt,
           difficulty: mc.difficulty,
           durationMinutes: mc.durationMinutes,
+          kind: mc.kind,
           mainPatternId: mc.mainPatternId,
           materials: mc.materials,
           gallery: mc.gallery,

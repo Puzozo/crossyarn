@@ -17,6 +17,7 @@ export function HeaderClient({ isAuthenticated, user }: Props) {
   const navLinks = [
     { href: "/explore", label: t("nav.explore") },
     { href: "/master-classes", label: t("nav.masterClasses") },
+    { href: "/video-lessons", label: t("nav.videoLessons") },
     ...(isAuthenticated
       ? [
           { href: "/patterns", label: t("nav.patterns") },

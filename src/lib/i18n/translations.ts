@@ -5,6 +5,7 @@ export const translations = {
     // Nav / Header
     "nav.patterns": "Схеми",
     "nav.masterClasses": "Майстер-класи",
+    "nav.videoLessons": "Відеоуроки",
     "nav.account": "Акаунт",
     "nav.signIn": "Увійти",
     "nav.signUp": "Реєстрація",
@@ -15,6 +16,7 @@ export const translations = {
     "footer.linksLabel": "Навігація",
     "footer.explore": "Каталог",
     "footer.masterClasses": "Майстер-класи",
+    "footer.videoLessons": "Відеоуроки",
     "footer.blog": "Блог",
 
     // Blog index
@@ -525,7 +527,7 @@ export const translations = {
 
     // Master class catalog (docs/master-classes-spec.md §9/§10)
     "masterClass.catalog.title": "Майстер-класи",
-    "masterClass.catalog.intro": "Покрокові відеоуроки та схеми в'язання — від базових петель до складних жакардових узорів.",
+    "masterClass.catalog.intro": "Майстер-класи зі схемами в'язання — від базових петель до складних жакардових узорів.",
     "masterClass.catalog.filterLevel": "Рівень",
     "masterClass.catalog.filterLang": "Мова",
     "masterClass.catalog.levelAll": "Усі рівні",
@@ -539,11 +541,18 @@ export const translations = {
     "masterClass.catalog.nextPage": "Далі",
     "masterClass.catalog.pageOf": "{page} / {total}",
     "masterClass.catalog.pageTitleSuffix": " — сторінка {page}",
+
+    // Video lessons catalog
+    "videoLessons.catalog.title": "Безкоштовні відеоуроки",
+    "videoLessons.catalog.intro": "Короткі безкоштовні відеоуроки з в'язання — техніки, прийоми та пояснення на простих прикладах.",
+    "videoLessons.catalog.empty": "Скоро тут з'являться відеоуроки",
+    "videoLessons.card.free": "Безкоштовно",
   },
   en: {
     // Nav / Header
     "nav.patterns": "Patterns",
     "nav.masterClasses": "Tutorials",
+    "nav.videoLessons": "Video lessons",
     "nav.account": "Account",
     "nav.signIn": "Sign In",
     "nav.signUp": "Sign Up",
@@ -554,6 +563,7 @@ export const translations = {
     "footer.linksLabel": "Navigation",
     "footer.explore": "Explore",
     "footer.masterClasses": "Tutorials",
+    "footer.videoLessons": "Video lessons",
     "footer.blog": "Blog",
 
     // Blog index
@@ -1064,7 +1074,7 @@ export const translations = {
 
     // Master class catalog (docs/master-classes-spec.md §9/§10)
     "masterClass.catalog.title": "Tutorials",
-    "masterClass.catalog.intro": "Step-by-step video tutorials and knitting charts — from basic stitches to advanced jacquard patterns.",
+    "masterClass.catalog.intro": "Knitting tutorials with charts — from basic stitches to advanced jacquard patterns.",
     "masterClass.catalog.filterLevel": "Level",
     "masterClass.catalog.filterLang": "Language",
     "masterClass.catalog.levelAll": "All levels",
@@ -1078,6 +1088,12 @@ export const translations = {
     "masterClass.catalog.nextPage": "Next",
     "masterClass.catalog.pageOf": "{page} / {total}",
     "masterClass.catalog.pageTitleSuffix": " — page {page}",
+
+    // Video lessons catalog
+    "videoLessons.catalog.title": "Free video lessons",
+    "videoLessons.catalog.intro": "Short free knitting video lessons — techniques, tips and explanations through simple examples.",
+    "videoLessons.catalog.empty": "Video lessons are coming soon",
+    "videoLessons.card.free": "Free",
   }
 } as const;
 

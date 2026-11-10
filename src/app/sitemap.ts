@@ -11,6 +11,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: SITE_URL, changeFrequency: "weekly", priority: 1 },
     { url: `${SITE_URL}/explore`, changeFrequency: "daily", priority: 0.9 },
     { url: `${SITE_URL}/master-classes`, changeFrequency: "daily", priority: 0.8 },
+    { url: `${SITE_URL}/video-lessons`, changeFrequency: "daily", priority: 0.8 },
     { url: `${SITE_URL}/blog`, changeFrequency: "weekly", priority: 0.6 },
     { url: `${SITE_URL}/premium`, changeFrequency: "monthly", priority: 0.5 },
     { url: `${SITE_URL}/terms`, changeFrequency: "yearly", priority: 0.2 },
@@ -26,7 +27,18 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   });
 
   const masterClasses = await db.masterClass.findMany({
-    where: { status: "PUBLISHED" },
+    where: { status: "PUBLISHED", kind: "MASTER_CLASS" },
+    select: {
+      slug: true,
+      lang: true,
+      updatedAt: true,
+      translationOf: { select: { slug: true, lang: true, status: true } }
+    },
+    take: 5000
+  });
+
+  const videoLessons = await db.masterClass.findMany({
+    where: { status: "PUBLISHED", kind: "VIDEO_LESSON" },
     select: {
       slug: true,
       lang: true,
@@ -67,6 +79,22 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
               languages: {
                 [mc.lang]: `${SITE_URL}/master-classes/${mc.slug}`,
                 [mc.translationOf.lang]: `${SITE_URL}/master-classes/${mc.translationOf.slug}`
+              }
+            }
+          }
+        : {})
+    })),
+    ...videoLessons.map((mc) => ({
+      url: `${SITE_URL}/video-lessons/${mc.slug}`,
+      lastModified: mc.updatedAt,
+      changeFrequency: "weekly" as const,
+      priority: 0.7,
+      ...(mc.translationOf && mc.translationOf.status === "PUBLISHED"
+        ? {
+            alternates: {
+              languages: {
+                [mc.lang]: `${SITE_URL}/video-lessons/${mc.slug}`,
+                [mc.translationOf.lang]: `${SITE_URL}/video-lessons/${mc.translationOf.slug}`
               }
             }
           }

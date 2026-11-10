@@ -66,6 +66,12 @@ export function Footer() {
               {t("footer.masterClasses")}
             </Link>
             <Link
+              href="/video-lessons"
+              className="block text-sm text-yarn-warm-gray hover:text-yarn-terracotta transition-colors"
+            >
+              {t("footer.videoLessons")}
+            </Link>
+            <Link
               href="/blog"
               className="block text-sm text-yarn-warm-gray hover:text-yarn-terracotta transition-colors"
             >

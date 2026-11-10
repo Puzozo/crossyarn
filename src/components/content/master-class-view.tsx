@@ -27,6 +27,7 @@ export type MasterClassViewData = {
   mainPatternId: string | null;
   materials: string;
   gallery: string;
+  kind: string;
   tags: string;
   content: string;
   priceUah: number | null;
@@ -71,6 +72,9 @@ export async function MasterClassView({
   preview?: boolean;
 }) {
   const lang = mc.lang as Language;
+  const isVideoLesson = mc.kind === "VIDEO_LESSON";
+  const catalogHref = isVideoLesson ? "/video-lessons" : "/master-classes";
+  const catalogLabel = isVideoLesson ? translate(lang, "nav.videoLessons") : translate(lang, "masterClass.breadcrumb.catalog");
 
   const [session, mainPattern] = await Promise.all([
     preview ? Promise.resolve(null) : getSession(),
@@ -110,7 +114,7 @@ export async function MasterClassView({
     inLanguage: mc.lang,
     author: { "@type": "Organization", name: "Crossyarn" },
     publisher: { "@type": "Organization", name: "Crossyarn" },
-    mainEntityOfPage: `${SITE_URL}/master-classes/${mc.slug}`
+    mainEntityOfPage: `${SITE_URL}${catalogHref}/${mc.slug}`
   };
 
   const breadcrumbJsonLd = {
@@ -121,8 +125,8 @@ export async function MasterClassView({
       {
         "@type": "ListItem",
         position: 2,
-        name: translate(lang, "masterClass.breadcrumb.catalog"),
-        item: `${SITE_URL}/master-classes`
+        name: catalogLabel,
+        item: `${SITE_URL}${catalogHref}`
       },
       { "@type": "ListItem", position: 3, name: mc.title }
     ]
@@ -151,8 +155,8 @@ export async function MasterClassView({
         <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round">
           <path d="M4 2l4 4-4 4" />
         </svg>
-        <Link href="/master-classes" className="hover:text-yarn-charcoal transition-colors">
-          {translate(lang, "masterClass.breadcrumb.catalog")}
+        <Link href={catalogHref} className="hover:text-yarn-charcoal transition-colors">
+          {catalogLabel}
         </Link>
         <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round">
           <path d="M4 2l4 4-4 4" />
@@ -189,7 +193,7 @@ export async function MasterClassView({
             <>
               <span aria-hidden>·</span>
               <Link
-                href={`/master-classes/${translation.slug}`}
+                href={`${catalogHref}/${translation.slug}`}
                 className="font-medium text-yarn-terracotta hover:text-yarn-terracotta-hover transition-colors"
               >
                 {translate(lang, TRANSLATION_LABEL_KEYS[translation.lang])}
@@ -310,8 +314,8 @@ export async function MasterClassView({
       ) : null}
 
       <div>
-        <Link href="/master-classes">
-          <Button variant="secondary">{translate(lang, "masterClass.breadcrumb.catalog")}</Button>
+        <Link href={catalogHref}>
+          <Button variant="secondary">{catalogLabel}</Button>
         </Link>
       </div>
     </article>
