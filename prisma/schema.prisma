@@ -145,6 +145,7 @@ model MasterClass {
   coverAssetId      String?
   coverAlt          String        @default("")
   difficulty        Difficulty    @default(BEGINNER)
+  kind              String        @default("MASTER_CLASS") // "MASTER_CLASS" | "VIDEO_LESSON"
   durationMinutes   Int?
   materials         String        @default("{\"yarn\":[],\"tools\":[],\"other\":[]}")
   tags              String        @default("[]")

@@ -18,6 +18,7 @@ export type MasterClassEditorData = {
   coverAssetId: string | null;
   coverAlt: string;
   difficulty: "BEGINNER" | "INTERMEDIATE" | "ADVANCED";
+  kind: "MASTER_CLASS" | "VIDEO_LESSON";
   durationMinutes: number | null;
   materials: { yarn: string[]; tools: string[]; other: string[] };
   tags: string[];
@@ -67,6 +68,10 @@ const DIFFICULTY_OPTIONS: { value: MasterClassEditorData["difficulty"]; label: s
   { value: "BEGINNER", label: "Початковий" },
   { value: "INTERMEDIATE", label: "Середній" },
   { value: "ADVANCED", label: "Просунутий" },
+];
+const KIND_OPTIONS: { value: MasterClassEditorData["kind"]; label: string }[] = [
+  { value: "MASTER_CLASS", label: "Майстер-клас" },
+  { value: "VIDEO_LESSON", label: "Відеоурок" },
 ];
 
 function MaterialList({ label, items, onChange }: { label: string; items: string[]; onChange: (next: string[]) => void }) {
@@ -220,6 +225,7 @@ export function ContentEditor(props: Props) {
       payload.translationOfId = f.translationOfId;
       payload.summary = f.summary;
       payload.difficulty = f.difficulty;
+      payload.kind = f.kind;
       payload.durationMinutes = f.durationMinutes;
       payload.materials = f.materials;
       payload.mainPatternId = f.mainPatternId;
@@ -653,6 +659,27 @@ export function ContentEditor(props: Props) {
           {props.kind === "masterClass" && (
             <CollapsiblePanel title="Параметри">
               <div className="space-y-3">
+                <div>
+                  <label className={LABEL_CLASS}>Тип</label>
+                  <div className="flex gap-2">
+                    {KIND_OPTIONS.map((opt) => (
+                      <button
+                        key={opt.value}
+                        type="button"
+                        onClick={() =>
+                          updateForm((f) => ({ ...(f as MasterClassEditorData), kind: opt.value }))
+                        }
+                        className={`rounded-full px-3 py-1 text-xs font-medium transition-colors ${
+                          mc?.kind === opt.value
+                            ? "bg-indigo-600 text-white"
+                            : "bg-gray-800 text-gray-400 hover:text-gray-300"
+                        }`}
+                      >
+                        {opt.label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
                 <div>
                   <label className={LABEL_CLASS}>Складність</label>
                   <div className="flex gap-2">

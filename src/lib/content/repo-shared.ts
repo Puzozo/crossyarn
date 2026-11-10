@@ -30,6 +30,7 @@ export class ContentApiError extends Error {
 const langSchema = z.enum(["uk", "en"]);
 const tagsSchema = z.array(z.string().trim().min(1).max(40)).max(20);
 const difficultySchema = z.enum(["BEGINNER", "INTERMEDIATE", "ADVANCED"]);
+const kindSchema = z.enum(["MASTER_CLASS", "VIDEO_LESSON"]);
 // content is validated by validateContentDoc (block whitelist + 1MB cap), not here.
 const contentSchema = z.unknown();
 
@@ -43,6 +44,7 @@ export const createMasterClassSchema = z
     coverAssetId: z.string().min(1).nullable().optional(),
     coverAlt: z.string().max(300).optional(),
     difficulty: difficultySchema.optional(),
+    kind: kindSchema.optional(),
     durationMinutes: z.number().int().min(1).max(100_000).nullable().optional(),
     materials: materialsSchema.optional(),
     tags: tagsSchema.optional(),
@@ -65,6 +67,7 @@ export const patchMasterClassSchema = z
     coverAssetId: z.string().min(1).nullable().optional(),
     coverAlt: z.string().max(300).optional(),
     difficulty: difficultySchema.optional(),
+    kind: kindSchema.optional(),
     durationMinutes: z.number().int().min(1).max(100_000).nullable().optional(),
     materials: materialsSchema.optional(),
     tags: tagsSchema.optional(),
@@ -282,10 +285,10 @@ export async function unlinkTranslation(tx: MasterClassTx, selfId: string): Prom
   await tx.masterClass.update({ where: { id: selfId }, data: { translationOfId: null } });
 }
 
-/** Resolve + validate (422) a translation target: exists, different id, different lang. */
-export async function resolveTranslationTarget(targetId: string, selfLang: string, selfId: string | null): Promise<void> {
-  const target = await db.masterClass.findUnique({ where: { id: targetId }, select: { id: true, lang: true } });
-  if (!target || target.id === selfId || target.lang === selfLang) {
+/** Resolve + validate (422) a translation target: exists, different id, different lang, same kind. */
+export async function resolveTranslationTarget(targetId: string, selfLang: string, selfId: string | null, selfKind: string): Promise<void> {
+  const target = await db.masterClass.findUnique({ where: { id: targetId }, select: { id: true, lang: true, kind: true } });
+  if (!target || target.id === selfId || target.lang === selfLang || target.kind !== selfKind) {
     throw new ContentApiError(422, { error: "INVALID_TRANSLATION", fields: ["translationOfId"] });
   }
 }
@@ -302,6 +305,7 @@ export function applyMasterClassFields(
   if (input.coverAssetId !== undefined) data.coverAssetId = input.coverAssetId;
   if (input.coverAlt !== undefined) data.coverAlt = input.coverAlt;
   if (input.difficulty !== undefined) data.difficulty = input.difficulty;
+  if (input.kind !== undefined) data.kind = input.kind;
   if (input.durationMinutes !== undefined) data.durationMinutes = input.durationMinutes;
   if (input.materials !== undefined) data.materials = JSON.stringify(input.materials);
   if (input.tags !== undefined) data.tags = serializeTags(input.tags);

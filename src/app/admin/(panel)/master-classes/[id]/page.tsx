@@ -49,6 +49,7 @@ export default async function AdminMasterClassEditPage({ params }: { params: Pro
         coverAssetId: mc.coverAssetId,
         coverAlt: mc.coverAlt,
         difficulty: mc.difficulty,
+        kind: mc.kind as "MASTER_CLASS" | "VIDEO_LESSON",
         durationMinutes: mc.durationMinutes,
         materials: safeJson(mc.materials, { yarn: [], tools: [], other: [] }),
         tags: parseTags(mc.tags),

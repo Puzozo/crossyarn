@@ -8,7 +8,7 @@ import { CreateMasterClassButton } from "@/components/admin/content/create-maste
 export default async function AdminMasterClassesPage({
   searchParams
 }: {
-  searchParams: Promise<{ status?: string; lang?: string; q?: string; page?: string }>;
+  searchParams: Promise<{ status?: string; lang?: string; kind?: string; q?: string; page?: string }>;
 }) {
   await requireAdminPage();
   const params = await searchParams;
@@ -17,6 +17,7 @@ export default async function AdminMasterClassesPage({
   const page = Math.max(1, Number(params.page ?? "1") || 1);
   const status = params.status ?? "";
   const lang = params.lang ?? "";
+  const kind = params.kind ?? "";
   const q = (params.q ?? "").trim();
 
   const where: Prisma.MasterClassWhereInput = {};
@@ -24,6 +25,7 @@ export default async function AdminMasterClassesPage({
     where.status = status as Prisma.MasterClassWhereInput["status"];
   }
   if (lang === "uk" || lang === "en") where.lang = lang;
+  if (kind === "MASTER_CLASS" || kind === "VIDEO_LESSON") where.kind = kind as Prisma.MasterClassWhereInput["kind"];
   if (q) where.title = { contains: q };
 
   const [rows, total] = await Promise.all([
@@ -38,6 +40,7 @@ export default async function AdminMasterClassesPage({
         slug: true,
         lang: true,
         status: true,
+        kind: true,
         updatedAt: true,
         publishedAt: true
       }
@@ -48,12 +51,13 @@ export default async function AdminMasterClassesPage({
 
   const items = rows.map((i) => ({
     ...i,
+    kind: i.kind as "MASTER_CLASS" | "VIDEO_LESSON",
     updatedAt: i.updatedAt.toISOString(),
     publishedAt: i.publishedAt ? i.publishedAt.toISOString() : null
   }));
 
-  const filtersActive = Boolean(status || lang || q);
-  const filterQuery = "status=" + status + "&lang=" + lang + "&q=" + q;
+  const filtersActive = Boolean(status || lang || kind || q);
+  const filterQuery = "status=" + status + "&lang=" + lang + "&kind=" + kind + "&q=" + q;
   const baseHref = "/admin/master-classes?";
 
   return (
@@ -87,6 +91,15 @@ export default async function AdminMasterClassesPage({
           <option value="">Усі</option>
           <option value="uk">uk</option>
           <option value="en">en</option>
+        </select>
+        <select
+          name="kind"
+          defaultValue={kind}
+          className="rounded-lg bg-gray-800 border border-gray-700 text-white px-3 py-2 text-sm focus:outline-none focus:border-indigo-500"
+        >
+          <option value="">Усі</option>
+          <option value="MASTER_CLASS">Майстер-клас</option>
+          <option value="VIDEO_LESSON">Відеоурок</option>
         </select>
         <input
           name="q"

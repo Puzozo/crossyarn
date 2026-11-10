@@ -92,7 +92,7 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
       intent = { kind: "keep" };
     }
     if (intent.kind === "set") {
-      await resolveTranslationTarget(intent.targetId, finalLang, id);
+      await resolveTranslationTarget(intent.targetId, finalLang, id, body.kind ?? existing.kind);
     }
 
     await db.$transaction(async (tx) => {

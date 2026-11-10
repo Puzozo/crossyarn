@@ -8,7 +8,7 @@ const PAGE_SIZE = 12;
 type Difficulty = "BEGINNER" | "INTERMEDIATE" | "ADVANCED";
 const LEVELS: Difficulty[] = ["BEGINNER", "INTERMEDIATE", "ADVANCED"];
 
-type SearchParams = { level?: string; lang?: string; page?: string };
+type SearchParams = { level?: string; lang?: string; kind?: string; page?: string };
 
 function parseLevel(value?: string): Difficulty | null {
   return value && (LEVELS as readonly string[]).includes(value) ? (value as Difficulty) : null;
@@ -16,6 +16,10 @@ function parseLevel(value?: string): Difficulty | null {
 
 function parseLangFilter(value?: string): "uk" | "en" | null {
   return value === "uk" || value === "en" ? value : null;
+}
+
+function parseKind(value?: string): "MASTER_CLASS" | "VIDEO_LESSON" | null {
+  return value === "MASTER_CLASS" || value === "VIDEO_LESSON" ? value : null;
 }
 
 function parseRequestedPage(value?: string): number {
@@ -58,15 +62,17 @@ export default async function MasterClassesPage({
 }: {
   searchParams: Promise<SearchParams>;
 }) {
-  const { level: levelRaw, lang: langRaw, page: pageRaw } = await searchParams;
+  const { level: levelRaw, lang: langRaw, kind: kindRaw, page: pageRaw } = await searchParams;
   const level = parseLevel(levelRaw);
   const langFilter = parseLangFilter(langRaw);
+  const kind = parseKind(kindRaw);
   const requestedPage = parseRequestedPage(pageRaw);
 
   const where = {
     status: "PUBLISHED" as const,
     ...(level ? { difficulty: level } : {}),
-    ...(langFilter ? { lang: langFilter } : {})
+    ...(langFilter ? { lang: langFilter } : {}),
+    ...(kind ? { kind } : {})
   };
 
   const total = await db.masterClass.count({ where });

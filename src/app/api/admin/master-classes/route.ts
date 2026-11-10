@@ -25,6 +25,7 @@ export async function GET(request: Request) {
   const params = new URL(request.url).searchParams;
   const status = params.get("status");
   const lang = params.get("lang");
+  const kind = params.get("kind");
   const q = (params.get("q") ?? "").trim();
   const page = Math.max(1, Number.parseInt(params.get("page") ?? "1", 10) || 1);
 
@@ -33,6 +34,7 @@ export async function GET(request: Request) {
     where.status = status as Prisma.MasterClassWhereInput["status"];
   }
   if (lang === "uk" || lang === "en") where.lang = lang;
+  if (kind === "MASTER_CLASS" || kind === "VIDEO_LESSON") where.kind = kind as Prisma.MasterClassWhereInput["kind"];
   if (q) where.title = { contains: q };
 
   const [total, items] = await Promise.all([
@@ -48,6 +50,7 @@ export async function GET(request: Request) {
         slug: true,
         lang: true,
         status: true,
+        kind: true,
         difficulty: true,
         publishedAt: true,
         updatedAt: true,
@@ -77,7 +80,7 @@ export async function POST(request: Request) {
     await assertPatternsVisible([input.mainPatternId, ...(content ? collectPatternEmbedIds(content) : [])]);
 
     if (input.translationOfId) {
-      await resolveTranslationTarget(input.translationOfId, input.lang, null);
+      await resolveTranslationTarget(input.translationOfId, input.lang, null, input.kind ?? "MASTER_CLASS");
     }
 
     const existingSlug = await db.masterClass.findUnique({ where: { slug }, select: { id: true } });

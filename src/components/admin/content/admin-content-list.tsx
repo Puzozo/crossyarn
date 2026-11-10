@@ -13,6 +13,7 @@ export type ContentListItem = {
   status: "DRAFT" | "PUBLISHED" | "PENDING_REVIEW" | "REJECTED";
   updatedAt: string; // ISO
   publishedAt: string | null; // ISO
+  kind?: "MASTER_CLASS" | "VIDEO_LESSON";
 };
 
 type AdminContentListProps = {
@@ -25,6 +26,11 @@ const STATUS_LABELS: Record<ContentListItem["status"], string> = {
   PUBLISHED: "Опубліковано",
   PENDING_REVIEW: "На розгляді",
   REJECTED: "Відхилено",
+};
+
+const KIND_LABELS: Record<"MASTER_CLASS" | "VIDEO_LESSON", string> = {
+  MASTER_CLASS: "Майстер-клас",
+  VIDEO_LESSON: "Відеоурок",
 };
 
 const STATUS_BADGES: Record<ContentListItem["status"], string> = {
@@ -151,6 +157,9 @@ export function AdminContentList({ kind, items }: AdminContentListProps) {
             <tr className="border-b border-gray-800 bg-gray-900/50">
               <th className="text-left px-4 py-3 text-gray-400 font-medium">Назва</th>
               <th className="text-left px-4 py-3 text-gray-400 font-medium">Мова</th>
+              {kind === "masterClass" && (
+                <th className="text-left px-4 py-3 text-gray-400 font-medium">Тип</th>
+              )}
               <th className="text-left px-4 py-3 text-gray-400 font-medium">Статус</th>
               <th className="text-left px-4 py-3 text-gray-400 font-medium">Оновлено</th>
               <th className="text-right px-4 py-3 text-gray-400 font-medium">Дії</th>
@@ -164,6 +173,11 @@ export function AdminContentList({ kind, items }: AdminContentListProps) {
                   <div className="text-gray-500 text-xs">{item.slug}</div>
                 </td>
                 <td className="px-4 py-3 text-gray-300 uppercase text-xs">{item.lang}</td>
+                {kind === "masterClass" && (
+                  <td className="px-4 py-3 text-gray-300 text-xs">
+                    {item.kind ? KIND_LABELS[item.kind] : "—"}
+                  </td>
+                )}
                 <td className="px-4 py-3">
                   <StatusBadge status={item.status} />
                 </td>
@@ -197,6 +211,11 @@ export function AdminContentList({ kind, items }: AdminContentListProps) {
               <StatusBadge status={item.status} />
             </div>
             <div className="text-xs text-gray-400">
+              {item.kind && (
+                <span className="inline-block rounded-full px-2 py-0.5 text-[10px] bg-gray-800 text-gray-300 mr-2">
+                  {KIND_LABELS[item.kind]}
+                </span>
+              )}
               {item.lang.toUpperCase()}
               {" "}
               · Оновлено:
