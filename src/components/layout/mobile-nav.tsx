@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -21,6 +21,8 @@ export function MobileNav({ links, authSection }: Props) {
   const [mounted, setMounted] = useState(false);
   const pathname = usePathname();
   const { t, lang, setLang } = useTranslation();
+  const toggleButtonRef = useRef<HTMLButtonElement>(null);
+  const drawerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     setMounted(true);
@@ -29,6 +31,11 @@ export function MobileNav({ links, authSection }: Props) {
   useEffect(() => {
     setOpen(false);
   }, [pathname]);
+
+  function closeMenu() {
+    setOpen(false);
+    toggleButtonRef.current?.focus();
+  }
 
   useEffect(() => {
     if (open) {
@@ -41,14 +48,47 @@ export function MobileNav({ links, authSection }: Props) {
     };
   }, [open]);
 
+  useEffect(() => {
+    if (!open) return;
+    const drawer = drawerRef.current;
+    if (!drawer) return;
+    const focusableSelector = 'a[href], button:not([disabled]), [tabindex]:not([tabindex="-1"])';
+    const focusables = Array.from(drawer.querySelectorAll<HTMLElement>(focusableSelector));
+    focusables[0]?.focus();
+
+    function handleKeyDown(e: KeyboardEvent) {
+      if (e.key === "Escape") {
+        e.preventDefault();
+        closeMenu();
+        return;
+      }
+      if (e.key === "Tab" && focusables.length > 0) {
+        const first = focusables[0];
+        const last = focusables[focusables.length - 1];
+        if (e.shiftKey && document.activeElement === first) {
+          e.preventDefault();
+          last.focus();
+        } else if (!e.shiftKey && document.activeElement === last) {
+          e.preventDefault();
+          first.focus();
+        }
+      }
+    }
+    document.addEventListener("keydown", handleKeyDown);
+    return () => document.removeEventListener("keydown", handleKeyDown);
+  }, [open]);
+
   return (
     <div className="md:hidden">
       {/* Hamburger button */}
       <button
+        ref={toggleButtonRef}
         type="button"
         onClick={() => setOpen(!open)}
         className="relative z-50 flex h-10 w-10 items-center justify-center rounded-xl text-yarn-charcoal hover:bg-yarn-oatmeal transition-colors"
         aria-label={open ? t("mobileNav.closeMenu") : t("mobileNav.openMenu")}
+        aria-expanded={open}
+        aria-controls="mobile-nav-drawer"
       >
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
           {open ? (
@@ -73,12 +113,19 @@ export function MobileNav({ links, authSection }: Props) {
           {open && (
             <div
               className="fixed inset-0 z-[9998] bg-yarn-charcoal/40 backdrop-blur-sm"
-              onClick={() => setOpen(false)}
+              onClick={closeMenu}
             />
           )}
 
           {/* Drawer */}
           <div
+            ref={drawerRef}
+            id="mobile-nav-drawer"
+            role="dialog"
+            aria-modal="true"
+            aria-label={t("mobileNav.title")}
+            inert={!open}
+            aria-hidden={!open}
             className={`fixed top-0 right-0 z-[9999] h-full w-72 bg-yarn-cream shadow-2xl transform transition-transform duration-300 ease-out ${
               open ? "translate-x-0" : "translate-x-full"
             }`}
@@ -87,7 +134,7 @@ export function MobileNav({ links, authSection }: Props) {
               {/* Close button */}
               <button
                 type="button"
-                onClick={() => setOpen(false)}
+                onClick={closeMenu}
                 className="self-end mb-6 flex h-10 w-10 items-center justify-center rounded-xl text-yarn-charcoal hover:bg-yarn-oatmeal transition-colors"
                 aria-label={t("mobileNav.closeMenu")}
               >

@@ -473,6 +473,7 @@ export const translations = {
     // Mobile nav
     "mobileNav.openMenu": "Відкрити меню",
     "mobileNav.closeMenu": "Закрити меню",
+    "mobileNav.title": "Меню навігації",
 
     // Private pattern
     "privatePattern.lockedIcon": "🔒",
@@ -1027,6 +1028,7 @@ export const translations = {
     // Mobile nav
     "mobileNav.openMenu": "Open menu",
     "mobileNav.closeMenu": "Close menu",
+    "mobileNav.title": "Navigation menu",
 
     // Private pattern
     "privatePattern.lockedIcon": "🔒",
