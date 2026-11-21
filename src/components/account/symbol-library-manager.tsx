@@ -142,7 +142,7 @@ export function SymbolLibraryManager({ initialSymbols }: Props) {
             <select
               value={width}
               onChange={(e) => setWidth(Number(e.target.value))}
-              className="w-full rounded-lg border border-yarn-sand bg-white px-3 py-2 text-sm text-yarn-charcoal focus:outline-none focus:border-yarn-terracotta"
+              className="w-full rounded-lg border border-yarn-field-border bg-white px-3 py-2 text-base sm:text-sm text-yarn-charcoal focus:outline-none focus:border-yarn-terracotta"
             >
               {SYMBOL_SPAN_OPTIONS.map((w) => (
                 <option key={w} value={w}>{w}</option>
@@ -154,7 +154,7 @@ export function SymbolLibraryManager({ initialSymbols }: Props) {
             <select
               value={height}
               onChange={(e) => setHeight(Number(e.target.value))}
-              className="w-full rounded-lg border border-yarn-sand bg-white px-3 py-2 text-sm text-yarn-charcoal focus:outline-none focus:border-yarn-terracotta"
+              className="w-full rounded-lg border border-yarn-field-border bg-white px-3 py-2 text-base sm:text-sm text-yarn-charcoal focus:outline-none focus:border-yarn-terracotta"
             >
               {SYMBOL_SPAN_OPTIONS.map((h) => (
                 <option key={h} value={h}>{h}</option>

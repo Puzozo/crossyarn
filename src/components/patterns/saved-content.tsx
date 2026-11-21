@@ -52,7 +52,7 @@ export function SavedContent({ patterns, page, totalPages, sort }: Props) {
         <select
           value={sort}
           onChange={(e) => handleSort(e.target.value)}
-          className="rounded-lg border border-yarn-sand bg-white/70 px-3 py-1.5 text-sm text-yarn-charcoal focus:border-yarn-terracotta/40 focus:outline-none focus:ring-2 focus:ring-yarn-terracotta/20"
+          className="rounded-lg border border-yarn-field-border bg-white/70 px-3 py-1.5 text-base sm:text-sm text-yarn-charcoal focus:border-yarn-terracotta/40 focus:outline-none focus:ring-2 focus:ring-yarn-terracotta/20"
         >
           {SORT_OPTIONS.map((opt) => (
             <option key={opt.value} value={opt.value}>

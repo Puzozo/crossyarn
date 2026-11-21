@@ -417,13 +417,13 @@ export function PatternEditor({ patternId, initialPattern, title, description, i
                 <label className="text-[10px] font-medium text-yarn-warm-gray">{t("editor.widthLabel")}</label>
                 <input type="number" min={1} max={200} value={draftWidth}
                   onChange={(e) => setDraftWidth(Math.max(1, Math.min(200, Number(e.target.value))))}
-                  className="w-full rounded-lg border border-yarn-sand bg-white px-2 py-1.5 text-sm font-mono text-yarn-charcoal focus:outline-none focus:border-yarn-terracotta" />
+                  className="w-full rounded-lg border border-yarn-field-border bg-white px-2 py-1.5 text-base sm:text-sm font-mono text-yarn-charcoal focus:outline-none focus:border-yarn-terracotta" />
               </div>
               <div className="space-y-1">
                 <label className="text-[10px] font-medium text-yarn-warm-gray">{t("editor.heightLabel")}</label>
                 <input type="number" min={1} max={200} value={draftHeight}
                   onChange={(e) => setDraftHeight(Math.max(1, Math.min(200, Number(e.target.value))))}
-                  className="w-full rounded-lg border border-yarn-sand bg-white px-2 py-1.5 text-sm font-mono text-yarn-charcoal focus:outline-none focus:border-yarn-terracotta" />
+                  className="w-full rounded-lg border border-yarn-field-border bg-white px-2 py-1.5 text-base sm:text-sm font-mono text-yarn-charcoal focus:outline-none focus:border-yarn-terracotta" />
               </div>
             </div>
             {(draftWidth < pattern.width || draftHeight < pattern.height) && (

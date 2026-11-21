@@ -6,17 +6,17 @@ type Props = ButtonHTMLAttributes<HTMLButtonElement> & {
 };
 
 const base =
-  "inline-flex items-center justify-center whitespace-nowrap font-semibold transition-all duration-200 ease-out focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-yarn-cream disabled:cursor-not-allowed disabled:opacity-50 cursor-pointer";
+  "inline-flex items-center justify-center whitespace-nowrap font-semibold transition-all duration-200 ease-out focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-yarn-cream disabled:cursor-not-allowed disabled:opacity-50 cursor-pointer";
 
 const variants: Record<NonNullable<Props["variant"]>, string> = {
   primary:
-    "bg-yarn-terracotta-strong text-white hover:bg-yarn-terracotta-strong-hover focus:ring-yarn-terracotta-strong shadow-warm-sm hover:shadow-warm rounded-full",
+    "bg-yarn-terracotta-strong text-white hover:bg-yarn-terracotta-strong-hover focus-visible:ring-yarn-terracotta-strong shadow-warm-sm hover:shadow-warm rounded-full",
   secondary:
-    "bg-yarn-oatmeal text-yarn-charcoal border border-yarn-sand hover:bg-yarn-sand focus:ring-yarn-sand rounded-full",
+    "bg-yarn-oatmeal text-yarn-charcoal border border-yarn-sand hover:bg-yarn-sand focus-visible:ring-yarn-terracotta-strong rounded-full",
   ghost:
-    "bg-transparent text-yarn-warm-gray hover:text-yarn-charcoal hover:bg-yarn-oatmeal focus:ring-yarn-sand rounded-xl",
+    "bg-transparent text-yarn-warm-gray hover:text-yarn-charcoal hover:bg-yarn-oatmeal focus-visible:ring-yarn-terracotta-strong rounded-xl",
   danger:
-    "bg-red-600 text-white hover:bg-red-500 focus:ring-red-500 rounded-full"
+    "bg-red-600 text-white hover:bg-red-500 focus-visible:ring-red-500 rounded-full"
 };
 
 const sizes: Record<NonNullable<Props["size"]>, string> = {

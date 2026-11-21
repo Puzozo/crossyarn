@@ -214,7 +214,7 @@ export function ProfileEditor({ initial }: { initial: ProfileValues }) {
           <label htmlFor="pf-username" className="block text-sm font-medium text-yarn-charcoal mb-1.5">
             {t("profile.username")}
           </label>
-          <div className="flex items-stretch rounded-xl border border-yarn-sand bg-white overflow-hidden focus-within:border-yarn-terracotta focus-within:ring-2 focus-within:ring-yarn-terracotta-light transition-all">
+          <div className="flex items-stretch rounded-xl border border-yarn-field-border bg-white overflow-hidden focus-within:border-yarn-terracotta focus-within:ring-2 focus-within:ring-yarn-terracotta-light transition-all">
             <span className="flex items-center px-3 text-sm text-yarn-warm-gray bg-yarn-oatmeal/50 border-r border-yarn-sand select-none">
               /u/
             </span>
@@ -224,7 +224,7 @@ export function ProfileEditor({ initial }: { initial: ProfileValues }) {
               maxLength={30}
               placeholder={t("profile.usernamePlaceholder")}
               onChange={(e) => set("username", e.target.value.replace(/\s/g, ""))}
-              className="w-full bg-transparent px-3 py-3 text-sm text-yarn-charcoal placeholder:text-yarn-warm-gray outline-none"
+              className="w-full bg-transparent px-3 py-3 text-base sm:text-sm text-yarn-charcoal placeholder:text-yarn-warm-gray outline-none"
             />
           </div>
           <p className="mt-1.5 text-xs text-yarn-warm-gray">
@@ -243,7 +243,7 @@ export function ProfileEditor({ initial }: { initial: ProfileValues }) {
             rows={3}
             placeholder={t("profile.bioPlaceholder")}
             onChange={(e) => set("bio", e.target.value)}
-            className="w-full rounded-xl border border-yarn-sand bg-white px-4 py-3 text-sm text-yarn-charcoal placeholder:text-yarn-warm-gray outline-none transition-all duration-200 resize-y focus:border-yarn-terracotta focus:bg-yarn-oatmeal/30 focus:ring-2 focus:ring-yarn-terracotta-light"
+            className="w-full rounded-xl border border-yarn-field-border bg-white px-4 py-3 text-base sm:text-sm text-yarn-charcoal placeholder:text-yarn-warm-gray outline-none transition-all duration-200 resize-y focus:border-yarn-terracotta focus:bg-yarn-oatmeal/30 focus:ring-2 focus:ring-yarn-terracotta-light"
           />
         </div>
 
