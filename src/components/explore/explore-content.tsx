@@ -171,7 +171,7 @@ export function ExploreContent({ patterns, query, page, totalPages, totalCount, 
                 {pattern.author ? (
                   <Link
                     href={`/u/${pattern.author.username}`}
-                    className="inline-flex items-center gap-1.5 text-xs font-medium text-yarn-warm-gray hover:text-yarn-terracotta transition-colors"
+                    className="relative inline-flex items-center gap-1.5 text-xs font-medium text-yarn-warm-gray hover:text-yarn-terracotta transition-colors before:absolute before:-inset-y-2 before:inset-x-0 before:content-['']"
                   >
                     {pattern.author.avatarUrl ? (
                       <Image

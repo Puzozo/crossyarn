@@ -201,7 +201,11 @@ export function SymbolLibraryManager({ initialSymbols }: Props) {
                 {symbol.imageData ? (
                   // Fixed thumbnail box: multi-cell symbols (e.g. 12×1) scale down inside it
                   // instead of stretching the card.
-                  <div className="flex h-20 w-20 shrink-0 items-center justify-center overflow-hidden rounded-lg border border-yarn-sand bg-white p-1">
+                  <div
+                    className={`flex h-20 ${
+                      (symbol.width ?? 1) > (symbol.height ?? 1) ? "w-32" : "w-20"
+                    } shrink-0 items-center justify-center overflow-hidden rounded-lg border border-yarn-sand bg-white p-1`}
+                  >
                     <Image
                       src={symbol.imageData}
                       alt={symbol.label}

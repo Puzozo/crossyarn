@@ -319,6 +319,7 @@ export const translations = {
     // Public pattern page
     "publicPattern.byAuthor": "Автор:",
     "publicPattern.photosTitle": "Фото виробу",
+    "publicPattern.gridRegion": "Схема (прокручується по горизонталі)",
     "publicPattern.viewProfile": "Профіль автора",
     "publicPattern.notPublic": "Ця схема недоступна",
     "publicPattern.share": "Поділитися",
@@ -469,6 +470,7 @@ export const translations = {
     "common.cancel": "Скасувати",
     "common.delete": "Видалити",
     "common.pagination": "Пагінація",
+    "common.skipToContent": "Перейти до вмісту",
     "common.chooseFile": "Обрати файл",
     "common.noFileChosen": "Файл не вибрано",
 
@@ -876,6 +878,7 @@ export const translations = {
     // Public pattern page
     "publicPattern.byAuthor": "By:",
     "publicPattern.photosTitle": "Photos",
+    "publicPattern.gridRegion": "Pattern chart (horizontally scrollable)",
     "publicPattern.viewProfile": "Author profile",
     "publicPattern.notPublic": "This pattern is unavailable",
     "publicPattern.share": "Share",
@@ -1026,6 +1029,7 @@ export const translations = {
     "common.cancel": "Cancel",
     "common.delete": "Delete",
     "common.pagination": "Pagination",
+    "common.skipToContent": "Skip to content",
     "common.chooseFile": "Choose file",
     "common.noFileChosen": "No file chosen",
 

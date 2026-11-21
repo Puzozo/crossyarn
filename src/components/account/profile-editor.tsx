@@ -131,15 +131,15 @@ export function ProfileEditor({ initial }: { initial: ProfileValues }) {
 
   return (
     <section className="max-w-2xl rounded-2xl bg-white/70 border border-yarn-sand/50 p-6 sm:p-8 shadow-warm-sm">
-      <div className="flex items-start justify-between gap-4">
-        <div>
+      <div className="flex flex-wrap items-start justify-between gap-2">
+        <div className="min-w-0">
           <h2 className="font-display text-xl font-bold text-yarn-charcoal">{t("profile.title")}</h2>
           <p className="mt-1 text-sm text-yarn-warm-gray">{t("profile.desc")}</p>
         </div>
         {canViewPublic ? (
           <Link
             href={`/u/${values.username.trim().toLowerCase()}`}
-            className="shrink-0 text-sm font-semibold text-yarn-terracotta hover:text-yarn-terracotta-hover transition-colors"
+            className="text-sm font-semibold text-yarn-terracotta hover:text-yarn-terracotta-hover transition-colors"
           >
             {t("profile.viewPublic")} →
           </Link>

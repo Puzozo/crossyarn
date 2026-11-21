@@ -77,7 +77,7 @@ export function LikeButton({
         onClick={toggle}
         aria-label={liked ? t("like.unlike") : t("like.like")}
         aria-pressed={liked}
-        className={`inline-flex items-center gap-1 rounded-full px-2 py-1 text-xs font-medium transition-colors ${
+        className={`relative inline-flex items-center gap-1 rounded-full px-2 py-1 text-xs font-medium transition-colors before:absolute before:-inset-2 before:content-[''] ${
           liked
             ? "text-yarn-terracotta"
             : "text-yarn-warm-gray hover:text-yarn-terracotta"

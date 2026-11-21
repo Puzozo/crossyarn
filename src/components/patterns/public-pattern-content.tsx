@@ -134,7 +134,10 @@ export function PublicPatternContent({
 
       <div
         ref={gridContainerRef}
-        className="rounded-2xl bg-white/70 border border-yarn-sand/50 p-6 shadow-warm-sm overflow-x-auto"
+        role="region"
+        tabIndex={0}
+        aria-label={t("publicPattern.gridRegion")}
+        className="rounded-2xl bg-white/70 border border-yarn-sand/50 p-6 shadow-warm-sm overflow-x-auto focus:outline-none focus-visible:ring-2 focus-visible:ring-yarn-terracotta focus-visible:ring-offset-2"
       >
         <PatternGrid
           document={document}

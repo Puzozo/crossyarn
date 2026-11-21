@@ -105,7 +105,7 @@ export function SavedContent({ patterns, page, totalPages, sort }: Props) {
                 {pattern.author ? (
                   <Link
                     href={`/u/${pattern.author.username}`}
-                    className="inline-flex items-center gap-1.5 text-xs font-medium text-yarn-warm-gray hover:text-yarn-terracotta transition-colors"
+                    className="relative inline-flex items-center gap-1.5 text-xs font-medium text-yarn-warm-gray hover:text-yarn-terracotta transition-colors before:absolute before:-inset-y-2 before:inset-x-0 before:content-['']"
                   >
                     {pattern.author.avatarUrl ? (
                       <Image
@@ -145,7 +145,7 @@ export function SavedContent({ patterns, page, totalPages, sort }: Props) {
                     }
                   }}
                   aria-label={t("like.unlike")}
-                  className="inline-flex items-center gap-1 rounded-full px-2 py-1 text-xs font-medium text-yarn-terracotta hover:text-yarn-terracotta-hover transition-colors"
+                  className="relative inline-flex items-center gap-1 rounded-full px-2 py-1 text-xs font-medium text-yarn-terracotta hover:text-yarn-terracotta-hover transition-colors before:absolute before:-inset-2 before:content-['']"
                 >
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
                     <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z" />
