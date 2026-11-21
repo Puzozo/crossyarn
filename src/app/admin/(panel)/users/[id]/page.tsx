@@ -91,7 +91,8 @@ export default async function AdminUserDetailPage({
           <p className="text-gray-500 text-sm">Немає схем</p>
         ) : (
           <div className="rounded-xl border border-gray-800 overflow-hidden">
-            <table className="w-full text-sm">
+            <div className="overflow-x-auto">
+              <table className="w-full min-w-[640px] text-sm">
               <thead>
                 <tr className="border-b border-gray-800 bg-gray-900/50">
                   <th className="text-left px-4 py-2.5 text-gray-400 font-medium">Назва</th>
@@ -120,7 +121,8 @@ export default async function AdminUserDetailPage({
                   </tr>
                 ))}
               </tbody>
-            </table>
+              </table>
+            </div>
           </div>
         )}
       </div>

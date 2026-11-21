@@ -1,5 +1,7 @@
 "use client";
 
+import { useEffect, useRef, useSyncExternalStore, useState } from "react";
+import { createPortal } from "react-dom";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 
@@ -59,14 +61,64 @@ const navItems = [
 export function AdminSidebar({ email }: { email: string }) {
   const pathname = usePathname();
   const router = useRouter();
+  const [open, setOpen] = useState(false);
+  const mounted = useSyncExternalStore(
+    () => () => {},
+    () => true,
+    () => false
+  );
+  const toggleButtonRef = useRef<HTMLButtonElement>(null);
+  const drawerRef = useRef<HTMLDivElement>(null);
+
+  function closeMenu() {
+    setOpen(false);
+    toggleButtonRef.current?.focus();
+  }
+
+  useEffect(() => {
+    document.body.style.overflow = open ? "hidden" : "";
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [open]);
+
+  useEffect(() => {
+    if (!open) return;
+    const drawer = drawerRef.current;
+    if (!drawer) return;
+    const focusableSelector = 'a[href], button:not([disabled]), [tabindex]:not([tabindex="-1"])';
+    const focusables = Array.from(drawer.querySelectorAll<HTMLElement>(focusableSelector));
+    focusables[0]?.focus();
+
+    function onKeyDown(e: KeyboardEvent) {
+      if (e.key === "Escape") {
+        e.preventDefault();
+        closeMenu();
+        return;
+      }
+      if (e.key === "Tab" && focusables.length > 0) {
+        const first = focusables[0];
+        const last = focusables[focusables.length - 1];
+        if (e.shiftKey && document.activeElement === first) {
+          e.preventDefault();
+          last.focus();
+        } else if (!e.shiftKey && document.activeElement === last) {
+          e.preventDefault();
+          first.focus();
+        }
+      }
+    }
+    document.addEventListener("keydown", onKeyDown);
+    return () => document.removeEventListener("keydown", onKeyDown);
+  }, [open]);
 
   async function handleSignOut() {
     await fetch("/api/admin/auth/sign-out", { method: "POST" });
     router.push("/admin/login");
   }
 
-  return (
-    <aside className="w-56 shrink-0 border-r border-gray-800 flex flex-col bg-gray-900">
+  const navContent = (
+    <>
       <div className="p-5 border-b border-gray-800">
         <div className="flex items-center gap-2.5">
           <div className="h-8 w-8 rounded-lg bg-indigo-600 flex items-center justify-center shrink-0">
@@ -88,6 +140,7 @@ export function AdminSidebar({ email }: { email: string }) {
             <Link
               key={item.href}
               href={item.href}
+              onClick={() => setOpen(false)}
               className={`flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
                 active
                   ? "bg-indigo-600 text-white"
@@ -114,6 +167,67 @@ export function AdminSidebar({ email }: { email: string }) {
           Вийти
         </button>
       </div>
-    </aside>
+    </>
+  );
+
+  return (
+    <>
+      {/* Mobile top bar */}
+      <div className="flex items-center justify-between gap-3 border-b border-gray-800 bg-gray-900 px-4 py-3 lg:hidden">
+        <button
+          ref={toggleButtonRef}
+          type="button"
+          onClick={() => setOpen(true)}
+          className="flex h-10 w-10 items-center justify-center rounded-lg text-gray-300 hover:bg-gray-800 transition-colors"
+          aria-label="Відкрити меню"
+          aria-expanded={open}
+        >
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+            <line x1="4" y1="7" x2="20" y2="7" />
+            <line x1="4" y1="12" x2="20" y2="12" />
+            <line x1="4" y1="17" x2="20" y2="17" />
+          </svg>
+        </button>
+        <span className="text-sm font-semibold text-white">Admin Panel</span>
+      </div>
+
+      {mounted && createPortal(
+        <>
+          {open && (
+            <div className="fixed inset-0 z-[9998] bg-black/50 lg:hidden" onClick={closeMenu} />
+          )}
+          <aside
+            ref={drawerRef}
+            role="dialog"
+            aria-modal="true"
+            aria-label="Меню адмінки"
+            inert={!open ? true : undefined}
+            aria-hidden={!open}
+            className={`fixed inset-y-0 left-0 z-[9999] flex w-64 flex-col overflow-y-auto border-r border-gray-800 bg-gray-900 transition-transform duration-300 lg:hidden ${
+              open ? "translate-x-0" : "-translate-x-full"
+            }`}
+          >
+            <button
+              type="button"
+              onClick={closeMenu}
+              className="self-end m-3 flex h-10 w-10 items-center justify-center rounded-lg text-gray-300 hover:bg-gray-800 transition-colors"
+              aria-label="Закрити меню"
+            >
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+                <line x1="6" y1="6" x2="18" y2="18" />
+                <line x1="6" y1="18" x2="18" y2="6" />
+              </svg>
+            </button>
+            {navContent}
+          </aside>
+        </>,
+        document.body
+      )}
+
+      {/* Desktop static sidebar */}
+      <aside className="hidden lg:flex lg:w-56 lg:shrink-0 lg:flex-col border-r border-gray-800 bg-gray-900">
+        {navContent}
+      </aside>
+    </>
   );
 }

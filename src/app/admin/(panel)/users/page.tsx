@@ -70,10 +70,11 @@ export default async function AdminUsersPage({
 
       {/* Table */}
       <div className="rounded-xl border border-gray-800 overflow-hidden">
-        <table className="w-full text-sm">
+        <div className="overflow-x-auto">
+          <table className="w-full min-w-[640px] text-sm">
           <thead>
             <tr className="border-b border-gray-800 bg-gray-900/50">
-              <th className="text-left px-4 py-3 text-gray-400 font-medium">Email / Ім'я</th>
+              <th className="text-left px-4 py-3 text-gray-400 font-medium">Email / Ім&apos;я</th>
               <th className="text-center px-4 py-3 text-gray-400 font-medium">Схем</th>
               <th className="text-center px-4 py-3 text-gray-400 font-medium">Символів</th>
               <th className="text-left px-4 py-3 text-gray-400 font-medium">Дата реєстрації</th>
@@ -131,8 +132,9 @@ export default async function AdminUsersPage({
                 </td>
               </tr>
             ))}
-          </tbody>
-        </table>
+            </tbody>
+          </table>
+        </div>
         {users.length === 0 && (
           <div className="text-center py-12 text-gray-500">Користувачів не знайдено</div>
         )}
