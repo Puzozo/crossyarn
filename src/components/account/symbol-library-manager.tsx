@@ -185,13 +185,17 @@ export function SymbolLibraryManager({ initialSymbols }: Props) {
             {customSymbols.map((symbol) => (
               <div key={symbol.id} className="rounded-xl border border-yarn-sand/60 bg-white p-4 flex items-start gap-4">
                 {symbol.imageData ? (
-                  <Image
-                    src={symbol.imageData}
-                    alt={symbol.label}
-                    width={(symbol.width ?? 1) * 48}
-                    height={(symbol.height ?? 1) * 48}
-                    className="rounded-lg border border-yarn-sand object-contain shrink-0"
-                  />
+                  // Fixed thumbnail box: multi-cell symbols (e.g. 12×1) scale down inside it
+                  // instead of stretching the card.
+                  <div className="flex h-20 w-20 shrink-0 items-center justify-center overflow-hidden rounded-lg border border-yarn-sand bg-white p-1">
+                    <Image
+                      src={symbol.imageData}
+                      alt={symbol.label}
+                      width={(symbol.width ?? 1) * 48}
+                      height={(symbol.height ?? 1) * 48}
+                      className="h-auto max-h-full w-auto max-w-full object-contain"
+                    />
+                  </div>
                 ) : null}
                 <div className="flex-1 min-w-0">
                   <div className="font-medium text-yarn-charcoal truncate" title={symbol.label}>{symbol.label}</div>
@@ -224,7 +228,7 @@ export function SymbolLibraryManager({ initialSymbols }: Props) {
                           onChange={(event) => setEditDescription(event.target.value)}
                         />
                       </div>
-                      <div className="flex items-center gap-2">
+                      <div className="flex flex-wrap items-center gap-2">
                         <Button type="submit" size="sm">{t("symbols.saveBtn")}</Button>
                         <Button type="button" variant="secondary" size="sm" onClick={() => setEditTarget(null)}>
                           {t("symbols.cancelBtn")}
@@ -235,7 +239,7 @@ export function SymbolLibraryManager({ initialSymbols }: Props) {
                       </div>
                     </form>
                   ) : (
-                    <div className="mt-2 flex items-center gap-2">
+                    <div className="mt-2 flex flex-wrap items-center gap-2">
                       <Button
                         variant="secondary"
                         size="sm"

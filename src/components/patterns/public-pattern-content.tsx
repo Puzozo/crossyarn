@@ -57,11 +57,12 @@ export function PublicPatternContent({
       ?.scrollIntoView({ block: "nearest", inline: "nearest" });
   }, [knitting.active, knitting.row]);
 
-  // Row numbers sit at the chart's right edge (charts are read right to left);
-  // on narrow screens bring them into view when knitting mode starts.
+  // Stitch 1 and the row numbers sit at the chart's right edge (charts are read
+  // right to left): open wide charts scrolled to the right, and again when
+  // knitting mode starts.
   useEffect(() => {
     const container = gridContainerRef.current;
-    if (knitting.active && container) container.scrollLeft = container.scrollWidth;
+    if (container) container.scrollLeft = container.scrollWidth;
   }, [knitting.active]);
 
   return (

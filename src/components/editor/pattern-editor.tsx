@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
 import { PatternDocument } from "@/lib/patterns/model";
 import { usePatternEditorStore } from "@/lib/patterns/editor-state";
 import { useTranslation } from "@/lib/i18n/context";
@@ -298,6 +298,34 @@ export function PatternEditor({ patternId, initialPattern, title, description, i
     el.addEventListener("wheel", onWheel, { passive: false });
     return () => el.removeEventListener("wheel", onWheel);
   }, []);
+
+  // Charts are read from row 1 (bottom) and stitch 1 (right edge): open the grid
+  // scrolled to its bottom-right corner, and keep that corner in place when the
+  // zoom changes (otherwise zooming in drifts the view toward the last stitches).
+  const hasPattern = pattern !== null;
+  const scrolledToStartRef = useRef(false);
+  const cornerOffsetRef = useRef<{ right: number; bottom: number } | null>(null);
+  useLayoutEffect(() => {
+    const el = gridSectionRef.current;
+    if (!el || !hasPattern) return;
+    if (!scrolledToStartRef.current) {
+      scrolledToStartRef.current = true;
+      el.scrollLeft = el.scrollWidth;
+      el.scrollTop = el.scrollHeight;
+    } else if (cornerOffsetRef.current) {
+      el.scrollLeft = el.scrollWidth - el.clientWidth - cornerOffsetRef.current.right;
+      el.scrollTop = el.scrollHeight - el.clientHeight - cornerOffsetRef.current.bottom;
+    }
+    const remember = () => {
+      cornerOffsetRef.current = {
+        right: el.scrollWidth - el.clientWidth - el.scrollLeft,
+        bottom: el.scrollHeight - el.clientHeight - el.scrollTop
+      };
+    };
+    remember();
+    el.addEventListener("scroll", remember, { passive: true });
+    return () => el.removeEventListener("scroll", remember);
+  }, [hasPattern, zoomLevel]);
 
   // Keyboard shortcuts: Ctrl+S save, Ctrl+Z/Y undo/redo, Esc cancel modes, 1-9 symbol pick, +/- zoom
   useEffect(() => {
@@ -777,7 +805,7 @@ export function PatternEditor({ patternId, initialPattern, title, description, i
       {!isFillMode && !isSelectionMode && !rapportInsertId && (
         <p className="px-1 text-[11px] text-yarn-warm-gray/80">{t("editor.dragPaintHint")}</p>
       )}
-      <section ref={gridSectionRef} className="overflow-auto rounded-2xl bg-white/70 border border-yarn-sand/50 p-3 sm:p-4 lg:p-5 shadow-warm-sm">
+      <section ref={gridSectionRef} className="max-h-[calc(100dvh-6rem)] overflow-auto rounded-2xl bg-white/70 border border-yarn-sand/50 p-3 sm:p-4 lg:p-5 shadow-warm-sm">
         <p className="mb-2 hidden text-right text-[10px] text-yarn-warm-gray/70 lg:block">{t("editor.zoomScrollHint")}</p>
 
         {/* Add/remove row top */}
