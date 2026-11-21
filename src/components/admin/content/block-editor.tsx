@@ -94,6 +94,9 @@ export function BlockEditor({ value, onChange }: Props) {
   const editor = useEditor({
     immediatelyRender: false,
     content: initialContent,
+    editorProps: {
+      attributes: { "aria-label": "Текст публікації" }
+    },
     extensions: [
       StarterKit.configure({
         heading: { levels: [2, 3] },
@@ -296,7 +299,10 @@ export function BlockEditor({ value, onChange }: Props) {
       </div>
 
       {editor ? (
-        <EditorContent editor={editor} className="blog-prose min-h-[200px] rounded-lg border border-gray-800 bg-gray-950 p-4" />
+        <EditorContent
+          editor={editor}
+          className="blog-prose min-h-[200px] rounded-lg border border-gray-800 bg-gray-950 p-4"
+        />
       ) : (
         <div className="min-h-[200px] rounded-lg border border-gray-800 bg-gray-950 p-4 text-sm text-gray-500">Завантаження…</div>
       )}

@@ -74,6 +74,7 @@ export default async function AdminMasterClassesPage({
       <form method="GET" action="/admin/master-classes" className="flex flex-wrap items-center gap-3">
         <select
           name="status"
+          aria-label="Статус"
           defaultValue={status}
           className="rounded-lg bg-gray-800 border border-gray-700 text-white px-3 py-2 text-sm focus:outline-none focus:border-indigo-500"
         >
@@ -85,6 +86,7 @@ export default async function AdminMasterClassesPage({
         </select>
         <select
           name="lang"
+          aria-label="Мова"
           defaultValue={lang}
           className="rounded-lg bg-gray-800 border border-gray-700 text-white px-3 py-2 text-sm focus:outline-none focus:border-indigo-500"
         >
@@ -94,6 +96,7 @@ export default async function AdminMasterClassesPage({
         </select>
         <select
           name="kind"
+          aria-label="Тип"
           defaultValue={kind}
           className="rounded-lg bg-gray-800 border border-gray-700 text-white px-3 py-2 text-sm focus:outline-none focus:border-indigo-500"
         >
@@ -103,6 +106,7 @@ export default async function AdminMasterClassesPage({
         </select>
         <input
           name="q"
+          aria-label="Пошук за назвою"
           defaultValue={q}
           placeholder="Пошук за назвою..."
           className="flex-1 max-w-sm rounded-lg bg-gray-800 border border-gray-700 text-white px-3 py-2 text-sm placeholder:text-gray-500 focus:outline-none focus:border-indigo-500"

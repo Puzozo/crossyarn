@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useId, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -30,6 +30,7 @@ const SORT_OPTIONS = [
 export function SavedContent({ patterns, page, totalPages, sort }: Props) {
   const { t } = useTranslation();
   const router = useRouter();
+  const sortSelectId = useId();
   const [hiddenIds, setHiddenIds] = useState<Set<string>>(new Set());
   const visible = patterns.filter((p) => !hiddenIds.has(p.id));
 
@@ -48,8 +49,9 @@ export function SavedContent({ patterns, page, totalPages, sort }: Props) {
 
       {/* Sort dropdown */}
       <div className="flex items-center gap-2">
-        <label className="text-sm text-yarn-warm-gray">{t("saved.sort")}:</label>
+        <label htmlFor={sortSelectId} className="text-sm text-yarn-warm-gray">{t("saved.sort")}:</label>
         <select
+          id={sortSelectId}
           value={sort}
           onChange={(e) => handleSort(e.target.value)}
           className="rounded-lg border border-yarn-field-border bg-white/70 px-3 py-1.5 text-base sm:text-sm text-yarn-charcoal focus:border-yarn-terracotta/40 focus:outline-none focus:ring-2 focus:ring-yarn-terracotta/20"

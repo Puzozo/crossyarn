@@ -1,8 +1,9 @@
 "use client";
 
 import Image from "next/image";
-import { ChangeEvent, FormEvent, useState } from "react";
+import { FormEvent, useId, useState } from "react";
 import { SYMBOL_SPAN_OPTIONS } from "@/lib/patterns/model";
+import { FileButton } from "@/components/ui/file-button";
 
 type SymbolEntry = {
   id: string;
@@ -52,8 +53,13 @@ export function OfficialSymbolManager({
   const [editError, setEditError] = useState<string | null>(null);
   const [editSubmitting, setEditSubmitting] = useState(false);
 
-  async function handleFile(e: ChangeEvent<HTMLInputElement>) {
-    const file = e.target.files?.[0];
+  const nameId = useId();
+  const descId = useId();
+  const imageId = useId();
+  const widthId = useId();
+  const heightId = useId();
+
+  async function handleFile(file: File | undefined) {
     if (!file) return;
     if (file.size > 300_000) { setError("Файл занадто великий (макс. 300 KB)"); return; }
     const data = await readFile(file);
@@ -61,8 +67,7 @@ export function OfficialSymbolManager({
     setImageData(data);
   }
 
-  async function handleEditFile(e: ChangeEvent<HTMLInputElement>) {
-    const file = e.target.files?.[0];
+  async function handleEditFile(file: File | undefined) {
     if (!file) return;
     if (file.size > 300_000) { setEditError("Файл занадто великий (макс. 300 KB)"); return; }
     const data = await readFile(file);
@@ -161,33 +166,32 @@ export function OfficialSymbolManager({
         <form onSubmit={(e) => void handleSubmit(e)} className="space-y-4">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="space-y-1.5">
-              <label className="block text-sm font-medium text-gray-300">Назва</label>
-              <input value={name} onChange={(e) => setName(e.target.value)} required maxLength={80}
+              <label htmlFor={nameId} className="block text-sm font-medium text-gray-300">Назва</label>
+              <input id={nameId} value={name} onChange={(e) => setName(e.target.value)} required maxLength={80}
                 className="w-full rounded-lg bg-gray-800 border border-gray-700 text-white px-3 py-2 text-sm focus:outline-none focus:border-indigo-500"
                 placeholder="Назва позначки" />
             </div>
             <div className="space-y-1.5">
-              <label className="block text-sm font-medium text-gray-300">Опис</label>
-              <input value={description} onChange={(e) => setDescription(e.target.value)} required maxLength={300}
+              <label htmlFor={descId} className="block text-sm font-medium text-gray-300">Опис</label>
+              <input id={descId} value={description} onChange={(e) => setDescription(e.target.value)} required maxLength={300}
                 className="w-full rounded-lg bg-gray-800 border border-gray-700 text-white px-3 py-2 text-sm focus:outline-none focus:border-indigo-500"
                 placeholder="Короткий опис" />
             </div>
             <div className="space-y-1.5">
-              <label className="block text-sm font-medium text-gray-300">Зображення</label>
-              <input type="file" accept="image/*" onChange={handleFile} required
-                className="w-full text-sm text-gray-400 file:mr-3 file:rounded-lg file:border-0 file:bg-indigo-600 file:px-3 file:py-1.5 file:text-xs file:font-medium file:text-white hover:file:bg-indigo-500" />
+              <label htmlFor={imageId} className="block text-sm font-medium text-gray-300">Зображення</label>
+              <FileButton id={imageId} accept="image/*" required chooseLabel="Обрати файл" noFileLabel="Файл не вибрано" onFileChange={(file) => void handleFile(file)} />
               <p className="text-[10px] text-gray-500">Рекомендовано {width * 64}×{height * 64}px, ≤ 300KB</p>
             </div>
             <div className="space-y-1.5">
-              <label className="block text-sm font-medium text-gray-300">Ширина (клітинок)</label>
-              <select value={width} onChange={(e) => setWidth(Number(e.target.value))}
+              <label htmlFor={widthId} className="block text-sm font-medium text-gray-300">Ширина (клітинок)</label>
+              <select id={widthId} value={width} onChange={(e) => setWidth(Number(e.target.value))}
                 className="w-full rounded-lg bg-gray-800 border border-gray-700 text-white px-3 py-2 text-sm focus:outline-none focus:border-indigo-500">
                 {SYMBOL_SPAN_OPTIONS.map((w) => <option key={w} value={w}>{w}</option>)}
               </select>
             </div>
             <div className="space-y-1.5">
-              <label className="block text-sm font-medium text-gray-300">Висота (клітинок)</label>
-              <select value={height} onChange={(e) => setHeight(Number(e.target.value))}
+              <label htmlFor={heightId} className="block text-sm font-medium text-gray-300">Висота (клітинок)</label>
+              <select id={heightId} value={height} onChange={(e) => setHeight(Number(e.target.value))}
                 className="w-full rounded-lg bg-gray-800 border border-gray-700 text-white px-3 py-2 text-sm focus:outline-none focus:border-indigo-500">
                 {SYMBOL_SPAN_OPTIONS.map((h) => <option key={h} value={h}>{h}</option>)}
               </select>
@@ -253,30 +257,29 @@ export function OfficialSymbolManager({
                         <button type="button" onClick={() => setEditingBuiltin(null)} className="text-xs text-gray-500 hover:text-gray-300">✕</button>
                       </div>
                       <div className="space-y-2">
-                        <input value={editName} onChange={(e) => setEditName(e.target.value)} required maxLength={80}
+                        <input id={`edit-name-${s.id}`} value={editName} onChange={(e) => setEditName(e.target.value)} required maxLength={80}
                           placeholder="Назва" className="w-full rounded-lg bg-gray-800 border border-gray-700 text-white px-3 py-1.5 text-sm focus:outline-none focus:border-indigo-500" />
-                        <input value={editDescription} onChange={(e) => setEditDescription(e.target.value)} required maxLength={300}
+                        <input id={`edit-desc-${s.id}`} value={editDescription} onChange={(e) => setEditDescription(e.target.value)} required maxLength={300}
                           placeholder="Опис" className="w-full rounded-lg bg-gray-800 border border-gray-700 text-white px-3 py-1.5 text-sm focus:outline-none focus:border-indigo-500" />
                         <div className="grid grid-cols-2 gap-2">
                           <div>
-                            <label className="text-[10px] text-gray-500 block mb-0.5">Ширина</label>
-                            <select value={editWidth} onChange={(e) => setEditWidth(Number(e.target.value))}
+                            <label htmlFor={`edit-width-${s.id}`} className="text-[10px] text-gray-500 block mb-0.5">Ширина</label>
+                            <select id={`edit-width-${s.id}`} value={editWidth} onChange={(e) => setEditWidth(Number(e.target.value))}
                               className="w-full rounded-lg bg-gray-800 border border-gray-700 text-white px-2 py-1.5 text-sm focus:outline-none focus:border-indigo-500">
                               {SYMBOL_SPAN_OPTIONS.map((w) => <option key={w} value={w}>{w}</option>)}
                             </select>
                           </div>
                           <div>
-                            <label className="text-[10px] text-gray-500 block mb-0.5">Висота</label>
-                            <select value={editHeight} onChange={(e) => setEditHeight(Number(e.target.value))}
+                            <label htmlFor={`edit-height-${s.id}`} className="text-[10px] text-gray-500 block mb-0.5">Висота</label>
+                            <select id={`edit-height-${s.id}`} value={editHeight} onChange={(e) => setEditHeight(Number(e.target.value))}
                               className="w-full rounded-lg bg-gray-800 border border-gray-700 text-white px-2 py-1.5 text-sm focus:outline-none focus:border-indigo-500">
                               {SYMBOL_SPAN_OPTIONS.map((h) => <option key={h} value={h}>{h}</option>)}
                             </select>
                           </div>
                         </div>
                         <div>
-                          <label className="text-[10px] text-gray-500 block mb-0.5">Зображення (необов&apos;язково)</label>
-                          <input type="file" accept="image/*" onChange={handleEditFile}
-                            className="w-full text-xs text-gray-400 file:mr-2 file:rounded file:border-0 file:bg-gray-700 file:px-2 file:py-1 file:text-xs file:text-white hover:file:bg-gray-600" />
+                          <label htmlFor={`edit-image-${s.id}`} className="text-[10px] text-gray-500 block mb-0.5">Зображення (необов&apos;язково)</label>
+                          <FileButton id={`edit-image-${s.id}`} accept="image/*" chooseLabel="Обрати файл" noFileLabel="Файл не вибрано" onFileChange={(file) => void handleEditFile(file)} />
                           <p className="text-[10px] text-gray-600 mt-0.5">Рекомендовано {editWidth * 64}×{editHeight * 64}px, ≤ 300KB</p>
                         </div>
                         {editImageData && (

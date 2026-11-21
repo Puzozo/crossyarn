@@ -469,6 +469,8 @@ export const translations = {
     "common.cancel": "Скасувати",
     "common.delete": "Видалити",
     "common.pagination": "Пагінація",
+    "common.chooseFile": "Обрати файл",
+    "common.noFileChosen": "Файл не вибрано",
 
     // Mobile nav
     "mobileNav.openMenu": "Відкрити меню",
@@ -1024,6 +1026,8 @@ export const translations = {
     "common.cancel": "Cancel",
     "common.delete": "Delete",
     "common.pagination": "Pagination",
+    "common.chooseFile": "Choose file",
+    "common.noFileChosen": "No file chosen",
 
     // Mobile nav
     "mobileNav.openMenu": "Open menu",

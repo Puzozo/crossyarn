@@ -1,10 +1,11 @@
 "use client";
 
 import Image from "next/image";
-import { ChangeEvent, FormEvent, useMemo, useState } from "react";
+import { FormEvent, useMemo, useId, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ConfirmDialog } from "@/components/ui/confirm-dialog";
+import { FileButton } from "@/components/ui/file-button";
 import { PatternSymbol, SYMBOL_SPAN_OPTIONS } from "@/lib/patterns/model";
 import { useTranslation } from "@/lib/i18n/context";
 import { apiErrorMessage } from "@/lib/i18n/api-errors";
@@ -27,10 +28,14 @@ export function SymbolLibraryManager({ initialSymbols }: Props) {
   const [editName, setEditName] = useState("");
   const [editDescription, setEditDescription] = useState("");
   const [editError, setEditError] = useState<string | null>(null);
+  const nameId = useId();
+  const descId = useId();
+  const fileId = useId();
+  const widthId = useId();
+  const heightId = useId();
   const customSymbols = useMemo(() => symbols.filter((item) => item.source === "user"), [symbols]);
 
-  async function handleFile(event: ChangeEvent<HTMLInputElement>) {
-    const file = event.target.files?.[0];
+  async function handleFile(file: File | undefined) {
     if (!file) return;
     if (file.size > 300_000) {
       setError(t("symbols.imageSizeError"));
@@ -123,23 +128,31 @@ export function SymbolLibraryManager({ initialSymbols }: Props) {
       <form onSubmit={handleSubmit} className="rounded-xl bg-yarn-oatmeal/40 border border-yarn-sand/40 p-5">
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           <div className="space-y-1.5">
-            <label className="block text-sm font-medium text-yarn-charcoal">{t("symbols.nameLabel")}</label>
-            <Input value={name} onChange={(event) => setName(event.target.value)} required />
+            <label htmlFor={nameId} className="block text-sm font-medium text-yarn-charcoal">{t("symbols.nameLabel")}</label>
+            <Input id={nameId} value={name} onChange={(event) => setName(event.target.value)} required />
           </div>
           <div className="space-y-1.5">
-            <label className="block text-sm font-medium text-yarn-charcoal">{t("symbols.descLabel")}</label>
-            <Input value={description} onChange={(event) => setDescription(event.target.value)} required />
+            <label htmlFor={descId} className="block text-sm font-medium text-yarn-charcoal">{t("symbols.descLabel")}</label>
+            <Input id={descId} value={description} onChange={(event) => setDescription(event.target.value)} required />
           </div>
           <div className="space-y-1.5">
-            <label className="block text-sm font-medium text-yarn-charcoal">{t("symbols.iconLabel")}</label>
-            <Input type="file" accept="image/*" onChange={handleFile} required />
+            <label htmlFor={fileId} className="block text-sm font-medium text-yarn-charcoal">{t("symbols.iconLabel")}</label>
+            <FileButton
+              id={fileId}
+              accept="image/*"
+              required
+              chooseLabel={t("common.chooseFile")}
+              noFileLabel={t("common.noFileChosen")}
+              onFileChange={(file) => void handleFile(file)}
+            />
             <p className="text-[10px] text-yarn-warm-gray">
               {t("symbols.imageSizeHint", { w: String(width * 64), h: String(height * 64) })}
             </p>
           </div>
           <div className="space-y-1.5">
-            <label className="block text-sm font-medium text-yarn-charcoal">{t("symbols.widthLabel")}</label>
+            <label htmlFor={widthId} className="block text-sm font-medium text-yarn-charcoal">{t("symbols.widthLabel")}</label>
             <select
+              id={widthId}
               value={width}
               onChange={(e) => setWidth(Number(e.target.value))}
               className="w-full rounded-lg border border-yarn-field-border bg-white px-3 py-2 text-base sm:text-sm text-yarn-charcoal focus:outline-none focus:border-yarn-terracotta"
@@ -150,8 +163,9 @@ export function SymbolLibraryManager({ initialSymbols }: Props) {
             </select>
           </div>
           <div className="space-y-1.5">
-            <label className="block text-sm font-medium text-yarn-charcoal">{t("symbols.heightLabel")}</label>
+            <label htmlFor={heightId} className="block text-sm font-medium text-yarn-charcoal">{t("symbols.heightLabel")}</label>
             <select
+              id={heightId}
               value={height}
               onChange={(e) => setHeight(Number(e.target.value))}
               className="w-full rounded-lg border border-yarn-field-border bg-white px-3 py-2 text-base sm:text-sm text-yarn-charcoal focus:outline-none focus:border-yarn-terracotta"
@@ -214,16 +228,18 @@ export function SymbolLibraryManager({ initialSymbols }: Props) {
                       }}
                     >
                       <div className="space-y-1.5">
-                        <label className="block text-sm font-medium text-yarn-charcoal">{t("symbols.nameLabel")}</label>
+                        <label htmlFor={`edit-name-${symbol.id}`} className="block text-sm font-medium text-yarn-charcoal">{t("symbols.nameLabel")}</label>
                         <Input
+                          id={`edit-name-${symbol.id}`}
                           value={editName}
                           onChange={(event) => setEditName(event.target.value)}
                           required
                         />
                       </div>
                       <div className="space-y-1.5">
-                        <label className="block text-sm font-medium text-yarn-charcoal">{t("symbols.descLabel")}</label>
+                        <label htmlFor={`edit-desc-${symbol.id}`} className="block text-sm font-medium text-yarn-charcoal">{t("symbols.descLabel")}</label>
                         <Input
+                          id={`edit-desc-${symbol.id}`}
                           value={editDescription}
                           onChange={(event) => setEditDescription(event.target.value)}
                         />
