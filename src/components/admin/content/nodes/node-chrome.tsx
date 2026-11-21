@@ -1,7 +1,9 @@
 "use client";
 
+import { useState } from "react";
 import { NodeViewWrapper } from "@tiptap/react";
 import type { Editor } from "@tiptap/react";
+import { AdminConfirmDialog } from "@/components/admin/admin-confirm-dialog";
 
 export function topLevelIndex(editor: Editor, pos: number | undefined): number {
   if (pos === undefined) return -1;
@@ -50,19 +52,20 @@ type Props = {
 };
 
 export function NodeChrome({ label, editor, getPos, onDelete, children }: Props) {
+  const [confirmOpen, setConfirmOpen] = useState(false);
   const index = topLevelIndex(editor, getPos());
   const count = topLevelCount(editor);
   return (
     <NodeViewWrapper className="my-3 rounded-lg border border-gray-700 bg-gray-900/40 p-3" data-drag-handle>
       <div className="mb-2 flex items-center justify-between select-none" contentEditable={false}>
         <span className="text-xs font-semibold uppercase tracking-wider text-gray-400">{label}</span>
-        <div className="flex gap-2 text-sm">
+        <div className="flex items-center gap-1">
           <button
             type="button"
             disabled={index === 0}
             onClick={() => moveTopLevelNode(editor, getPos, -1)}
             aria-label="Вище"
-            className="text-gray-500 hover:text-white disabled:opacity-30"
+            className="flex h-8 w-8 items-center justify-center rounded-lg text-gray-500 hover:text-white hover:bg-gray-800 disabled:opacity-30 disabled:hover:bg-transparent transition-colors"
           >
             ↑
           </button>
@@ -71,16 +74,34 @@ export function NodeChrome({ label, editor, getPos, onDelete, children }: Props)
             disabled={index === count - 1}
             onClick={() => moveTopLevelNode(editor, getPos, 1)}
             aria-label="Нижче"
-            className="text-gray-500 hover:text-white disabled:opacity-30"
+            className="flex h-8 w-8 items-center justify-center rounded-lg text-gray-500 hover:text-white hover:bg-gray-800 disabled:opacity-30 disabled:hover:bg-transparent transition-colors"
           >
             ↓
           </button>
-          <button type="button" onClick={onDelete} aria-label="Видалити блок" className="text-red-400 hover:text-red-300">
+          <button
+            type="button"
+            onClick={() => setConfirmOpen(true)}
+            aria-label="Видалити блок"
+            className="flex h-8 w-8 items-center justify-center rounded-lg text-red-400 hover:text-red-300 hover:bg-red-950/40 disabled:opacity-30 transition-colors"
+          >
             ×
           </button>
         </div>
       </div>
       {children}
+      <AdminConfirmDialog
+        open={confirmOpen}
+        title={`Видалити блок «${label}»?`}
+        message="Цю дію можна скасувати лише через Ctrl+Z у редакторі."
+        confirmLabel="Видалити"
+        cancelLabel="Скасувати"
+        danger
+        onConfirm={() => {
+          setConfirmOpen(false);
+          onDelete();
+        }}
+        onCancel={() => setConfirmOpen(false)}
+      />
     </NodeViewWrapper>
   );
 }

@@ -118,7 +118,7 @@ export default async function AdminUsersPage({
                   <div className="flex items-center justify-end gap-2">
                     <Link
                       href={`/admin/users/${user.id}`}
-                      className="text-xs text-gray-400 hover:text-white transition-colors"
+                      className="inline-flex items-center px-2 py-1.5 rounded-lg text-xs text-gray-400 hover:text-white hover:bg-gray-800 transition-colors"
                     >
                       Деталі
                     </Link>

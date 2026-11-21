@@ -5,6 +5,7 @@ import { Node, mergeAttributes } from "@tiptap/core";
 import { ReactNodeViewRenderer, NodeViewContent, NodeViewWrapper, type ReactNodeViewProps } from "@tiptap/react";
 import { ImageUploadDialog } from "@/components/admin/content/image-upload-dialog";
 import { moveTopLevelNode, topLevelCount, topLevelIndex } from "./node-chrome";
+import { AdminConfirmDialog } from "@/components/admin/admin-confirm-dialog";
 
 const INPUT_CLASS =
   "w-full rounded-lg bg-gray-800 border border-gray-700 text-white px-2 py-1 text-sm font-medium focus:outline-none focus:border-indigo-500";
@@ -17,6 +18,7 @@ function StepNodeView(props: ReactNodeViewProps) {
   // committed as an empty string mid-typing (that would 422 the whole doc on autosave).
   const [title, setTitle] = useState<string>(node.attrs.title ?? "Крок");
   const [dialogOpen, setDialogOpen] = useState(false);
+  const [confirmOpen, setConfirmOpen] = useState(false);
 
   const index = topLevelIndex(editor, getPos());
   const count = topLevelCount(editor);
@@ -47,13 +49,13 @@ function StepNodeView(props: ReactNodeViewProps) {
           className={INPUT_CLASS}
           placeholder="Назва кроку"
         />
-        <div className="flex items-center gap-2 text-sm shrink-0">
+        <div className="flex items-center gap-1 shrink-0">
           <button
             type="button"
             disabled={index === 0}
             onClick={() => moveTopLevelNode(editor, getPos, -1)}
             aria-label="Вище"
-            className="text-gray-500 hover:text-white disabled:opacity-30"
+            className="flex h-8 w-8 items-center justify-center rounded-lg text-gray-500 hover:text-white hover:bg-gray-800 disabled:opacity-30 disabled:hover:bg-transparent transition-colors"
           >
             ↑
           </button>
@@ -62,11 +64,16 @@ function StepNodeView(props: ReactNodeViewProps) {
             disabled={index === count - 1}
             onClick={() => moveTopLevelNode(editor, getPos, 1)}
             aria-label="Нижче"
-            className="text-gray-500 hover:text-white disabled:opacity-30"
+            className="flex h-8 w-8 items-center justify-center rounded-lg text-gray-500 hover:text-white hover:bg-gray-800 disabled:opacity-30 disabled:hover:bg-transparent transition-colors"
           >
             ↓
           </button>
-          <button type="button" onClick={deleteNode} aria-label="Видалити блок" className="text-red-400 hover:text-red-300">
+          <button
+            type="button"
+            onClick={() => setConfirmOpen(true)}
+            aria-label="Видалити блок"
+            className="flex h-8 w-8 items-center justify-center rounded-lg text-red-400 hover:text-red-300 hover:bg-red-950/40 transition-colors"
+          >
             ×
           </button>
         </div>
@@ -87,6 +94,20 @@ function StepNodeView(props: ReactNodeViewProps) {
           const first = ids[0];
           if (first) insertImageAtEnd(first);
         }}
+      />
+
+      <AdminConfirmDialog
+        open={confirmOpen}
+        title="Видалити блок «Крок»?"
+        message="Цю дію можна скасувати лише через Ctrl+Z у редакторі."
+        confirmLabel="Видалити"
+        cancelLabel="Скасувати"
+        danger
+        onConfirm={() => {
+          setConfirmOpen(false);
+          deleteNode();
+        }}
+        onCancel={() => setConfirmOpen(false)}
       />
     </NodeViewWrapper>
   );

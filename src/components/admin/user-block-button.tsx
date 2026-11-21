@@ -2,6 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { AdminConfirmDialog } from "@/components/admin/admin-confirm-dialog";
 
 export function UserBlockButton({
   userId,
@@ -12,11 +13,10 @@ export function UserBlockButton({
 }) {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
+  const [confirmOpen, setConfirmOpen] = useState(false);
 
   async function handleToggle() {
     const action = isDisabled ? "unblock" : "block";
-    const label = isDisabled ? "розблокувати" : "заблокувати";
-    if (!confirm(`${label.charAt(0).toUpperCase() + label.slice(1)} цього користувача?`)) return;
 
     setLoading(true);
     try {
@@ -32,17 +32,32 @@ export function UserBlockButton({
   }
 
   return (
-    <button
-      type="button"
-      onClick={() => void handleToggle()}
-      disabled={loading}
-      className={`text-xs font-medium transition-colors disabled:opacity-50 ${
-        isDisabled
-          ? "text-emerald-400 hover:text-emerald-300"
-          : "text-red-400 hover:text-red-300"
-      }`}
-    >
-      {loading ? "..." : isDisabled ? "Розблокувати" : "Заблокувати"}
-    </button>
+    <>
+      <button
+        type="button"
+        onClick={() => setConfirmOpen(true)}
+        disabled={loading}
+        className={`px-2 py-1.5 text-xs font-medium rounded-lg transition-colors disabled:opacity-50 ${
+          isDisabled
+            ? "text-emerald-400 hover:text-emerald-300 hover:bg-emerald-950/30"
+            : "text-red-400 hover:text-red-300 hover:bg-red-950/30"
+        }`}
+      >
+        {loading ? "..." : isDisabled ? "Розблокувати" : "Заблокувати"}
+      </button>
+      <AdminConfirmDialog
+        open={confirmOpen}
+        title={isDisabled ? "Розблокувати користувача?" : "Заблокувати користувача?"}
+        confirmLabel={isDisabled ? "Розблокувати" : "Заблокувати"}
+        cancelLabel="Скасувати"
+        danger={!isDisabled}
+        busy={loading}
+        onConfirm={() => {
+          setConfirmOpen(false);
+          void handleToggle();
+        }}
+        onCancel={() => setConfirmOpen(false)}
+      />
+    </>
   );
 }

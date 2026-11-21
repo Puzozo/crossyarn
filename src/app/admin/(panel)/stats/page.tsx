@@ -86,7 +86,7 @@ export default async function AdminStatsPage() {
         <div className="rounded-xl border border-gray-800 bg-gray-900/50 p-5">
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-base font-semibold text-white">Нові користувачі</h2>
-            <Link href="/admin/users" className="text-xs text-indigo-400 hover:text-indigo-300 transition-colors">
+            <Link href="/admin/users" className="inline-flex items-center px-2 py-1.5 -mr-2 rounded-lg text-xs text-indigo-400 hover:text-indigo-300 hover:bg-gray-800 transition-colors">
               Всі →
             </Link>
           </div>

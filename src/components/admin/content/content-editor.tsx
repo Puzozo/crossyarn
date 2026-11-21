@@ -380,13 +380,13 @@ export function ContentEditor(props: Props) {
         <div className="flex items-center gap-3 min-w-0">
           <Link
             href={kind === "masterClass" ? "/admin/master-classes" : "/admin/posts"}
-            className="text-sm text-gray-400 hover:text-white"
+            className="inline-flex items-center px-2 py-1.5 -ml-2 rounded-lg text-sm text-gray-400 hover:text-white hover:bg-gray-800 transition-colors"
           >
             ← Список
           </Link>
-          <span className="text-white font-medium truncate max-w-[200px]">
+          <h1 className="text-base font-medium text-white truncate max-w-[200px]">
             {form.title || "Без назви"}
-          </span>
+          </h1>
           {statusIndicator}
         </div>
         <div className="flex items-center gap-2">

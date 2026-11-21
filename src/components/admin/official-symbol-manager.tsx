@@ -4,6 +4,7 @@ import Image from "next/image";
 import { FormEvent, useId, useState } from "react";
 import { SYMBOL_SPAN_OPTIONS } from "@/lib/patterns/model";
 import { FileButton } from "@/components/ui/file-button";
+import { AdminConfirmDialog } from "@/components/admin/admin-confirm-dialog";
 
 type SymbolEntry = {
   id: string;
@@ -33,6 +34,8 @@ export function OfficialSymbolManager({
 }) {
   const [symbols, setSymbols] = useState<SymbolEntry[]>(initialSymbols);
   const [overrides, setOverrides] = useState<Record<string, BuiltinOverride>>(initialOverrides);
+  const [deleteTarget, setDeleteTarget] = useState<{ id: string; name: string } | null>(null);
+  const [resetTarget, setResetTarget] = useState<{ id: string; name: string } | null>(null);
 
   // New official symbol form
   const [name, setName] = useState("");
@@ -105,8 +108,7 @@ export function OfficialSymbolManager({
     }
   }
 
-  async function handleDelete(id: string, symbolName: string) {
-    if (!confirm(`Видалити символ "${symbolName}"?`)) return;
+  async function handleDelete(id: string) {
     const res = await fetch(`/api/admin/symbols/${id}`, { method: "DELETE" });
     if (res.ok) setSymbols((prev) => prev.filter((s) => s.id !== id));
   }
@@ -146,8 +148,7 @@ export function OfficialSymbolManager({
     }
   }
 
-  async function handleResetBuiltin(builtinId: string, symbolName: string) {
-    if (!confirm(`Скинути "${symbolName}" до стандартного вигляду?`)) return;
+  async function handleResetBuiltin(builtinId: string) {
     const res = await fetch(`/api/admin/symbols/builtin/${builtinId}`, { method: "DELETE" });
     if (res.ok) {
       setOverrides((prev) => {
@@ -223,7 +224,7 @@ export function OfficialSymbolManager({
                       <div className="text-gray-400 text-sm truncate" title={s.description}>{s.description}</div>
                       {s.width > 1 && <span className="text-xs text-indigo-400">{s.width}×{s.height ?? 1} клітинки</span>}
                     </div>
-                    <button type="button" onClick={() => void handleDelete(s.id, s.name)}
+                    <button type="button" onClick={() => setDeleteTarget({ id: s.id, name: s.name })}
                       className="text-xs text-red-400 hover:text-red-300 transition-colors shrink-0">
                       Видалити
                     </button>
@@ -321,7 +322,7 @@ export function OfficialSymbolManager({
                               Редагувати
                             </button>
                             {override && (
-                              <button type="button" onClick={() => void handleResetBuiltin(s.id, s.name)}
+                              <button type="button" onClick={() => setResetTarget({ id: s.id, name: s.name })}
                                 className="text-xs text-gray-500 hover:text-gray-300 transition-colors">
                                 Скинути
                               </button>
@@ -337,6 +338,24 @@ export function OfficialSymbolManager({
           </div>
         </div>
       )}
+
+      <AdminConfirmDialog
+        open={deleteTarget !== null}
+        title={`Видалити символ «${deleteTarget?.name ?? ""}»?`}
+        confirmLabel="Видалити"
+        cancelLabel="Скасувати"
+        danger
+        onConfirm={() => { if (deleteTarget) void handleDelete(deleteTarget.id); setDeleteTarget(null); }}
+        onCancel={() => setDeleteTarget(null)}
+      />
+      <AdminConfirmDialog
+        open={resetTarget !== null}
+        title={`Скинути «${resetTarget?.name ?? ""}» до стандартного вигляду?`}
+        confirmLabel="Скинути"
+        cancelLabel="Скасувати"
+        onConfirm={() => { if (resetTarget) void handleResetBuiltin(resetTarget.id); setResetTarget(null); }}
+        onCancel={() => setResetTarget(null)}
+      />
     </div>
   );
 }
