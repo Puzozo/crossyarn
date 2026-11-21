@@ -28,7 +28,7 @@ export function VideoLessonCard({ slug, title, videoId, durationMinutes, itemLan
           </>
         ) : null}
         <div className="absolute left-2 top-2 z-10">
-          <span className="inline-block rounded-full bg-yarn-terracotta text-white text-xs font-medium px-2 py-0.5">
+          <span className="inline-block rounded-full bg-yarn-terracotta-strong text-white text-xs font-medium px-2 py-0.5">
             {translate(lang, "videoLessons.card.free")}
           </span>
         </div>

@@ -144,7 +144,7 @@ function PremiumGate({ onClose }: { onClose: () => void }) {
         <div className="flex flex-col gap-2 pt-1">
           <Link
             href="/premium"
-            className="w-full rounded-xl bg-yarn-terracotta py-2.5 text-center text-sm font-semibold text-white hover:bg-yarn-terracotta-hover transition-colors"
+            className="w-full rounded-xl bg-yarn-terracotta-strong py-2.5 text-center text-sm font-semibold text-white hover:bg-yarn-terracotta-strong-hover transition-colors"
           >
             {t("import.getPremium")}
           </Link>

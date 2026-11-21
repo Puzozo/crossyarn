@@ -103,7 +103,7 @@ export function ResetPasswordContent({ tokenValid }: { tokenValid: boolean }) {
             </p>
             <Link
               href="/sign-in"
-              className="inline-block rounded-xl bg-yarn-terracotta px-5 py-2.5 text-sm font-semibold text-white shadow-warm-sm transition-colors hover:bg-yarn-terracotta-hover"
+              className="inline-block rounded-xl bg-yarn-terracotta-strong px-5 py-2.5 text-sm font-semibold text-white shadow-warm-sm transition-colors hover:bg-yarn-terracotta-strong-hover"
             >
               {t("auth.backToSignIn")}
             </Link>
@@ -117,7 +117,7 @@ export function ResetPasswordContent({ tokenValid }: { tokenValid: boolean }) {
                 </div>
                 <Link
                   href="/forgot-password"
-                  className="block rounded-xl bg-yarn-terracotta px-5 py-2.5 text-center text-sm font-semibold text-white shadow-warm-sm transition-colors hover:bg-yarn-terracotta-hover"
+                  className="block rounded-xl bg-yarn-terracotta-strong px-5 py-2.5 text-center text-sm font-semibold text-white shadow-warm-sm transition-colors hover:bg-yarn-terracotta-strong-hover"
                 >
                   {t("auth.requestNewLink")}
                 </Link>

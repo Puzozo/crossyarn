@@ -112,7 +112,7 @@ export function Footer() {
         </div>
 
         {/* Copyright */}
-        <div className="mt-8 border-t border-yarn-sand/40 pt-4 text-center text-xs text-yarn-warm-gray/70">
+        <div className="mt-8 border-t border-yarn-sand/40 pt-4 text-center text-xs text-yarn-warm-gray">
           <p>© {year} Crossyarn. {t("footer.rights")}</p>
         </div>
       </div>

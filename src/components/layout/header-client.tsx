@@ -61,7 +61,7 @@ export function HeaderClient({ isAuthenticated, user }: Props) {
               onClick={() => setLang("uk")}
               className={`px-2 py-1 rounded-md text-xs font-semibold transition-colors ${
                 lang === "uk"
-                  ? "bg-yarn-terracotta text-white"
+                  ? "bg-yarn-terracotta-strong text-white"
                   : "text-yarn-warm-gray hover:text-yarn-charcoal"
               }`}
             >
@@ -72,7 +72,7 @@ export function HeaderClient({ isAuthenticated, user }: Props) {
               onClick={() => setLang("en")}
               className={`px-2 py-1 rounded-md text-xs font-semibold transition-colors ${
                 lang === "en"
-                  ? "bg-yarn-terracotta text-white"
+                  ? "bg-yarn-terracotta-strong text-white"
                   : "text-yarn-warm-gray hover:text-yarn-charcoal"
               }`}
             >
@@ -120,7 +120,7 @@ export function HeaderClient({ isAuthenticated, user }: Props) {
                 </Link>
                 <Link
                   href="/sign-up"
-                  className="px-5 py-2 rounded-full text-sm font-semibold bg-yarn-terracotta text-white hover:bg-yarn-terracotta-hover transition-colors shadow-warm-sm"
+                  className="px-5 py-2 rounded-full text-sm font-semibold bg-yarn-terracotta-strong text-white hover:bg-yarn-terracotta-strong-hover transition-colors shadow-warm-sm"
                 >
                   {t("nav.signUp")}
                 </Link>
@@ -145,7 +145,7 @@ export function HeaderClient({ isAuthenticated, user }: Props) {
                 </Link>
                 <Link
                   href="/sign-up"
-                  className="px-4 py-3 rounded-full text-center text-sm font-semibold bg-yarn-terracotta text-white hover:bg-yarn-terracotta-hover transition-colors"
+                  className="px-4 py-3 rounded-full text-center text-sm font-semibold bg-yarn-terracotta-strong text-white hover:bg-yarn-terracotta-strong-hover transition-colors"
                 >
                   {t("nav.signUp")}
                 </Link>

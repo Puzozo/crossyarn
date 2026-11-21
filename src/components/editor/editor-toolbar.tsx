@@ -52,7 +52,7 @@ export function EditorToolbar({
 
   const saveBadgeClass =
     saveState === "saved"
-      ? "bg-yarn-sage-light text-yarn-sage"
+      ? "bg-yarn-sage-light text-yarn-sage-strong"
       : saveState === "error"
         ? "bg-red-50 text-red-600"
         : "bg-yarn-terracotta-light text-yarn-terracotta";

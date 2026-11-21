@@ -28,7 +28,7 @@ export default function ErrorPage({ error, reset }: { error: Error & { digest?: 
         </Link>
       </div>
       {error.digest && (
-        <p className="mt-4 text-xs text-yarn-warm-gray/70 font-mono">{error.digest}</p>
+        <p className="mt-4 text-xs text-yarn-warm-gray font-mono">{error.digest}</p>
       )}
     </div>
   );

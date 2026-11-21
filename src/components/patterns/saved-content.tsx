@@ -67,7 +67,7 @@ export function SavedContent({ patterns, page, totalPages, sort }: Props) {
           <p className="text-sm text-yarn-warm-gray">{t("saved.empty")}</p>
           <Link
             href="/explore"
-            className="mt-4 inline-block rounded-xl bg-yarn-terracotta px-5 py-2.5 text-sm font-semibold text-white shadow-warm-sm transition-colors hover:bg-yarn-terracotta-hover"
+            className="mt-4 inline-block rounded-xl bg-yarn-terracotta-strong px-5 py-2.5 text-sm font-semibold text-white shadow-warm-sm transition-colors hover:bg-yarn-terracotta-strong-hover"
           >
             {t("saved.goExplore")}
           </Link>

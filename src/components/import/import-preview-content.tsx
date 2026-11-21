@@ -409,7 +409,7 @@ export function ImportPreviewContent({ importId, initialStatus }: Props) {
               : t("import.allChecked")}
           </p>
           {lowConfidenceCount > 0 && (
-            <p className="text-xs text-yarn-warm-gray/90">{t("import.reviewHint")}</p>
+            <p className="text-xs text-yarn-warm-gray">{t("import.reviewHint")}</p>
           )}
           <PreviewGrid
             cells={cells}
@@ -501,7 +501,7 @@ function ProcessingView({
               <span
                 className={`flex h-5 w-5 items-center justify-center rounded-full text-[10px] ${
                   i === 0
-                    ? "bg-yarn-terracotta text-white"
+                    ? "bg-yarn-terracotta-strong text-white"
                     : "border border-yarn-sand text-yarn-warm-gray"
                 } ${i === 1 ? "animate-pulse" : ""}`}
               >
@@ -515,7 +515,7 @@ function ProcessingView({
           <div className="h-full w-1/3 animate-pulse bg-yarn-terracotta" />
         </div>
       </div>
-      <p className="text-center text-[11px] text-yarn-warm-gray/60">#{importId.slice(0, 8)}</p>
+      <p className="text-center text-[11px] text-yarn-warm-gray">#{importId.slice(0, 8)}</p>
     </div>
   );
 }
@@ -733,7 +733,7 @@ function LegendPanel({
         {t("import.legendTitle")}
       </p>
       {!legendDetected && (
-        <p className="text-[11px] text-yarn-warm-gray/70">{t("import.legendNotDetected")}</p>
+        <p className="text-[11px] text-yarn-warm-gray">{t("import.legendNotDetected")}</p>
       )}
       <div className="space-y-1.5">
         {list.map((g) => {

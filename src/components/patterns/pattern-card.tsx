@@ -87,7 +87,7 @@ export function PatternCard({ pattern }: { pattern: PatternData }) {
             {pattern.width} × {pattern.height} {t("patterns.cells")}
           </p>
         </div>
-        <span className="shrink-0 rounded-full bg-yarn-sage-light px-3 py-1 text-xs font-medium text-yarn-sage">
+        <span className="shrink-0 rounded-full bg-yarn-sage-light px-3 py-1 text-xs font-medium text-yarn-sage-strong">
           {t(VISIBILITY_LABEL_KEYS[pattern.visibility] ?? "visibility.private")}
         </span>
       </div>

@@ -70,7 +70,7 @@ export function ExploreContent({ patterns, query, page, totalPages, totalCount, 
         />
         <button
           type="submit"
-          className="shrink-0 rounded-xl bg-yarn-terracotta px-5 py-2.5 text-sm font-semibold text-white shadow-warm-sm transition-colors hover:bg-yarn-terracotta-hover"
+          className="shrink-0 rounded-xl bg-yarn-terracotta-strong px-5 py-2.5 text-sm font-semibold text-white shadow-warm-sm transition-colors hover:bg-yarn-terracotta-strong-hover"
         >
           {t("explore.searchButton")}
         </button>
@@ -92,7 +92,7 @@ export function ExploreContent({ patterns, query, page, totalPages, totalCount, 
             href={tagHref(null)}
             className={`px-3 py-1 rounded-full text-xs font-medium transition-colors ${
               !activeTag
-                ? "bg-yarn-terracotta text-white"
+                ? "bg-yarn-terracotta-strong text-white"
                 : "bg-yarn-oatmeal/60 text-yarn-charcoal hover:bg-yarn-oatmeal"
             }`}
           >
@@ -104,7 +104,7 @@ export function ExploreContent({ patterns, query, page, totalPages, totalCount, 
               href={tagHref(tag)}
               className={`px-3 py-1 rounded-full text-xs font-medium transition-colors ${
                 activeTag === tag
-                  ? "bg-yarn-terracotta text-white"
+                  ? "bg-yarn-terracotta-strong text-white"
                   : "bg-yarn-oatmeal/60 text-yarn-charcoal hover:bg-yarn-oatmeal"
               }`}
             >
@@ -122,7 +122,7 @@ export function ExploreContent({ patterns, query, page, totalPages, totalCount, 
           {(query || activeTag) && (
             <Link
               href="/explore"
-              className="mt-4 inline-block rounded-xl bg-yarn-terracotta px-5 py-2.5 text-sm font-semibold text-white shadow-warm-sm transition-colors hover:bg-yarn-terracotta-hover"
+              className="mt-4 inline-block rounded-xl bg-yarn-terracotta-strong px-5 py-2.5 text-sm font-semibold text-white shadow-warm-sm transition-colors hover:bg-yarn-terracotta-strong-hover"
             >
               {t("explore.resetFilters")}
             </Link>
@@ -161,7 +161,7 @@ export function ExploreContent({ patterns, query, page, totalPages, totalCount, 
                         </span>
                       ))}
                       {pattern.tags.length > 3 && (
-                        <span className="text-[10px] text-yarn-warm-gray/60">+{pattern.tags.length - 3}</span>
+                        <span className="text-[10px] text-yarn-warm-gray">+{pattern.tags.length - 3}</span>
                       )}
                     </div>
                   )}
@@ -191,7 +191,7 @@ export function ExploreContent({ patterns, query, page, totalPages, totalCount, 
                       </span>
                     )}
                     {pattern.author.name?.trim() || pattern.author.username}{" "}
-                    <span className="text-yarn-warm-gray/70">@{pattern.author.username}</span>
+                    <span className="text-yarn-warm-gray">@{pattern.author.username}</span>
                   </Link>
                 ) : (
                   <span />

@@ -19,7 +19,7 @@ export function PremiumContent() {
         <p className="text-yarn-warm-gray">
           {t("premium.subtitle")}
         </p>
-        <p className="text-sm text-yarn-warm-gray/70">
+        <p className="text-sm text-yarn-warm-gray">
           {t("premium.note")}
         </p>
       </div>
@@ -28,7 +28,7 @@ export function PremiumContent() {
         <li>✅ {t("premium.feature2")}</li>
         <li>✅ {t("premium.feature3")}</li>
       </ul>
-      <div className="rounded-2xl bg-yarn-sage-light/40 border border-yarn-sage/30 px-4 py-3 text-xs text-yarn-sage">
+      <div className="rounded-2xl bg-yarn-sage-light/40 border border-yarn-sage/30 px-4 py-3 text-xs text-yarn-sage-strong">
         {t("premium.thanks")}
       </div>
       <div className="flex gap-3 justify-center">
@@ -40,7 +40,7 @@ export function PremiumContent() {
         </Link>
         <Link
           href="/explore"
-          className="inline-block rounded-full bg-yarn-terracotta px-5 py-2.5 text-sm font-semibold text-white hover:bg-yarn-terracotta-hover transition-colors"
+          className="inline-block rounded-full bg-yarn-terracotta-strong px-5 py-2.5 text-sm font-semibold text-white hover:bg-yarn-terracotta-strong-hover transition-colors"
         >
           {t("premium.explore")}
         </Link>

@@ -41,7 +41,7 @@ function buildHref(level: Difficulty | null, langFilter: "uk" | "en" | null, pag
 
 function pillClass(active: boolean) {
   return `shrink-0 px-3 py-1 rounded-full text-xs font-medium transition-colors ${
-    active ? "bg-yarn-terracotta text-white" : "bg-yarn-oatmeal/60 text-yarn-charcoal hover:bg-yarn-oatmeal"
+    active ? "bg-yarn-terracotta-strong text-white" : "bg-yarn-oatmeal/60 text-yarn-charcoal hover:bg-yarn-oatmeal"
   }`;
 }
 
@@ -96,7 +96,7 @@ export function VideoLessonCatalogContent({ items, level, langFilter, page, tota
           {hasFilters ? (
             <Link
               href="/video-lessons"
-              className="mt-4 inline-block rounded-xl bg-yarn-terracotta px-5 py-2.5 text-sm font-semibold text-white shadow-warm-sm transition-colors hover:bg-yarn-terracotta-hover"
+              className="mt-4 inline-block rounded-xl bg-yarn-terracotta-strong px-5 py-2.5 text-sm font-semibold text-white shadow-warm-sm transition-colors hover:bg-yarn-terracotta-strong-hover"
             >
               {t("masterClass.catalog.resetFilters")}
             </Link>

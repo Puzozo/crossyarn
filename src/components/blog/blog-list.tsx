@@ -42,7 +42,7 @@ export function BlogList({ posts }: { posts: BlogPostSummary[] }) {
                 </Link>
                 <time
                   dateTime={post.date}
-                  className="mt-1 block text-xs text-yarn-warm-gray/80"
+                  className="mt-1 block text-xs text-yarn-warm-gray"
                 >
                   {new Date(post.date).toLocaleDateString(
                     post.lang === "en" ? "en-US" : "uk-UA",

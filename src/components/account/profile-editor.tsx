@@ -295,7 +295,7 @@ export function ProfileEditor({ initial }: { initial: ProfileValues }) {
           <Button type="submit" disabled={saving}>
             {saving ? t("profile.saving") : t("profile.save")}
           </Button>
-          {saved ? <span className="text-sm font-medium text-yarn-sage">{t("profile.saved")}</span> : null}
+          {saved ? <span className="text-sm font-medium text-yarn-sage-strong">{t("profile.saved")}</span> : null}
         </div>
       </form>
     </section>

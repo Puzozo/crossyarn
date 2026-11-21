@@ -135,7 +135,7 @@ export function PatternGrid({
           const rowNumber = document.height - rowIndex;
           const isCurrent = rowNumber === highlightRow;
           const className = `flex min-h-4 items-center justify-center print:bg-gray-100 text-[10px] font-mono font-semibold print:text-gray-600 border-l ${line}${displayIdx > 0 ? ` border-t ${line}` : ""} ${
-            isCurrent ? "bg-yarn-terracotta text-white" : "bg-yarn-oatmeal text-yarn-warm-gray"
+            isCurrent ? "bg-yarn-terracotta-strong text-white" : "bg-yarn-oatmeal text-yarn-warm-gray"
           }`;
           const style = { gridColumn: document.width + 1, gridRow: displayIdx + 1 };
           return onRowClick ? (

@@ -201,7 +201,7 @@ export function SymbolLibraryManager({ initialSymbols }: Props) {
                   <div className="font-medium text-yarn-charcoal truncate" title={symbol.label}>{symbol.label}</div>
                   <div className="text-sm text-yarn-warm-gray truncate" title={symbol.description}>{symbol.description}</div>
                   {((symbol.width ?? 1) > 1 || (symbol.height ?? 1) > 1) && (
-                    <span className="text-xs text-yarn-sage font-semibold">
+                    <span className="text-xs text-yarn-sage-strong font-semibold">
                       {symbol.width ?? 1}×{symbol.height ?? 1} {t("symbols.cells")}
                     </span>
                   )}

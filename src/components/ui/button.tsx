@@ -10,7 +10,7 @@ const base =
 
 const variants: Record<NonNullable<Props["variant"]>, string> = {
   primary:
-    "bg-yarn-terracotta text-white hover:bg-yarn-terracotta-hover focus:ring-yarn-terracotta shadow-warm-sm hover:shadow-warm rounded-full",
+    "bg-yarn-terracotta-strong text-white hover:bg-yarn-terracotta-strong-hover focus:ring-yarn-terracotta-strong shadow-warm-sm hover:shadow-warm rounded-full",
   secondary:
     "bg-yarn-oatmeal text-yarn-charcoal border border-yarn-sand hover:bg-yarn-sand focus:ring-yarn-sand rounded-full",
   ghost:

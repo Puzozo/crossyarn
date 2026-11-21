@@ -431,7 +431,7 @@ export function PatternEditor({ patternId, initialPattern, title, description, i
             )}
             <div className="flex gap-2">
               <button type="button" onClick={() => { resizePattern(draftWidth, draftHeight); setResizing(false); }}
-                className="flex-1 rounded-lg bg-yarn-terracotta text-white text-xs font-semibold py-1.5 hover:bg-yarn-terracotta-hover transition-colors">
+                className="flex-1 rounded-lg bg-yarn-terracotta-strong text-white text-xs font-semibold py-1.5 hover:bg-yarn-terracotta-strong-hover transition-colors">
                 {t("editor.resizeApply")}
               </button>
               <button type="button" onClick={() => setResizing(false)}
@@ -506,7 +506,7 @@ export function PatternEditor({ patternId, initialPattern, title, description, i
                             symbolDescInputRef.current?.value ?? ""
                           )
                         }
-                        className="flex-1 rounded-lg bg-yarn-terracotta text-white text-xs font-semibold py-1.5 hover:bg-yarn-terracotta-hover transition-colors">
+                        className="flex-1 rounded-lg bg-yarn-terracotta-strong text-white text-xs font-semibold py-1.5 hover:bg-yarn-terracotta-strong-hover transition-colors">
                         {t("editor.save")}
                       </button>
                       <button type="button" onClick={() => setEditingSymbolId(null)}
@@ -538,7 +538,7 @@ export function PatternEditor({ patternId, initialPattern, title, description, i
                         <span className="rounded-full bg-amber-100 px-1 py-0.5 text-[9px] font-bold text-amber-700">?</span>
                       )}
                       {((symbol.width ?? 1) > 1 || (symbol.height ?? 1) > 1) && (
-                        <span className="ml-0.5 rounded bg-yarn-sage-light px-1 py-0.5 text-[9px] font-bold text-yarn-sage">
+                        <span className="ml-0.5 rounded bg-yarn-sage-light px-1 py-0.5 text-[9px] font-bold text-yarn-sage-strong">
                           {symbol.width ?? 1}×{symbol.height ?? 1}
                         </span>
                       )}
@@ -591,7 +591,7 @@ export function PatternEditor({ patternId, initialPattern, title, description, i
                   disabled={tagLoading}
                   title={t("editor.tagRemove")}
                   aria-label={t("editor.tagRemove")}
-                  className="relative text-yarn-warm-gray/50 hover:text-red-400 transition-colors leading-none disabled:opacity-40 before:absolute before:-inset-2.5 before:content-['']"
+                  className="relative text-yarn-warm-gray hover:text-red-400 transition-colors leading-none disabled:opacity-40 before:absolute before:-inset-2.5 before:content-['']"
                 >
                   ×
                 </button>
@@ -618,7 +618,7 @@ export function PatternEditor({ patternId, initialPattern, title, description, i
               type="button"
               onClick={() => void addTag()}
               disabled={tagLoading || !tagInput.trim()}
-              className="rounded-lg bg-yarn-terracotta px-3 py-1.5 text-xs font-medium text-white disabled:opacity-40 hover:bg-yarn-terracotta-hover transition-colors"
+              className="rounded-lg bg-yarn-terracotta-strong px-3 py-1.5 text-xs font-medium text-white disabled:opacity-40 hover:bg-yarn-terracotta-strong-hover transition-colors"
             >
               {t("editor.tagAdd")}
             </button>
@@ -736,14 +736,14 @@ export function PatternEditor({ patternId, initialPattern, title, description, i
                     className={`text-xs px-2 py-0.5 rounded transition-colors shrink-0 ${
                       rapportInsertId === rapport.id
                         ? "bg-amber-200 text-amber-800 hover:bg-amber-300"
-                        : "bg-yarn-sage-light text-yarn-sage hover:bg-yarn-sage/20"
+                        : "bg-yarn-sage-light text-yarn-sage-strong hover:bg-yarn-sage/20"
                     }`}>
                     {rapportInsertId === rapport.id ? t("editor.rapportCancelInsert") : t("editor.rapportInsert")}
                   </button>
                   <button type="button" onClick={() => deleteRapport(rapport.id)}
                     title={t("editor.rapportDelete")}
                     aria-label={t("editor.rapportDelete")}
-                    className="relative text-yarn-warm-gray/40 hover:text-red-400 transition-colors text-sm leading-none shrink-0 before:absolute before:-inset-2 before:content-['']">
+                    className="relative text-yarn-warm-gray hover:text-red-400 transition-colors text-sm leading-none shrink-0 before:absolute before:-inset-2 before:content-['']">
                     ×
                   </button>
                 </div>
@@ -759,7 +759,7 @@ export function PatternEditor({ patternId, initialPattern, title, description, i
                   <span className="flex-1 text-xs text-yarn-charcoal">{t("editor.rapportMarkItem", { w: mark.width, h: mark.height })}</span>
                   <button type="button" onClick={() => removeRapportMark(mark.id)}
                     title={t("editor.rapportMarkRemove")} aria-label={t("editor.rapportMarkRemove")}
-                    className="relative text-yarn-warm-gray/40 hover:text-red-400 transition-colors text-sm leading-none shrink-0 before:absolute before:-inset-2 before:content-['']">
+                    className="relative text-yarn-warm-gray hover:text-red-400 transition-colors text-sm leading-none shrink-0 before:absolute before:-inset-2 before:content-['']">
                     ×
                   </button>
                 </div>
@@ -768,7 +768,7 @@ export function PatternEditor({ patternId, initialPattern, title, description, i
           )}
 
           {rapports.length === 0 && !isSelectionMode && (
-            <p className="text-[11px] text-yarn-warm-gray/70">
+            <p className="text-[11px] text-yarn-warm-gray">
               {t("editor.rapportEmptyHint")}
             </p>
           )}
@@ -800,13 +800,13 @@ export function PatternEditor({ patternId, initialPattern, title, description, i
         onZoomFit={fitZoomToWidth}
       />
       {isFillMode && (
-        <p className="px-1 text-[11px] text-yarn-warm-gray/80">{t("editor.fillHint")}</p>
+        <p className="px-1 text-[11px] text-yarn-warm-gray">{t("editor.fillHint")}</p>
       )}
       {!isFillMode && !isSelectionMode && !rapportInsertId && (
-        <p className="px-1 text-[11px] text-yarn-warm-gray/80">{t("editor.dragPaintHint")}</p>
+        <p className="px-1 text-[11px] text-yarn-warm-gray">{t("editor.dragPaintHint")}</p>
       )}
       <section ref={gridSectionRef} className="max-h-[calc(100dvh-6rem)] overflow-auto rounded-2xl bg-white/70 border border-yarn-sand/50 p-3 sm:p-4 lg:p-5 shadow-warm-sm">
-        <p className="mb-2 hidden text-right text-[10px] text-yarn-warm-gray/70 lg:block">{t("editor.zoomScrollHint")}</p>
+        <p className="mb-2 hidden text-right text-[10px] text-yarn-warm-gray lg:block">{t("editor.zoomScrollHint")}</p>
 
         {/* Add/remove row top */}
         <div className="flex justify-center gap-1 mb-1">

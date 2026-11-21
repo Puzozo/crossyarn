@@ -119,14 +119,14 @@ export function VersionHistory({ patternId }: { patternId: string }) {
                   onClick={() => loadSnapshot(v.id)}
                   className={`flex-1 text-left text-xs py-1 px-2 rounded-lg transition-colors ${
                     isExpanded
-                      ? "bg-yarn-sage-light text-yarn-sage font-medium"
+                      ? "bg-yarn-sage-light text-yarn-sage-strong font-medium"
                       : "text-yarn-charcoal hover:bg-yarn-oatmeal"
                   }`}
                 >
                   #{n} — {dateStr} {timeStr}
                 </button>
                 {idx === 0 ? (
-                  <span className="rounded-full bg-yarn-sage-light px-2 py-0.5 text-[10px] font-medium text-yarn-sage">
+                  <span className="rounded-full bg-yarn-sage-light px-2 py-0.5 text-[10px] font-medium text-yarn-sage-strong">
                     {t("versions.current")}
                   </span>
                 ) : (
@@ -134,7 +134,7 @@ export function VersionHistory({ patternId }: { patternId: string }) {
                     type="button"
                     onClick={() => setRestoreTarget(v.id)}
                     disabled={restoring}
-                    className="text-[10px] py-1 px-2 rounded-lg bg-yarn-terracotta-light text-yarn-terracotta hover:bg-yarn-terracotta-hover hover:text-white transition-colors disabled:opacity-50 min-h-8 min-w-8"
+                    className="text-[10px] py-1 px-2 rounded-lg bg-yarn-terracotta-light text-yarn-terracotta hover:bg-yarn-terracotta-strong-hover hover:text-white transition-colors disabled:opacity-50 min-h-8 min-w-8"
                     title={t("versions.restore")}
                     aria-label={t("versions.restoreN", { n })}
                   >

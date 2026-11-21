@@ -104,7 +104,7 @@ export function MobileNav({ links, authSection }: Props) {
                   onClick={() => setLang("uk")}
                   className={`px-2.5 py-1.5 rounded-md text-xs font-semibold transition-colors ${
                     lang === "uk"
-                      ? "bg-yarn-terracotta text-white"
+                      ? "bg-yarn-terracotta-strong text-white"
                       : "text-yarn-warm-gray hover:text-yarn-charcoal"
                   }`}
                 >
@@ -115,7 +115,7 @@ export function MobileNav({ links, authSection }: Props) {
                   onClick={() => setLang("en")}
                   className={`px-2.5 py-1.5 rounded-md text-xs font-semibold transition-colors ${
                     lang === "en"
-                      ? "bg-yarn-terracotta text-white"
+                      ? "bg-yarn-terracotta-strong text-white"
                       : "text-yarn-warm-gray hover:text-yarn-charcoal"
                   }`}
                 >
