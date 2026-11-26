@@ -7,9 +7,11 @@ type Props = {
   defaultOpen?: boolean;
   forceOpen?: boolean;
   children: React.ReactNode;
+  /** "dark" for the admin panel's dark surfaces. */
+  tone?: "light" | "dark";
 };
 
-export function CollapsiblePanel({ title, defaultOpen = true, forceOpen = false, children }: Props) {
+export function CollapsiblePanel({ title, defaultOpen = true, forceOpen = false, children, tone = "light" }: Props) {
   const [open, setOpen] = useState(defaultOpen);
   const isOpen = open || forceOpen;
   const id = useId();
@@ -23,7 +25,7 @@ export function CollapsiblePanel({ title, defaultOpen = true, forceOpen = false,
         aria-controls={id}
         className="flex w-full items-center justify-between py-1 text-left"
       >
-        <span className="text-xs font-semibold uppercase tracking-wider text-yarn-warm-gray">{title}</span>
+        <span className={`text-xs font-semibold uppercase tracking-wider ${tone === "dark" ? "text-gray-400" : "text-yarn-warm-gray"}`}>{title}</span>
         <svg
           width="12"
           height="12"

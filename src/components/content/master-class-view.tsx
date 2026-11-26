@@ -209,7 +209,7 @@ export async function MasterClassView({
               <span aria-hidden>·</span>
               <Link
                 href={`${catalogHref}/${translation.slug}`}
-                className="font-medium text-yarn-terracotta hover:text-yarn-terracotta-hover transition-colors"
+                className="font-medium text-yarn-terracotta-text hover:text-yarn-terracotta-text-hover transition-colors"
               >
                 {translate(lang, TRANSLATION_LABEL_KEYS[translation.lang])}
               </Link>
@@ -287,7 +287,7 @@ export async function MasterClassView({
             </div>
             <div className="min-w-0">
               <p className="font-medium text-yarn-charcoal truncate">{mainPattern.title}</p>
-              <p className="text-sm text-yarn-terracotta">{translate(lang, "masterClass.pattern.openPattern")}</p>
+              <p className="text-sm text-yarn-terracotta-text">{translate(lang, "masterClass.pattern.openPattern")}</p>
             </div>
           </Link>
         ) : (

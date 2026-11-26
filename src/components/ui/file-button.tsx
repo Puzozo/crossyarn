@@ -10,9 +10,11 @@ type Props = {
   noFileLabel: string;
   onFileChange: (file: File | undefined) => void;
   className?: string;
+  /** "dark" for the admin panel's dark surfaces. */
+  tone?: "light" | "dark";
 };
 
-export function FileButton({ accept, required, id, chooseLabel, noFileLabel, onFileChange, className = "" }: Props) {
+export function FileButton({ accept, required, id, chooseLabel, noFileLabel, onFileChange, className = "", tone = "light" }: Props) {
   const generatedId = useId();
   const inputId = id ?? generatedId;
   const [fileName, setFileName] = useState<string | null>(null);
@@ -31,15 +33,19 @@ export function FileButton({ accept, required, id, chooseLabel, noFileLabel, onF
         accept={accept}
         required={required}
         onChange={handleChange}
-        className="sr-only"
+        className="peer sr-only"
       />
       <label
         htmlFor={inputId}
-        className="cursor-pointer rounded-xl border border-yarn-sand bg-white px-4 py-2 text-sm font-medium text-yarn-charcoal hover:border-yarn-terracotta/40 hover:bg-yarn-terracotta-light/30 transition-colors"
+        className={
+          tone === "dark"
+            ? "cursor-pointer rounded-lg border border-gray-700 bg-gray-800 px-4 py-2 text-sm font-medium text-white hover:bg-gray-700 transition-colors peer-focus-visible:ring-2 peer-focus-visible:ring-indigo-500"
+            : "cursor-pointer rounded-xl border border-yarn-field-border bg-white px-4 py-2 text-sm font-medium text-yarn-charcoal hover:bg-yarn-terracotta-light/30 transition-colors peer-focus-visible:ring-2 peer-focus-visible:ring-yarn-terracotta-strong peer-focus-visible:ring-offset-2"
+        }
       >
         {chooseLabel}
       </label>
-      <span className="text-sm text-yarn-warm-gray truncate max-w-[12rem]">
+      <span className={`text-sm truncate max-w-[12rem] ${tone === "dark" ? "text-gray-400" : "text-yarn-warm-gray"}`}>
         {fileName ?? noFileLabel}
       </span>
     </div>

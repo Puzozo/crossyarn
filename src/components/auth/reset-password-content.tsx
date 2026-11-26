@@ -70,7 +70,7 @@ export function ResetPasswordContent({ tokenValid }: { tokenValid: boolean }) {
           </Link>
 
           <div className="flex justify-center">
-            <svg width="48" height="48" viewBox="0 0 48 48" fill="none" className="text-yarn-terracotta opacity-60">
+            <svg width="48" height="48" viewBox="0 0 48 48" fill="none" className="text-yarn-terracotta-text opacity-60">
               <path d="M24 8v4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
               <path d="M16 14h16l2 6H14l2-6z" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round" />
               <rect x="12" y="18" width="24" height="22" rx="3" stroke="currentColor" strokeWidth="1.5" />

@@ -130,7 +130,7 @@ function PremiumGate({ onClose }: { onClose: () => void }) {
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex justify-center">
-          <span className="flex h-12 w-12 items-center justify-center rounded-full bg-yarn-terracotta-light text-yarn-terracotta">
+          <span className="flex h-12 w-12 items-center justify-center rounded-full bg-yarn-terracotta-light text-yarn-terracotta-text">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6">
               <rect x="4" y="10" width="16" height="11" rx="2.5" />
               <path d="M8 10V7a4 4 0 0 1 8 0v3" strokeLinecap="round" />

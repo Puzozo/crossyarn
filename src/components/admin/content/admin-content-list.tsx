@@ -145,7 +145,7 @@ export function AdminContentList({ kind, items }: AdminContentListProps) {
   };
 
   if (items.length === 0) {
-    return <div className="text-center py-12 text-gray-500">Записів не знайдено</div>;
+    return <div className="text-center py-12 text-gray-400">Записів не знайдено</div>;
   }
 
   return (
@@ -170,7 +170,7 @@ export function AdminContentList({ kind, items }: AdminContentListProps) {
               <tr key={item.id} className="hover:bg-gray-900/30 transition-colors">
                 <td className="px-4 py-3">
                   <div className="text-white font-medium">{item.title}</div>
-                  <div className="text-gray-500 text-xs">{item.slug}</div>
+                  <div className="text-gray-400 text-xs">{item.slug}</div>
                 </td>
                 <td className="px-4 py-3 text-gray-300 uppercase text-xs">{item.lang}</td>
                 {kind === "masterClass" && (
@@ -206,7 +206,7 @@ export function AdminContentList({ kind, items }: AdminContentListProps) {
             <div className="flex items-start justify-between gap-2">
               <div>
                 <div className="text-white font-medium">{item.title}</div>
-                <div className="text-gray-500 text-xs">{item.slug}</div>
+                <div className="text-gray-400 text-xs">{item.slug}</div>
               </div>
               <StatusBadge status={item.status} />
             </div>

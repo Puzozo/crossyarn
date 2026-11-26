@@ -141,9 +141,9 @@ export function PatternPickerDialog({ open, onClose, onSelect }: Props) {
         />
 
         {loading ? (
-          <p className="text-gray-500 text-center py-8">Завантаження…</p>
+          <p className="text-gray-400 text-center py-8">Завантаження…</p>
         ) : items.length === 0 ? (
-          <p className="text-gray-500 text-center py-8">
+          <p className="text-gray-400 text-center py-8">
             {query.trim() ? "Нічого не знайдено" : "Немає доступних публічних схем"}
           </p>
         ) : (
@@ -169,7 +169,7 @@ export function PatternPickerDialog({ open, onClose, onSelect }: Props) {
                   />
                 </div>
                 <p className="text-sm text-white truncate mt-1">{item.title}</p>
-                <p className="text-xs text-gray-500">
+                <p className="text-xs text-gray-400">
                   {item.width} × {item.height}
                 </p>
               </button>

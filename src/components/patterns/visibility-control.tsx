@@ -105,7 +105,7 @@ export function VisibilityControl({
             href={`/p/${patternId}`}
             target="_blank"
             rel="noopener"
-            className="text-sm font-semibold text-yarn-terracotta hover:text-yarn-terracotta-hover transition-colors"
+            className="text-sm font-semibold text-yarn-terracotta-text hover:text-yarn-terracotta-text-hover transition-colors"
           >
             {t("visibility.openPublic")} →
           </a>

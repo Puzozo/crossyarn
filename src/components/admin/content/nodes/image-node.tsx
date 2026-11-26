@@ -7,9 +7,9 @@ import { NodeChrome } from "./node-chrome";
 import { ImageUploadDialog } from "@/components/admin/content/image-upload-dialog";
 
 const INPUT_CLASS =
-  "w-full rounded-lg bg-gray-800 border border-gray-700 text-white px-2 py-1 text-xs focus:outline-none focus:border-indigo-500";
+  "w-full rounded-lg bg-white border border-yarn-field-border text-yarn-charcoal px-2 py-1 text-xs focus:outline-none focus:border-indigo-500";
 const BUTTON_CLASS =
-  "px-2.5 py-1 rounded-lg bg-gray-800 hover:bg-gray-700 text-gray-300 text-xs font-medium transition-colors";
+  "px-2.5 py-1 rounded-lg bg-yarn-oatmeal hover:bg-yarn-sand text-yarn-charcoal text-xs font-medium transition-colors";
 
 type ImageAttrs = { assetId: string | null; alt: string; caption?: string };
 
@@ -23,7 +23,7 @@ function ImageNodeView({ name, label, props }: { name: "image" | "patternImage";
       {attrs.assetId ? (
         <div className="space-y-2">
           {/* eslint-disable-next-line @next/next/no-img-element -- admin preview of a pre-generated media variant */}
-          <img src={`/api/media/${attrs.assetId}/480`} alt="" className="max-h-48 rounded-lg object-contain bg-gray-800" />
+          <img src={`/api/media/${attrs.assetId}/480`} alt="" className="max-h-48 rounded-lg object-contain bg-yarn-oatmeal" />
           <input
             value={attrs.alt}
             onChange={(e) => updateAttributes({ alt: e.target.value })}

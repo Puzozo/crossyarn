@@ -9,7 +9,7 @@ export default function NotFound() {
 
   return (
     <div className="flex min-h-[60vh] flex-col items-center justify-center text-center px-4">
-      <p className="font-display text-7xl font-bold text-yarn-terracotta/40">404</p>
+      <p aria-hidden="true" className="font-display text-7xl font-bold text-yarn-terracotta">404</p>
       <h1 className="mt-4 font-display text-2xl font-bold text-yarn-charcoal">
         {t("notFound.title")}
       </h1>

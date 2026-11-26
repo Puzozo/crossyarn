@@ -8,9 +8,9 @@ import { NodeChrome } from "./node-chrome";
 export const GUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
 const INPUT_CLASS =
-  "w-full rounded-lg bg-gray-800 border border-gray-700 text-white px-2 py-1 text-xs focus:outline-none focus:border-indigo-500";
+  "w-full rounded-lg bg-white border border-yarn-field-border text-yarn-charcoal px-2 py-1 text-xs focus:outline-none focus:border-indigo-500";
 const BUTTON_CLASS =
-  "px-2.5 py-1 rounded-lg bg-gray-800 hover:bg-gray-700 text-gray-300 text-xs font-medium transition-colors";
+  "px-2.5 py-1 rounded-lg bg-yarn-oatmeal hover:bg-yarn-sand text-yarn-charcoal text-xs font-medium transition-colors";
 
 type ProtectedVideoAttrs = { provider: "bunny"; videoId: string | null; title?: string };
 
@@ -39,7 +39,7 @@ function ProtectedVideoNodeView(props: ReactNodeViewProps) {
     <NodeChrome label="Bunny" editor={editor} getPos={getPos} onDelete={deleteNode}>
       {attrs.videoId && !editingGuid ? (
         <div className="space-y-2">
-          <code className="text-xs text-gray-400 break-all">{attrs.videoId}</code>
+          <code className="text-xs text-yarn-warm-gray break-all">{attrs.videoId}</code>
           <input
             value={attrs.title ?? ""}
             onChange={(e) => updateAttributes({ title: e.target.value || undefined })}
@@ -68,7 +68,7 @@ function ProtectedVideoNodeView(props: ReactNodeViewProps) {
               </button>
             )}
           </div>
-          {error && <p className="text-xs text-red-400">{error}</p>}
+          {error && <p className="text-xs text-red-700">{error}</p>}
         </div>
       )}
     </NodeChrome>

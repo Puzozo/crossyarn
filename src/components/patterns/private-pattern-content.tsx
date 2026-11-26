@@ -9,7 +9,7 @@ export function PrivatePatternContent() {
 
   return (
     <div className="flex min-h-[60vh] flex-col items-center justify-center text-center px-4">
-      <p className="font-display text-7xl font-bold text-yarn-terracotta/40">
+      <p aria-hidden="true" className="font-display text-7xl font-bold text-yarn-terracotta">
         {t("privatePattern.lockedIcon")}
       </p>
       <h1 className="mt-4 font-display text-2xl font-bold text-yarn-charcoal">

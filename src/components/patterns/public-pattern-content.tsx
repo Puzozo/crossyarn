@@ -90,7 +90,7 @@ export function PublicPatternContent({
                 {t("publicPattern.byAuthor")}{" "}
                 <Link
                   href={`/u/${author.username}`}
-                  className="font-medium text-yarn-terracotta hover:text-yarn-terracotta-hover transition-colors"
+                  className="font-medium text-yarn-terracotta-text hover:text-yarn-terracotta-text-hover transition-colors"
                 >
                   {author.name?.trim() || author.username}
                 </Link>
@@ -126,7 +126,7 @@ export function PublicPatternContent({
         >
           <p className="text-xs uppercase tracking-wide text-yarn-warm-gray">{t("masterClass.relatedBlock.badge")}</p>
           <p className="mt-1 font-display text-lg font-semibold text-yarn-charcoal">{relatedMasterClass.title}</p>
-          <p className="mt-1 text-sm text-yarn-terracotta">{t("masterClass.relatedBlock.cta")}</p>
+          <p className="mt-1 text-sm text-yarn-terracotta-text">{t("masterClass.relatedBlock.cta")}</p>
         </Link>
       ) : null}
 

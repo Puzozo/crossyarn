@@ -7,7 +7,7 @@ import { NodeChrome } from "./node-chrome";
 import { PatternPickerDialog } from "@/components/admin/content/pattern-picker-dialog";
 
 const BUTTON_CLASS =
-  "px-2.5 py-1 rounded-lg bg-gray-800 hover:bg-gray-700 text-gray-300 text-xs font-medium transition-colors";
+  "px-2.5 py-1 rounded-lg bg-yarn-oatmeal hover:bg-yarn-sand text-yarn-charcoal text-xs font-medium transition-colors";
 
 function PatternEmbedNodeView(props: ReactNodeViewProps) {
   const { node, updateAttributes, deleteNode, getPos, editor } = props;
@@ -23,10 +23,10 @@ function PatternEmbedNodeView(props: ReactNodeViewProps) {
           <img
             src={`/api/patterns/${patternId}/thumbnail`}
             alt=""
-            className="h-16 w-16 rounded-lg bg-gray-800 object-contain"
+            className="h-16 w-16 rounded-lg bg-yarn-oatmeal object-contain"
           />
           <div className="min-w-0 flex-1">
-            <p className="truncate text-sm text-white">{title ?? patternId}</p>
+            <p className="truncate text-sm text-yarn-charcoal">{title ?? patternId}</p>
             <button type="button" className={BUTTON_CLASS + " mt-1"} onClick={() => setDialogOpen(true)}>
               Змінити
             </button>

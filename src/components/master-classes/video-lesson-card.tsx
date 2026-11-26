@@ -34,7 +34,7 @@ export function VideoLessonCard({ slug, title, videoId, durationMinutes, itemLan
         </div>
       </div>
       <div className="p-4 space-y-1">
-        <h2 className="font-display text-base font-semibold text-yarn-charcoal group-hover:text-yarn-terracotta transition-colors line-clamp-2">{title}</h2>
+        <h2 className="font-display text-base font-semibold text-yarn-charcoal group-hover:text-yarn-terracotta-text transition-colors line-clamp-2">{title}</h2>
         <div className="flex items-center gap-2 text-xs text-yarn-warm-gray">
           {durationMinutes != null ? <span>⏱ {translate(lang, "masterClass.duration", { minutes: durationMinutes })}</span> : null}
           <span className="uppercase">{itemLang}</span>

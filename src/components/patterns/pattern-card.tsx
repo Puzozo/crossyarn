@@ -80,7 +80,7 @@ export function PatternCard({ pattern }: { pattern: PatternData }) {
       <div className="p-6">
       <div className="flex items-start justify-between gap-4">
         <div className="min-w-0">
-          <h2 className="font-display text-lg font-semibold text-yarn-charcoal group-hover:text-yarn-terracotta transition-colors break-words [overflow-wrap:anywhere] line-clamp-2">
+          <h2 className="font-display text-lg font-semibold text-yarn-charcoal group-hover:text-yarn-terracotta-text transition-colors break-words [overflow-wrap:anywhere] line-clamp-2">
             {pattern.title}
           </h2>
           <p className="mt-1 text-sm text-yarn-warm-gray">
@@ -97,7 +97,7 @@ export function PatternCard({ pattern }: { pattern: PatternData }) {
       <div className="mt-4 flex flex-wrap items-center gap-x-4 gap-y-1 pt-3 border-t border-yarn-sand/40">
         <Link
           href={`/editor/${pattern.id}`}
-          className="inline-flex items-center min-h-11 text-sm font-semibold text-yarn-terracotta hover:text-yarn-terracotta-hover transition-colors"
+          className="inline-flex items-center min-h-11 text-sm font-semibold text-yarn-terracotta-text hover:text-yarn-terracotta-text-hover transition-colors"
         >
           {t("patterns.openEditor")}
         </Link>
@@ -119,7 +119,7 @@ export function PatternCard({ pattern }: { pattern: PatternData }) {
           type="button"
           onClick={() => setDeleteConfirmOpen(true)}
           disabled={deleting || duplicating}
-          className="ml-auto inline-flex items-center min-h-11 text-sm font-medium text-red-400 hover:text-red-600 transition-colors disabled:opacity-50"
+          className="ml-auto inline-flex items-center min-h-11 text-sm font-medium text-red-700 hover:text-red-600 transition-colors disabled:opacity-50"
         >
           {deleting ? "..." : t("patterns.delete")}
         </button>

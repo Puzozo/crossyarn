@@ -134,7 +134,7 @@ export function VersionHistory({ patternId }: { patternId: string }) {
                     type="button"
                     onClick={() => setRestoreTarget(v.id)}
                     disabled={restoring}
-                    className="text-[10px] py-1 px-2 rounded-lg bg-yarn-terracotta-light text-yarn-terracotta hover:bg-yarn-terracotta-strong-hover hover:text-white transition-colors disabled:opacity-50 min-h-8 min-w-8"
+                    className="text-[10px] py-1 px-2 rounded-lg bg-yarn-terracotta-light text-yarn-terracotta-text hover:bg-yarn-terracotta-strong-hover hover:text-white transition-colors disabled:opacity-50 min-h-8 min-w-8"
                     title={t("versions.restore")}
                     aria-label={t("versions.restoreN", { n })}
                   >

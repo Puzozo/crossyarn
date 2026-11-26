@@ -32,7 +32,7 @@ export function HeaderClient({ isAuthenticated, user }: Props) {
       <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-4 sm:px-6">
         {/* Logo */}
         <Link href="/" className="flex items-center gap-2 group">
-          <svg width="28" height="28" viewBox="0 0 28 28" fill="none" className="text-yarn-terracotta transition-transform group-hover:rotate-12">
+          <svg width="28" height="28" viewBox="0 0 28 28" fill="none" className="text-yarn-terracotta-text transition-transform group-hover:rotate-12">
             <circle cx="14" cy="14" r="12" stroke="currentColor" strokeWidth="2" />
             <path d="M8 14c0-3.3 2.7-6 6-6s6 2.7 6 6-2.7 6-6 6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
             <path d="M11 14c0-1.7 1.3-3 3-3s3 1.3 3 3" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
@@ -101,7 +101,7 @@ export function HeaderClient({ isAuthenticated, user }: Props) {
                     ) : (
                       <span
                         aria-hidden
-                        className="flex h-8 w-8 items-center justify-center rounded-full bg-yarn-terracotta/15 text-sm font-bold text-yarn-terracotta"
+                        className="flex h-8 w-8 items-center justify-center rounded-full bg-yarn-terracotta/15 text-sm font-bold text-yarn-terracotta-text"
                       >
                         {user.initial}
                       </span>

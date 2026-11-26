@@ -7,9 +7,9 @@ import { NodeChrome } from "./node-chrome";
 import { ImageUploadDialog } from "@/components/admin/content/image-upload-dialog";
 
 const INPUT_CLASS =
-  "w-full rounded-lg bg-gray-800 border border-gray-700 text-white px-2 py-1 text-xs focus:outline-none focus:border-indigo-500";
+  "w-full rounded-lg bg-white border border-yarn-field-border text-yarn-charcoal px-2 py-1 text-xs focus:outline-none focus:border-indigo-500";
 const BUTTON_CLASS =
-  "px-2.5 py-1 rounded-lg bg-gray-800 hover:bg-gray-700 text-gray-300 text-xs font-medium transition-colors disabled:opacity-50";
+  "px-2.5 py-1 rounded-lg bg-yarn-oatmeal hover:bg-yarn-sand text-yarn-charcoal text-xs font-medium transition-colors disabled:opacity-50";
 
 const MAX_ITEMS = 12;
 
@@ -40,9 +40,9 @@ function GalleryNodeView(props: ReactNodeViewProps) {
     <NodeChrome label="Галерея" editor={editor} getPos={getPos} onDelete={deleteNode}>
       <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
         {items.map((item, i) => (
-          <div key={item.assetId + i} className="space-y-1 rounded-lg border border-gray-800 p-2">
+          <div key={item.assetId + i} className="space-y-1 rounded-lg border border-yarn-sand p-2">
             {/* eslint-disable-next-line @next/next/no-img-element -- admin preview of a pre-generated media variant */}
-            <img src={`/api/media/${item.assetId}/480`} alt="" className="h-20 w-full rounded object-cover bg-gray-800" />
+            <img src={`/api/media/${item.assetId}/480`} alt="" className="h-20 w-full rounded object-cover bg-yarn-oatmeal" />
             <input
               value={item.alt}
               onChange={(e) => updateItem(i, { alt: e.target.value })}
@@ -55,7 +55,7 @@ function GalleryNodeView(props: ReactNodeViewProps) {
               placeholder="Підпис"
               className={INPUT_CLASS}
             />
-            <button type="button" onClick={() => removeItem(i)} className="text-xs text-red-400 hover:text-red-300">
+            <button type="button" onClick={() => removeItem(i)} className="text-xs text-red-700 hover:text-red-800">
               Видалити
             </button>
           </div>

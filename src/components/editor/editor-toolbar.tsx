@@ -55,7 +55,7 @@ export function EditorToolbar({
       ? "bg-yarn-sage-light text-yarn-sage-strong"
       : saveState === "error"
         ? "bg-red-50 text-red-600"
-        : "bg-yarn-terracotta-light text-yarn-terracotta";
+        : "bg-yarn-terracotta-light text-yarn-terracotta-text";
 
   return (
     <div className="sticky top-2 z-20 space-y-2 rounded-2xl border border-yarn-sand/60 bg-white/95 p-2 shadow-warm-sm backdrop-blur">
@@ -79,7 +79,7 @@ export function EditorToolbar({
           aria-label={t("editor.fillMode")}
           className={
             isFillMode
-              ? "flex h-10 min-w-10 items-center justify-center rounded-lg border border-yarn-terracotta/40 bg-yarn-terracotta-light px-2 text-sm font-semibold text-yarn-terracotta hover:bg-yarn-oatmeal transition-colors"
+              ? "flex h-10 min-w-10 items-center justify-center rounded-lg border border-yarn-terracotta/40 bg-yarn-terracotta-light px-2 text-sm font-semibold text-yarn-terracotta-text hover:bg-yarn-oatmeal transition-colors"
               : iconButtonClass
           }
         >

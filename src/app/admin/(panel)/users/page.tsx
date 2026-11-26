@@ -70,7 +70,7 @@ export default async function AdminUsersPage({
 
       {/* Table */}
       <div className="rounded-xl border border-gray-800 overflow-hidden">
-        <div className="overflow-x-auto">
+        <div className="overflow-x-auto rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500" tabIndex={0} role="region" aria-label="Таблиця користувачів">
           <table className="w-full min-w-[640px] text-sm">
           <thead>
             <tr className="border-b border-gray-800 bg-gray-900/50">
@@ -88,7 +88,7 @@ export default async function AdminUsersPage({
                 <td className="px-4 py-3">
                   <Link href={`/admin/users/${user.id}`} className="hover:text-indigo-400 transition-colors">
                     <div className="text-white font-medium">{user.email}</div>
-                    {user.name && <div className="text-gray-500 text-xs">{user.name}</div>}
+                    {user.name && <div className="text-gray-400 text-xs">{user.name}</div>}
                     {user.isAdmin && (
                       <span className="inline-block mt-0.5 rounded px-1.5 py-0.5 text-[10px] font-semibold bg-indigo-900/60 text-indigo-300">
                         admin
@@ -136,7 +136,7 @@ export default async function AdminUsersPage({
           </table>
         </div>
         {users.length === 0 && (
-          <div className="text-center py-12 text-gray-500">Користувачів не знайдено</div>
+          <div className="text-center py-12 text-gray-400">Користувачів не знайдено</div>
         )}
       </div>
 

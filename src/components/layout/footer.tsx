@@ -55,37 +55,37 @@ export function Footer() {
           <nav className="space-y-3 text-center sm:text-left" aria-label={t("footer.linksLabel")}>
             <Link
               href="/explore"
-              className="block text-sm text-yarn-warm-gray hover:text-yarn-terracotta transition-colors"
+              className="block text-sm text-yarn-warm-gray hover:text-yarn-terracotta-text transition-colors"
             >
               {t("footer.explore")}
             </Link>
             <Link
               href="/master-classes"
-              className="block text-sm text-yarn-warm-gray hover:text-yarn-terracotta transition-colors"
+              className="block text-sm text-yarn-warm-gray hover:text-yarn-terracotta-text transition-colors"
             >
               {t("footer.masterClasses")}
             </Link>
             <Link
               href="/video-lessons"
-              className="block text-sm text-yarn-warm-gray hover:text-yarn-terracotta transition-colors"
+              className="block text-sm text-yarn-warm-gray hover:text-yarn-terracotta-text transition-colors"
             >
               {t("footer.videoLessons")}
             </Link>
             <Link
               href="/blog"
-              className="block text-sm text-yarn-warm-gray hover:text-yarn-terracotta transition-colors"
+              className="block text-sm text-yarn-warm-gray hover:text-yarn-terracotta-text transition-colors"
             >
               {t("footer.blog")}
             </Link>
             <Link
               href="/terms"
-              className="block text-sm text-yarn-warm-gray hover:text-yarn-terracotta transition-colors"
+              className="block text-sm text-yarn-warm-gray hover:text-yarn-terracotta-text transition-colors"
             >
               {t("footer.terms")}
             </Link>
             <Link
               href="/privacy"
-              className="block text-sm text-yarn-warm-gray hover:text-yarn-terracotta transition-colors"
+              className="block text-sm text-yarn-warm-gray hover:text-yarn-terracotta-text transition-colors"
             >
               {t("footer.privacy")}
             </Link>
@@ -101,7 +101,7 @@ export function Footer() {
                   href={link.href}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="rounded-lg p-2 text-yarn-warm-gray hover:text-yarn-terracotta hover:bg-yarn-oatmeal/50 transition-colors"
+                  className="rounded-lg p-2 text-yarn-warm-gray hover:text-yarn-terracotta-text hover:bg-yarn-oatmeal/50 transition-colors"
                   aria-label={link.label}
                 >
                   {link.icon}

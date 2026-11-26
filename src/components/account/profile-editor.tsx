@@ -139,7 +139,7 @@ export function ProfileEditor({ initial }: { initial: ProfileValues }) {
         {canViewPublic ? (
           <Link
             href={`/u/${values.username.trim().toLowerCase()}`}
-            className="text-sm font-semibold text-yarn-terracotta hover:text-yarn-terracotta-hover transition-colors"
+            className="text-sm font-semibold text-yarn-terracotta-text hover:text-yarn-terracotta-text-hover transition-colors"
           >
             {t("profile.viewPublic")} →
           </Link>
@@ -161,7 +161,7 @@ export function ProfileEditor({ initial }: { initial: ProfileValues }) {
             ) : (
               <div
                 aria-hidden
-                className="flex h-16 w-16 shrink-0 items-center justify-center rounded-full bg-yarn-terracotta/15 text-xl font-bold text-yarn-terracotta"
+                className="flex h-16 w-16 shrink-0 items-center justify-center rounded-full bg-yarn-terracotta/15 text-xl font-bold text-yarn-terracotta-text"
               >
                 {(values.name.trim() || values.username.trim() || "?").charAt(0).toUpperCase()}
               </div>
@@ -188,7 +188,7 @@ export function ProfileEditor({ initial }: { initial: ProfileValues }) {
                 <button
                   type="button"
                   onClick={() => set("avatar", "")}
-                  className="text-sm font-medium text-yarn-warm-gray hover:text-red-500 transition-colors"
+                  className="text-sm font-medium text-yarn-warm-gray hover:text-red-700 transition-colors"
                 >
                   {t("profile.avatarRemove")}
                 </button>

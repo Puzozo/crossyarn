@@ -39,7 +39,7 @@ export function YouTubeFacade({ videoId, title, lang }: YouTubeFacadeProps) {
       </div>
       <a
         href={`https://www.youtube.com/watch?v=${videoId}`}
-        className="mt-1 inline-block text-sm text-yarn-terracotta underline"
+        className="mt-1 inline-block text-sm text-yarn-terracotta-text underline"
       >
         {translate(lang, "masterClass.video.watchOnYoutube")}
       </a>

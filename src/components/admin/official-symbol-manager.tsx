@@ -180,8 +180,8 @@ export function OfficialSymbolManager({
             </div>
             <div className="space-y-1.5">
               <label htmlFor={imageId} className="block text-sm font-medium text-gray-300">Зображення</label>
-              <FileButton id={imageId} accept="image/*" required chooseLabel="Обрати файл" noFileLabel="Файл не вибрано" onFileChange={(file) => void handleFile(file)} />
-              <p className="text-[10px] text-gray-500">Рекомендовано {width * 64}×{height * 64}px, ≤ 300KB</p>
+              <FileButton tone="dark" id={imageId} accept="image/*" required chooseLabel="Обрати файл" noFileLabel="Файл не вибрано" onFileChange={(file) => void handleFile(file)} />
+              <p className="text-[10px] text-gray-400">Рекомендовано {width * 64}×{height * 64}px, ≤ 300KB</p>
             </div>
             <div className="space-y-1.5">
               <label htmlFor={widthId} className="block text-sm font-medium text-gray-300">Ширина (клітинок)</label>
@@ -211,7 +211,7 @@ export function OfficialSymbolManager({
       <div className="space-y-3">
         <h2 className="text-base font-semibold text-white">Офіційні позначки ({symbols.length})</h2>
         {symbols.length === 0 ? (
-          <p className="text-gray-500 text-sm">Немає офіційних позначок. Додайте першу.</p>
+          <p className="text-gray-400 text-sm">Немає офіційних позначок. Додайте першу.</p>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             {symbols.map((s) => (
@@ -241,7 +241,7 @@ export function OfficialSymbolManager({
         <div className="space-y-3">
           <div>
             <h2 className="text-base font-semibold text-white">Вбудовані позначки ({builtinSymbols.length})</h2>
-            <p className="text-gray-500 text-xs mt-0.5">Стандартні символи редактора. Зміни зберігаються в БД і діють глобально.</p>
+            <p className="text-gray-400 text-xs mt-0.5">Стандартні символи редактора. Зміни зберігаються в БД і діють глобально.</p>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             {builtinSymbols.map((s) => {
@@ -255,7 +255,7 @@ export function OfficialSymbolManager({
                     <form onSubmit={(e) => void handleSaveBuiltin(e)} className="space-y-3">
                       <div className="flex items-center justify-between mb-1">
                         <span className="text-sm font-medium text-white">Редагування: {s.name}</span>
-                        <button type="button" onClick={() => setEditingBuiltin(null)} className="text-xs text-gray-500 hover:text-gray-300">✕</button>
+                        <button type="button" onClick={() => setEditingBuiltin(null)} className="text-xs text-gray-400 hover:text-gray-300">✕</button>
                       </div>
                       <div className="space-y-2">
                         <input id={`edit-name-${s.id}`} value={editName} onChange={(e) => setEditName(e.target.value)} required maxLength={80}
@@ -264,14 +264,14 @@ export function OfficialSymbolManager({
                           placeholder="Опис" className="w-full rounded-lg bg-gray-800 border border-gray-700 text-white px-3 py-1.5 text-sm focus:outline-none focus:border-indigo-500" />
                         <div className="grid grid-cols-2 gap-2">
                           <div>
-                            <label htmlFor={`edit-width-${s.id}`} className="text-[10px] text-gray-500 block mb-0.5">Ширина</label>
+                            <label htmlFor={`edit-width-${s.id}`} className="text-[10px] text-gray-400 block mb-0.5">Ширина</label>
                             <select id={`edit-width-${s.id}`} value={editWidth} onChange={(e) => setEditWidth(Number(e.target.value))}
                               className="w-full rounded-lg bg-gray-800 border border-gray-700 text-white px-2 py-1.5 text-sm focus:outline-none focus:border-indigo-500">
                               {SYMBOL_SPAN_OPTIONS.map((w) => <option key={w} value={w}>{w}</option>)}
                             </select>
                           </div>
                           <div>
-                            <label htmlFor={`edit-height-${s.id}`} className="text-[10px] text-gray-500 block mb-0.5">Висота</label>
+                            <label htmlFor={`edit-height-${s.id}`} className="text-[10px] text-gray-400 block mb-0.5">Висота</label>
                             <select id={`edit-height-${s.id}`} value={editHeight} onChange={(e) => setEditHeight(Number(e.target.value))}
                               className="w-full rounded-lg bg-gray-800 border border-gray-700 text-white px-2 py-1.5 text-sm focus:outline-none focus:border-indigo-500">
                               {SYMBOL_SPAN_OPTIONS.map((h) => <option key={h} value={h}>{h}</option>)}
@@ -279,9 +279,9 @@ export function OfficialSymbolManager({
                           </div>
                         </div>
                         <div>
-                          <label htmlFor={`edit-image-${s.id}`} className="text-[10px] text-gray-500 block mb-0.5">Зображення (необов&apos;язково)</label>
-                          <FileButton id={`edit-image-${s.id}`} accept="image/*" chooseLabel="Обрати файл" noFileLabel="Файл не вибрано" onFileChange={(file) => void handleEditFile(file)} />
-                          <p className="text-[10px] text-gray-600 mt-0.5">Рекомендовано {editWidth * 64}×{editHeight * 64}px, ≤ 300KB</p>
+                          <label htmlFor={`edit-image-${s.id}`} className="text-[10px] text-gray-400 block mb-0.5">Зображення (необов&apos;язково)</label>
+                          <FileButton tone="dark" id={`edit-image-${s.id}`} accept="image/*" chooseLabel="Обрати файл" noFileLabel="Файл не вибрано" onFileChange={(file) => void handleEditFile(file)} />
+                          <p className="text-xs text-gray-400 mt-0.5">Рекомендовано {editWidth * 64}×{editHeight * 64}px, ≤ 300KB</p>
                         </div>
                         {editImageData && (
                           <Image src={editImageData} alt="preview" width={48} height={48} className="rounded border border-gray-700 bg-white" />
@@ -312,9 +312,9 @@ export function OfficialSymbolManager({
                               <span className="text-gray-200 font-medium truncate" title={display.name}>{display.name}</span>
                               {override && <span className="text-[10px] bg-amber-800/60 text-amber-300 px-1.5 py-0.5 rounded">змінено</span>}
                             </div>
-                            <div className="text-gray-500 text-sm truncate" title={display.description}>{display.description}</div>
-                            {display.width > 1 && <span className="text-xs text-indigo-400/70">{display.width}×{(display.height ?? 1)} клітинки</span>}
-                            <div className="text-[10px] text-gray-600 mt-0.5">id: {s.id}</div>
+                            <div className="text-gray-400 text-sm truncate" title={display.description}>{display.description}</div>
+                            {display.width > 1 && <span className="text-xs text-indigo-300">{display.width}×{(display.height ?? 1)} клітинки</span>}
+                            <div className="text-xs text-gray-400 mt-0.5">id: {s.id}</div>
                           </div>
                           <div className="flex flex-col gap-1 shrink-0">
                             <button type="button" onClick={() => openEditBuiltin(s.id)}
@@ -323,7 +323,7 @@ export function OfficialSymbolManager({
                             </button>
                             {override && (
                               <button type="button" onClick={() => setResetTarget({ id: s.id, name: s.name })}
-                                className="text-xs text-gray-500 hover:text-gray-300 transition-colors">
+                                className="text-xs text-gray-400 hover:text-gray-300 transition-colors">
                                 Скинути
                               </button>
                             )}

@@ -301,10 +301,10 @@ export function BlockEditor({ value, onChange }: Props) {
       {editor ? (
         <EditorContent
           editor={editor}
-          className="blog-prose min-h-[200px] rounded-lg border border-gray-800 bg-gray-950 p-4"
+          className="blog-prose min-h-[200px] rounded-lg border border-gray-700 bg-yarn-cream p-4 text-yarn-charcoal"
         />
       ) : (
-        <div className="min-h-[200px] rounded-lg border border-gray-800 bg-gray-950 p-4 text-sm text-gray-500">Завантаження…</div>
+        <div className="min-h-[200px] rounded-lg border border-gray-800 bg-gray-950 p-4 text-sm text-gray-400">Завантаження…</div>
       )}
 
       {pendingBlock === "video" && (

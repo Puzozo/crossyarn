@@ -7,9 +7,9 @@ import { NodeChrome } from "./node-chrome";
 import { parseYouTubeId } from "@/lib/content/youtube";
 
 const INPUT_CLASS =
-  "w-full rounded-lg bg-gray-800 border border-gray-700 text-white px-2 py-1 text-xs focus:outline-none focus:border-indigo-500";
+  "w-full rounded-lg bg-white border border-yarn-field-border text-yarn-charcoal px-2 py-1 text-xs focus:outline-none focus:border-indigo-500";
 const BUTTON_CLASS =
-  "px-2.5 py-1 rounded-lg bg-gray-800 hover:bg-gray-700 text-gray-300 text-xs font-medium transition-colors";
+  "px-2.5 py-1 rounded-lg bg-yarn-oatmeal hover:bg-yarn-sand text-yarn-charcoal text-xs font-medium transition-colors";
 
 type VideoAttrs = { provider: "youtube"; videoId: string | null; title?: string };
 
@@ -42,7 +42,7 @@ function VideoNodeView(props: ReactNodeViewProps) {
           <img
             src={`https://i.ytimg.com/vi/${attrs.videoId}/hqdefault.jpg`}
             alt=""
-            className="max-h-48 rounded-lg object-contain bg-gray-800"
+            className="max-h-48 rounded-lg object-contain bg-yarn-oatmeal"
           />
           <input
             value={attrs.title ?? ""}
@@ -72,7 +72,7 @@ function VideoNodeView(props: ReactNodeViewProps) {
               </button>
             )}
           </div>
-          {error && <p className="text-xs text-red-400">{error}</p>}
+          {error && <p className="text-xs text-red-700">{error}</p>}
         </div>
       )}
     </NodeChrome>

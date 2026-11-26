@@ -50,7 +50,7 @@ export function ForgotPasswordContent() {
           </Link>
 
           <div className="flex justify-center">
-            <svg width="48" height="48" viewBox="0 0 48 48" fill="none" className="text-yarn-terracotta opacity-60">
+            <svg width="48" height="48" viewBox="0 0 48 48" fill="none" className="text-yarn-terracotta-text opacity-60">
               <rect x="8" y="16" width="32" height="22" rx="3" stroke="currentColor" strokeWidth="1.5" />
               <path d="M8 19l16 10 16-10" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
             </svg>

@@ -56,16 +56,16 @@ export function NodeChrome({ label, editor, getPos, onDelete, children }: Props)
   const index = topLevelIndex(editor, getPos());
   const count = topLevelCount(editor);
   return (
-    <NodeViewWrapper className="my-3 rounded-lg border border-gray-700 bg-gray-900/40 p-3" data-drag-handle>
+    <NodeViewWrapper className="my-3 rounded-lg border border-yarn-sand bg-white p-3" data-drag-handle>
       <div className="mb-2 flex items-center justify-between select-none" contentEditable={false}>
-        <span className="text-xs font-semibold uppercase tracking-wider text-gray-400">{label}</span>
+        <span className="text-xs font-semibold uppercase tracking-wider text-yarn-warm-gray">{label}</span>
         <div className="flex items-center gap-1">
           <button
             type="button"
             disabled={index === 0}
             onClick={() => moveTopLevelNode(editor, getPos, -1)}
             aria-label="Вище"
-            className="flex h-8 w-8 items-center justify-center rounded-lg text-gray-500 hover:text-white hover:bg-gray-800 disabled:opacity-30 disabled:hover:bg-transparent transition-colors"
+            className="flex h-8 w-8 items-center justify-center rounded-lg text-yarn-warm-gray hover:text-yarn-charcoal hover:bg-yarn-oatmeal disabled:opacity-30 disabled:hover:bg-transparent transition-colors"
           >
             ↑
           </button>
@@ -74,7 +74,7 @@ export function NodeChrome({ label, editor, getPos, onDelete, children }: Props)
             disabled={index === count - 1}
             onClick={() => moveTopLevelNode(editor, getPos, 1)}
             aria-label="Нижче"
-            className="flex h-8 w-8 items-center justify-center rounded-lg text-gray-500 hover:text-white hover:bg-gray-800 disabled:opacity-30 disabled:hover:bg-transparent transition-colors"
+            className="flex h-8 w-8 items-center justify-center rounded-lg text-yarn-warm-gray hover:text-yarn-charcoal hover:bg-yarn-oatmeal disabled:opacity-30 disabled:hover:bg-transparent transition-colors"
           >
             ↓
           </button>
@@ -82,7 +82,7 @@ export function NodeChrome({ label, editor, getPos, onDelete, children }: Props)
             type="button"
             onClick={() => setConfirmOpen(true)}
             aria-label="Видалити блок"
-            className="flex h-8 w-8 items-center justify-center rounded-lg text-red-400 hover:text-red-300 hover:bg-red-950/40 disabled:opacity-30 transition-colors"
+            className="flex h-8 w-8 items-center justify-center rounded-lg text-red-700 hover:text-red-800 hover:bg-red-50 disabled:opacity-30 transition-colors"
           >
             ×
           </button>

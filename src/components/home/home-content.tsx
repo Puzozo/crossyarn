@@ -100,7 +100,7 @@ export function HomeContent({ isAuthenticated }: Props) {
 
         <div className="relative grid gap-10 lg:grid-cols-[1.3fr_0.7fr] items-center">
           <div className="space-y-6">
-            <span className="inline-flex items-center gap-2 rounded-full bg-yarn-terracotta-light px-4 py-1.5 text-sm font-semibold text-yarn-terracotta">
+            <span className="inline-flex items-center gap-2 rounded-full bg-yarn-terracotta-light px-4 py-1.5 text-sm font-semibold text-yarn-terracotta-text">
               <svg width="14" height="14" viewBox="0 0 14 14" fill="currentColor">
                 <circle cx="7" cy="7" r="3" />
               </svg>
@@ -109,7 +109,7 @@ export function HomeContent({ isAuthenticated }: Props) {
             <h1 className="font-display text-4xl sm:text-5xl lg:text-6xl font-bold leading-[1.1] text-yarn-charcoal">
               {t("home.titleLine1")}
               <br />
-              <span className="text-yarn-terracotta">{t("home.titleLine2")}</span>
+              <span className="text-yarn-terracotta-text">{t("home.titleLine2")}</span>
             </h1>
             <p className="max-w-xl text-lg text-yarn-warm-gray leading-relaxed">
               {t("home.subtitle")}
@@ -131,7 +131,7 @@ export function HomeContent({ isAuthenticated }: Props) {
           {/* Decorative illustration */}
           <div className="hidden lg:flex items-center justify-center">
             <div className="relative w-64 h-64">
-              <svg viewBox="0 0 200 200" className="w-full h-full text-yarn-terracotta opacity-20" fill="none" stroke="currentColor" strokeWidth="1">
+              <svg viewBox="0 0 200 200" className="w-full h-full text-yarn-terracotta-text opacity-20" fill="none" stroke="currentColor" strokeWidth="1">
                 <circle cx="100" cy="100" r="80" />
                 <circle cx="100" cy="100" r="60" />
                 <circle cx="100" cy="100" r="40" />
@@ -163,7 +163,7 @@ export function HomeContent({ isAuthenticated }: Props) {
               key={feature.title}
               className="group rounded-2xl bg-white/70 border border-yarn-sand/50 p-6 shadow-warm-sm hover:shadow-warm transition-all duration-300 hover:-translate-y-0.5"
             >
-              <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-yarn-terracotta-light text-yarn-terracotta mb-4 group-hover:scale-110 transition-transform duration-300">
+              <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-yarn-terracotta-light text-yarn-terracotta-text mb-4 group-hover:scale-110 transition-transform duration-300">
                 {feature.icon}
               </div>
               <h3 className="font-display text-lg font-semibold text-yarn-charcoal">

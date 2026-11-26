@@ -79,7 +79,7 @@ export function ExploreContent({ patterns, query, page, totalPages, totalCount, 
       {query ? (
         <p className="text-sm text-yarn-warm-gray">
           {t("explore.resultsFor", { count: totalCount, query })}{" "}
-          <Link href="/explore" className="font-medium text-yarn-terracotta hover:text-yarn-terracotta-hover transition-colors">
+          <Link href="/explore" className="font-medium text-yarn-terracotta-text hover:text-yarn-terracotta-text-hover transition-colors">
             {t("explore.clearSearch")}
           </Link>
         </p>
@@ -147,7 +147,7 @@ export function ExploreContent({ patterns, query, page, totalPages, totalCount, 
                   />
                 </div>
                 <div className="p-4 pb-2">
-                  <h2 className="font-display text-base font-semibold text-yarn-charcoal group-hover:text-yarn-terracotta transition-colors break-words [overflow-wrap:anywhere] line-clamp-2">
+                  <h2 className="font-display text-base font-semibold text-yarn-charcoal group-hover:text-yarn-terracotta-text transition-colors break-words [overflow-wrap:anywhere] line-clamp-2">
                     {pattern.title}
                   </h2>
                   <p className="mt-0.5 text-xs text-yarn-warm-gray">
@@ -171,7 +171,7 @@ export function ExploreContent({ patterns, query, page, totalPages, totalCount, 
                 {pattern.author ? (
                   <Link
                     href={`/u/${pattern.author.username}`}
-                    className="relative inline-flex items-center gap-1.5 text-xs font-medium text-yarn-warm-gray hover:text-yarn-terracotta transition-colors before:absolute before:-inset-y-2 before:inset-x-0 before:content-['']"
+                    className="relative inline-flex min-h-6 items-center gap-1.5 text-xs font-medium text-yarn-warm-gray hover:text-yarn-terracotta-text transition-colors before:absolute before:-inset-y-2 before:inset-x-0 before:content-['']"
                   >
                     {pattern.author.avatarUrl ? (
                       <Image
@@ -185,7 +185,7 @@ export function ExploreContent({ patterns, query, page, totalPages, totalCount, 
                     ) : (
                       <span
                         aria-hidden
-                        className="flex h-5 w-5 items-center justify-center rounded-full bg-yarn-terracotta/15 text-[10px] font-bold text-yarn-terracotta"
+                        className="flex h-5 w-5 items-center justify-center rounded-full bg-yarn-terracotta/15 text-[10px] font-bold text-yarn-terracotta-text"
                       >
                         {(pattern.author.name?.trim() || pattern.author.username).charAt(0).toUpperCase()}
                       </span>

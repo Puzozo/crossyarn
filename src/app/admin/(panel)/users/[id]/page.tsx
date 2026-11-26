@@ -63,7 +63,7 @@ export default async function AdminUserDetailPage({
               )}
             </div>
             {user.name && <p className="text-gray-400 mt-1">{user.name}</p>}
-            <p className="text-gray-500 text-xs mt-2">
+            <p className="text-gray-400 text-xs mt-2">
               ID: {user.id} · Зареєстрований: {new Date(user.createdAt).toLocaleDateString("uk-UA")}
             </p>
           </div>
@@ -75,11 +75,11 @@ export default async function AdminUserDetailPage({
         <div className="grid grid-cols-2 gap-4 mt-4 pt-4 border-t border-gray-800">
           <div className="text-center">
             <div className="text-2xl font-bold text-white">{user.patterns.length}</div>
-            <div className="text-gray-500 text-xs mt-0.5">схем (показано до 20)</div>
+            <div className="text-gray-400 text-xs mt-0.5">схем (показано до 20)</div>
           </div>
           <div className="text-center">
             <div className="text-2xl font-bold text-white">{user.symbols.length}</div>
-            <div className="text-gray-500 text-xs mt-0.5">кастомних символів</div>
+            <div className="text-gray-400 text-xs mt-0.5">кастомних символів</div>
           </div>
         </div>
       </div>
@@ -88,10 +88,10 @@ export default async function AdminUserDetailPage({
       <div className="space-y-3">
         <h2 className="text-lg font-semibold text-white">Схеми</h2>
         {user.patterns.length === 0 ? (
-          <p className="text-gray-500 text-sm">Немає схем</p>
+          <p className="text-gray-400 text-sm">Немає схем</p>
         ) : (
           <div className="rounded-xl border border-gray-800 overflow-hidden">
-            <div className="overflow-x-auto">
+            <div className="overflow-x-auto rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500" tabIndex={0} role="region" aria-label="Схеми користувача">
               <table className="w-full min-w-[640px] text-sm">
               <thead>
                 <tr className="border-b border-gray-800 bg-gray-900/50">
@@ -115,7 +115,7 @@ export default async function AdminUserDetailPage({
                         {p.visibility}
                       </span>
                     </td>
-                    <td className="px-4 py-2.5 text-gray-500 text-xs">
+                    <td className="px-4 py-2.5 text-gray-400 text-xs">
                       {new Date(p.updatedAt).toLocaleDateString("uk-UA")}
                     </td>
                   </tr>
@@ -145,7 +145,7 @@ export default async function AdminUserDetailPage({
                 )}
                 <div className="min-w-0">
                   <div className="text-white text-sm font-medium truncate">{s.name}</div>
-                  <div className="text-gray-500 text-xs truncate">{s.description}</div>
+                  <div className="text-gray-400 text-xs truncate">{s.description}</div>
                   {(s.width ?? 1) > 1 && (
                     <span className="text-[10px] text-indigo-400">×{s.width}</span>
                   )}

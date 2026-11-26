@@ -77,10 +77,10 @@ export function LikeButton({
         onClick={toggle}
         aria-label={liked ? t("like.unlike") : t("like.like")}
         aria-pressed={liked}
-        className={`relative inline-flex items-center gap-1 rounded-full px-2 py-1 text-xs font-medium transition-colors before:absolute before:-inset-2 before:content-[''] ${
+        className={`relative inline-flex min-h-6 items-center gap-1 rounded-full px-2 py-1 text-xs font-medium transition-colors before:absolute before:-inset-2 before:content-[''] ${
           liked
-            ? "text-yarn-terracotta"
-            : "text-yarn-warm-gray hover:text-yarn-terracotta"
+            ? "text-yarn-terracotta-text"
+            : "text-yarn-warm-gray hover:text-yarn-terracotta-text"
         }`}
       >
         {heart}
@@ -97,13 +97,13 @@ export function LikeButton({
       aria-pressed={liked}
       className={`inline-flex items-center gap-2 rounded-xl border px-4 py-2 text-sm font-semibold transition-colors ${
         liked
-          ? "border-yarn-terracotta/40 bg-yarn-terracotta-light text-yarn-terracotta"
-          : "border-yarn-sand bg-white/70 text-yarn-charcoal hover:border-yarn-terracotta/40 hover:text-yarn-terracotta"
+          ? "border-yarn-terracotta/40 bg-yarn-terracotta-light text-yarn-terracotta-text"
+          : "border-yarn-sand bg-white/70 text-yarn-charcoal hover:border-yarn-terracotta/40 hover:text-yarn-terracotta-text"
       }`}
     >
       {heart}
       <span>{liked ? t("like.liked") : t("like.like")}</span>
-      <span className={liked ? "text-yarn-terracotta/70" : "text-yarn-warm-gray"}>{count}</span>
+      <span className={liked ? "text-yarn-terracotta-text/70" : "text-yarn-warm-gray"}>{count}</span>
     </button>
   );
 }

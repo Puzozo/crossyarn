@@ -60,7 +60,7 @@ export function PublicProfileContent({ profile, patterns }: Props) {
           ) : (
             <div
               aria-hidden
-              className="flex h-16 w-16 shrink-0 items-center justify-center rounded-full bg-yarn-terracotta/15 text-2xl font-bold text-yarn-terracotta"
+              className="flex h-16 w-16 shrink-0 items-center justify-center rounded-full bg-yarn-terracotta/15 text-2xl font-bold text-yarn-terracotta-text"
             >
               {displayName.charAt(0).toUpperCase()}
             </div>
@@ -95,7 +95,7 @@ export function PublicProfileContent({ profile, patterns }: Props) {
                 href={profile.website}
                 target="_blank"
                 rel="nofollow noopener noreferrer"
-                className="inline-flex items-center gap-1.5 font-medium text-yarn-terracotta hover:text-yarn-terracotta-hover transition-colors"
+                className="inline-flex items-center gap-1.5 font-medium text-yarn-terracotta-text hover:text-yarn-terracotta-text-hover transition-colors"
               >
                 <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden>
                   <path d="M6.5 9.5l3-3M7 4l.8-.8a2.5 2.5 0 013.5 3.5l-.8.8M9 12l-.8.8a2.5 2.5 0 01-3.5-3.5l.8-.8" strokeLinecap="round" />
@@ -135,7 +135,7 @@ export function PublicProfileContent({ profile, patterns }: Props) {
                   />
                 </div>
                 <div className="p-5">
-                  <h3 className="font-display text-lg font-semibold text-yarn-charcoal group-hover:text-yarn-terracotta transition-colors break-words [overflow-wrap:anywhere] line-clamp-2">
+                  <h3 className="font-display text-lg font-semibold text-yarn-charcoal group-hover:text-yarn-terracotta-text transition-colors break-words [overflow-wrap:anywhere] line-clamp-2">
                     {pattern.title}
                   </h3>
                   <p className="mt-1 text-sm text-yarn-warm-gray">

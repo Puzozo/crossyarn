@@ -10,7 +10,7 @@ const DIFFICULTY_KEYS: Record<Difficulty, TranslationKey> = {
 
 const DIFFICULTY_CLASSES: Record<Difficulty, string> = {
   BEGINNER: "bg-yarn-sage-light text-yarn-charcoal",
-  INTERMEDIATE: "bg-yarn-terracotta-light text-yarn-terracotta",
+  INTERMEDIATE: "bg-yarn-terracotta-light text-yarn-terracotta-text",
   ADVANCED: "bg-yarn-charcoal text-white"
 };
 

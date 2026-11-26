@@ -99,9 +99,9 @@ export default async function AdminStatsPage() {
               >
                 <div>
                   <div className="text-white text-sm">{u.email}</div>
-                  {u.name && <div className="text-gray-500 text-xs">{u.name}</div>}
+                  {u.name && <div className="text-gray-400 text-xs">{u.name}</div>}
                 </div>
-                <div className="text-gray-500 text-xs">{new Date(u.createdAt).toLocaleDateString("uk-UA")}</div>
+                <div className="text-gray-400 text-xs">{new Date(u.createdAt).toLocaleDateString("uk-UA")}</div>
               </Link>
             ))}
             {recentUsers.length === 0 && <p className="text-gray-600 text-sm">Немає даних</p>}
@@ -116,7 +116,7 @@ export default async function AdminStatsPage() {
               <div key={p.id} className="flex items-center justify-between py-2">
                 <div>
                   <div className="text-white text-sm">{p.title}</div>
-                  <div className="text-gray-500 text-xs">{p.user.email} · {p.width}×{p.height}</div>
+                  <div className="text-gray-400 text-xs">{p.user.email} · {p.width}×{p.height}</div>
                 </div>
                 <div className="flex items-center gap-2 shrink-0">
                   <span className={`text-[10px] px-1.5 py-0.5 rounded-full ${
@@ -126,7 +126,7 @@ export default async function AdminStatsPage() {
                   }`}>
                     {p.visibility}
                   </span>
-                  <div className="text-gray-500 text-xs">{new Date(p.createdAt).toLocaleDateString("uk-UA")}</div>
+                  <div className="text-gray-400 text-xs">{new Date(p.createdAt).toLocaleDateString("uk-UA")}</div>
                 </div>
               </div>
             ))}
@@ -154,7 +154,7 @@ function MetricCard({
     <div className={`rounded-xl border bg-gray-900/50 p-4 ${colors[color]}`}>
       <div className="text-3xl font-bold text-white">{value.toLocaleString("uk-UA")}</div>
       <div className="text-sm font-medium mt-1">{label}</div>
-      <div className="text-xs text-gray-500 mt-0.5">{sub}</div>
+      <div className="text-xs text-gray-400 mt-0.5">{sub}</div>
     </div>
   );
 }

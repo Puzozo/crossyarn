@@ -14,7 +14,7 @@ export default function MasterClassError({ error, reset }: { error: Error & { di
 
   return (
     <div className="flex min-h-[60vh] flex-col items-center justify-center text-center px-4">
-      <p className="font-display text-7xl font-bold text-yarn-terracotta/40">!</p>
+      <p aria-hidden="true" className="font-display text-7xl font-bold text-yarn-terracotta">!</p>
       <h1 className="mt-4 font-display text-2xl font-bold text-yarn-charcoal">{t("error.title")}</h1>
       <p className="mt-2 max-w-sm text-sm text-yarn-warm-gray">{t("error.description")}</p>
       <div className="mt-6 flex flex-wrap justify-center gap-3">

@@ -363,12 +363,12 @@ export function ImageUploadDialog({ open, onClose, onSelect }: Props) {
                               ✕
                             </span>
                           ) : (
-                            <span className="text-gray-500" aria-hidden>
+                            <span className="text-gray-400" aria-hidden>
                               …
                             </span>
                           )}
                           <span className="truncate text-gray-200 flex-1">{item.name}</span>
-                          <span className="text-gray-500 text-xs shrink-0">{formatBytes(item.sizeBytes)}</span>
+                          <span className="text-gray-400 text-xs shrink-0">{formatBytes(item.sizeBytes)}</span>
                           <span className="text-xs text-gray-400 shrink-0" aria-hidden>
                             {selected ? "☑" : "☐"}
                           </span>
@@ -404,7 +404,7 @@ export function ImageUploadDialog({ open, onClose, onSelect }: Props) {
         ) : (
           <div className="overflow-y-auto space-y-3">
             {libraryItems.length === 0 ? (
-              <p className="text-gray-500 text-center py-8">Медіатека порожня</p>
+              <p className="text-gray-400 text-center py-8">Медіатека порожня</p>
             ) : (
               <div className="grid grid-cols-3 sm:grid-cols-4 gap-2">
                 {libraryItems.map((item) => {

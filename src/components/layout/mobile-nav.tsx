@@ -177,7 +177,7 @@ export function MobileNav({ links, authSection }: Props) {
                     href={link.href}
                     className={`px-4 py-3 rounded-xl text-base font-medium transition-colors ${
                       pathname === link.href
-                        ? "bg-yarn-terracotta-light text-yarn-terracotta"
+                        ? "bg-yarn-terracotta-light text-yarn-terracotta-text"
                         : "text-yarn-charcoal hover:bg-yarn-oatmeal"
                     }`}
                   >

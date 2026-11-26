@@ -179,7 +179,7 @@ export function ProtectedVideoEmbed({
       <Placeholder
         message={translate(lang, "masterClass.protectedVideo.signIn")}
         cta={
-          <Link href="/sign-in" className="text-sm font-medium text-yarn-terracotta underline">
+          <Link href="/sign-in" className="text-sm font-medium text-yarn-terracotta-text underline">
             {translate(lang, "masterClass.protectedVideo.signInCta")}
           </Link>
         }

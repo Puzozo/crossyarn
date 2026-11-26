@@ -350,7 +350,7 @@ export function ImportPreviewContent({ importId, initialStatus }: Props) {
             onClick={() => setActiveTab(tab)}
             className={`flex-1 py-2.5 text-sm font-medium transition-colors ${
               activeTab === tab
-                ? "border-b-2 border-yarn-terracotta text-yarn-terracotta"
+                ? "border-b-2 border-yarn-terracotta text-yarn-terracotta-text"
                 : "text-yarn-warm-gray"
             }`}
           >

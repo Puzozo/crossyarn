@@ -114,7 +114,7 @@ function ResetButton({ onReset }: { onReset: () => void }) {
     <Button
       variant="ghost"
       size="sm"
-      className={confirming ? "text-yarn-terracotta" : undefined}
+      className={confirming ? "text-yarn-terracotta-text" : undefined}
       onClick={() => {
         if (confirming) {
           setConfirming(false);

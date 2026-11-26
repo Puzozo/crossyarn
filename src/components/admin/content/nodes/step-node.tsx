@@ -8,9 +8,9 @@ import { moveTopLevelNode, topLevelCount, topLevelIndex } from "./node-chrome";
 import { AdminConfirmDialog } from "@/components/admin/admin-confirm-dialog";
 
 const INPUT_CLASS =
-  "w-full rounded-lg bg-gray-800 border border-gray-700 text-white px-2 py-1 text-sm font-medium focus:outline-none focus:border-indigo-500";
+  "w-full rounded-lg bg-white border border-yarn-field-border text-yarn-charcoal px-2 py-1 text-sm font-medium focus:outline-none focus:border-indigo-500";
 const BUTTON_CLASS =
-  "px-2.5 py-1 rounded-lg bg-gray-800 hover:bg-gray-700 text-gray-300 text-xs font-medium transition-colors";
+  "px-2.5 py-1 rounded-lg bg-yarn-oatmeal hover:bg-yarn-sand text-yarn-charcoal text-xs font-medium transition-colors";
 
 function StepNodeView(props: ReactNodeViewProps) {
   const { node, updateAttributes, deleteNode, getPos, editor } = props;
@@ -40,7 +40,7 @@ function StepNodeView(props: ReactNodeViewProps) {
   };
 
   return (
-    <NodeViewWrapper className="my-3 rounded-lg border border-gray-700 bg-gray-900/40 p-3">
+    <NodeViewWrapper className="my-3 rounded-lg border border-yarn-sand bg-white p-3">
       <div className="mb-2 flex items-center justify-between gap-2" contentEditable={false}>
         <input
           value={title}
@@ -55,7 +55,7 @@ function StepNodeView(props: ReactNodeViewProps) {
             disabled={index === 0}
             onClick={() => moveTopLevelNode(editor, getPos, -1)}
             aria-label="Вище"
-            className="flex h-8 w-8 items-center justify-center rounded-lg text-gray-500 hover:text-white hover:bg-gray-800 disabled:opacity-30 disabled:hover:bg-transparent transition-colors"
+            className="flex h-8 w-8 items-center justify-center rounded-lg text-yarn-warm-gray hover:text-yarn-charcoal hover:bg-yarn-oatmeal disabled:opacity-30 disabled:hover:bg-transparent transition-colors"
           >
             ↑
           </button>
@@ -64,7 +64,7 @@ function StepNodeView(props: ReactNodeViewProps) {
             disabled={index === count - 1}
             onClick={() => moveTopLevelNode(editor, getPos, 1)}
             aria-label="Нижче"
-            className="flex h-8 w-8 items-center justify-center rounded-lg text-gray-500 hover:text-white hover:bg-gray-800 disabled:opacity-30 disabled:hover:bg-transparent transition-colors"
+            className="flex h-8 w-8 items-center justify-center rounded-lg text-yarn-warm-gray hover:text-yarn-charcoal hover:bg-yarn-oatmeal disabled:opacity-30 disabled:hover:bg-transparent transition-colors"
           >
             ↓
           </button>
@@ -72,14 +72,14 @@ function StepNodeView(props: ReactNodeViewProps) {
             type="button"
             onClick={() => setConfirmOpen(true)}
             aria-label="Видалити блок"
-            className="flex h-8 w-8 items-center justify-center rounded-lg text-red-400 hover:text-red-300 hover:bg-red-950/40 transition-colors"
+            className="flex h-8 w-8 items-center justify-center rounded-lg text-red-700 hover:text-red-800 hover:bg-red-50 transition-colors"
           >
             ×
           </button>
         </div>
       </div>
 
-      <NodeViewContent className="step-content rounded-lg border border-gray-800 p-2 text-sm text-gray-200" />
+      <NodeViewContent className="step-content rounded-lg border border-yarn-sand p-2 text-sm text-yarn-charcoal" />
 
       <div contentEditable={false} className="mt-2">
         <button type="button" className={BUTTON_CLASS} onClick={() => setDialogOpen(true)}>

@@ -16,6 +16,8 @@
   --color-yarn-terracotta-light: #F2DDD6;
   --color-yarn-terracotta-strong: #A65A43;
   --color-yarn-terracotta-strong-hover: #9A543E;
+  --color-yarn-terracotta-text: #8C4B38;
+  --color-yarn-terracotta-text-hover: #7A4131;
   --color-yarn-field-border: #967F68;
   --color-yarn-sage-strong: #5D6B5D;
   --color-yarn-dusty-rose: #C9928A;
@@ -180,11 +182,11 @@ h1, h2, h3, h4, h5, h6 {
 .blog-prose ol { list-style: decimal; }
 .blog-prose li { margin-top: 0.375rem; }
 .blog-prose a {
-  color: var(--color-yarn-terracotta);
+  color: var(--color-yarn-terracotta-text);
   text-decoration: underline;
   text-underline-offset: 2px;
 }
-.blog-prose a:hover { color: var(--color-yarn-terracotta-hover); }
+.blog-prose a:hover { color: var(--color-yarn-terracotta-text-hover); }
 .blog-prose strong { color: var(--color-yarn-charcoal); font-weight: 600; }
 .blog-prose table {
   width: 100%;

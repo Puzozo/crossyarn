@@ -36,7 +36,7 @@ export function BlogList({ posts }: { posts: BlogPostSummary[] }) {
               ) : null}
               <div className="min-w-0 flex-1">
                 <Link href={`/blog/${post.slug}`} className="group">
-                  <h2 className="font-display text-xl font-semibold text-yarn-charcoal group-hover:text-yarn-terracotta transition-colors">
+                  <h2 className="font-display text-xl font-semibold text-yarn-charcoal group-hover:text-yarn-terracotta-text transition-colors">
                     {post.heading}
                   </h2>
                 </Link>

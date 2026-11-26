@@ -91,7 +91,7 @@ function MaterialList({ label, items, onChange }: { label: string; items: string
                 [next[i - 1], next[i]] = [next[i], next[i - 1]];
                 onChange(next);
               }}
-              className="text-gray-500 hover:text-white disabled:opacity-30"
+              className="text-gray-400 hover:text-white disabled:opacity-30"
               aria-label="Вище"
             >
               ↑
@@ -104,7 +104,7 @@ function MaterialList({ label, items, onChange }: { label: string; items: string
                 [next[i + 1], next[i]] = [next[i], next[i + 1]];
                 onChange(next);
               }}
-              className="text-gray-500 hover:text-white disabled:opacity-30"
+              className="text-gray-400 hover:text-white disabled:opacity-30"
               aria-label="Нижче"
             >
               ↓
@@ -452,7 +452,7 @@ export function ContentEditor(props: Props) {
         </main>
 
         <aside className={(mobileTab === "settings" ? "block" : "hidden md:block") + " space-y-4"}>
-          <CollapsiblePanel title="Основне">
+          <CollapsiblePanel tone="dark" title="Основне">
             <div className="space-y-3">
               <div>
                 <label htmlFor="field-title" className={LABEL_CLASS}>
@@ -480,7 +480,7 @@ export function ContentEditor(props: Props) {
                     updateForm((f) => ({ ...f, slug: e.target.value }));
                   }}
                 />
-                <p className="text-xs text-gray-500 mt-1">
+                <p className="text-xs text-gray-400 mt-1">
                   {form.publishedAt != null
                     ? "Slug заблокований після публікації"
                     : (kind === "masterClass" ? "/master-classes/" : "/blog/") + form.slug}
@@ -590,7 +590,7 @@ export function ContentEditor(props: Props) {
                         updateForm((f) => ({ ...(f as PostEditorData), description: e.target.value }))
                       }
                     />
-                    <p className="text-xs text-gray-500 mt-1">{(post?.description ?? "").length}/155</p>
+                    <p className="text-xs text-gray-400 mt-1">{(post?.description ?? "").length}/155</p>
                   </div>
                 </>
               )}
@@ -598,7 +598,7 @@ export function ContentEditor(props: Props) {
           </CollapsiblePanel>
 
           <div id="field-cover">
-            <CollapsiblePanel title="Обкладинка">
+            <CollapsiblePanel tone="dark" title="Обкладинка">
               <div className="space-y-3">
                 {form.coverAssetId ? (
                   <div className="space-y-2">
@@ -657,7 +657,7 @@ export function ContentEditor(props: Props) {
           </div>
 
           {props.kind === "masterClass" && (
-            <CollapsiblePanel title="Параметри">
+            <CollapsiblePanel tone="dark" title="Параметри">
               <div className="space-y-3">
                 <div>
                   <label className={LABEL_CLASS}>Тип</label>
@@ -723,7 +723,7 @@ export function ContentEditor(props: Props) {
             </CollapsiblePanel>
           )}
 
-          <CollapsiblePanel title="Теги">
+          <CollapsiblePanel tone="dark" title="Теги">
             <div className="space-y-3">
               <div className="flex flex-wrap gap-1.5">
                 {form.tags.map((tag) => (
@@ -735,7 +735,7 @@ export function ContentEditor(props: Props) {
                     <button
                       type="button"
                       onClick={() => updateForm((f) => ({ ...f, tags: f.tags.filter((t) => t !== tag) }))}
-                      className="text-gray-500 hover:text-white"
+                      className="text-gray-400 hover:text-white"
                       aria-label={"Видалити тег " + tag}
                     >
                       ×
@@ -764,7 +764,7 @@ export function ContentEditor(props: Props) {
           </CollapsiblePanel>
 
           {props.kind === "masterClass" && (
-            <CollapsiblePanel title="Основна схема">
+            <CollapsiblePanel tone="dark" title="Основна схема">
               <div className="space-y-2">
                 {mc?.mainPatternId ? (
                   <div className="space-y-2">
@@ -800,7 +800,7 @@ export function ContentEditor(props: Props) {
           )}
 
           {props.kind === "masterClass" && (
-            <CollapsiblePanel title="Матеріали">
+            <CollapsiblePanel tone="dark" title="Матеріали">
               <div className="space-y-4">
                 <MaterialList
                   label="Пряжа"
@@ -838,7 +838,7 @@ export function ContentEditor(props: Props) {
 
           {props.kind === "masterClass" && (
             <div id="field-gallery">
-              <CollapsiblePanel title="Галерея">
+              <CollapsiblePanel tone="dark" title="Галерея">
                 <div className="space-y-2">
                   {mc?.gallery.map((item, i) => (
                     <div key={item.assetId + i} className="flex items-start gap-2 border-b border-gray-800 pb-2">
@@ -880,7 +880,7 @@ export function ContentEditor(props: Props) {
                             [next[i - 1], next[i]] = [next[i], next[i - 1]];
                             updateForm((f) => ({ ...(f as MasterClassEditorData), gallery: next }));
                           }}
-                          className="text-gray-500 hover:text-white disabled:opacity-30"
+                          className="text-gray-400 hover:text-white disabled:opacity-30"
                           aria-label="Вище"
                         >
                           ↑
@@ -893,7 +893,7 @@ export function ContentEditor(props: Props) {
                             [next[i + 1], next[i]] = [next[i], next[i + 1]];
                             updateForm((f) => ({ ...(f as MasterClassEditorData), gallery: next }));
                           }}
-                          className="text-gray-500 hover:text-white disabled:opacity-30"
+                          className="text-gray-400 hover:text-white disabled:opacity-30"
                           aria-label="Нижче"
                         >
                           ↓
@@ -928,8 +928,8 @@ export function ContentEditor(props: Props) {
           )}
 
           {props.kind === "masterClass" && (
-            <CollapsiblePanel title="Продаж (скоро)" defaultOpen={false}>
-              <p className="text-xs text-gray-500 mb-2">
+            <CollapsiblePanel tone="dark" title="Продаж (скоро)" defaultOpen={false}>
+              <p className="text-xs text-gray-400 mb-2">
                 Продаж курсів буде доступний пізніше. Поля нижче зарезервовані для майбутнього білінгу і зараз
                 недоступні для редагування.
               </p>
@@ -938,19 +938,19 @@ export function ContentEditor(props: Props) {
                 disabled
                 value={mc?.priceUah ?? ""}
                 placeholder="Ціна (копійки)"
-                className="w-full rounded-lg bg-gray-800/50 border border-gray-800 text-gray-500 px-3 py-2 text-sm cursor-not-allowed"
+                className="w-full rounded-lg bg-gray-800/50 border border-gray-800 text-gray-400 px-3 py-2 text-sm cursor-not-allowed"
               />
               <label className={LABEL_CLASS}>Безкоштовних блоків</label>
               <input
                 disabled
                 value={mc?.previewBlockCount ?? 0}
                 placeholder="Кількість безкоштовних блоків"
-                className="w-full rounded-lg bg-gray-800/50 border border-gray-800 text-gray-500 px-3 py-2 text-sm cursor-not-allowed mt-2"
+                className="w-full rounded-lg bg-gray-800/50 border border-gray-800 text-gray-400 px-3 py-2 text-sm cursor-not-allowed mt-2"
               />
             </CollapsiblePanel>
           )}
 
-          <CollapsiblePanel title="Чекліст публікації">
+          <CollapsiblePanel tone="dark" title="Чекліст публікації">
             <div className="space-y-0.5">
               {(
                 kind === "masterClass"
@@ -985,7 +985,7 @@ export function ContentEditor(props: Props) {
                     className="flex w-full items-center gap-2 py-1 text-left text-sm"
                   >
                     <span className={miss ? "text-red-400" : "text-emerald-400"}>{miss ? "○" : "✓"}</span>
-                    <span className={miss ? "text-gray-400" : "text-gray-500 line-through"}>{entry.label}</span>
+                    <span className={miss ? "text-gray-400" : "text-gray-400 line-through"}>{entry.label}</span>
                   </button>
                 );
               })}

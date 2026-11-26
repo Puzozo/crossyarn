@@ -130,7 +130,7 @@ function renderBlock(block: TopLevelBlock, key: React.Key, ctx: RenderContext): 
           <a key={key} href={`/p/${p.id}`} className="my-4 block rounded-lg border border-yarn-sand p-4 hover:bg-yarn-cream/40">
             <span className="text-xs uppercase text-yarn-warm-gray">{schemeLabel(ctx.lang)}</span>
             <span className="block font-medium">{p.title}</span>
-            <span className="text-sm text-yarn-terracotta">{openPatternLabel(ctx.lang)}</span>
+            <span className="text-sm text-yarn-terracotta-text">{openPatternLabel(ctx.lang)}</span>
           </a>
         );
       }
