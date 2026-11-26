@@ -4,7 +4,7 @@ export const metadata = {
   title: "Premium — Crossyarn"
 };
 
-// Universal Premium is active until 2026-11-30. When billing goes live,
+// Universal Premium is active until 2026-12-31. When billing goes live,
 // replace this with a WayForPay checkout CTA and remove the banner.
 export default function PremiumPage() {
   return <PremiumContent />;
